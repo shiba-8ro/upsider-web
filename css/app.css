@@ -296,6 +296,18 @@ table {
   color: var(--warning);
 }
 
+.request[data-request-status="送信中"] { border-color: var(--info); }
+.request[data-request-status="受付済み"] {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+.request[data-request-status="エラー"] { border-color: var(--danger); }
+.request[data-request-status="送信中"] .request-state { color: var(--info); }
+.request[data-request-status="受付済み"] .request-state { color: var(--success); }
+.request[data-request-status="エラー"] .request-state { color: var(--danger); }
+
+.btn:disabled { opacity: 0.65; cursor: progress; }
+
 .request dl {
   display: grid;
   grid-template-columns: 8.5em 1fr;
