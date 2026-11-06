@@ -1,0 +1,533 @@
+import {
+  COPY_SUCCESS_MS,
+  FILTERS,
+  STORAGE_KEY,
+  buildExecutionRequest,
+  countOf,
+  filterTransactions,
+  formatMemoText,
+  formatYen,
+  initialMemo,
+  isExecutionRequest,
+  statusTone,
+  sumOf,
+} from "./logic.js";
+
+const EXEC_NOTE =
+  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼としてまとめ、このブラウザの中だけに保持します。実行にはバックエンド接続が必要です。この静的サイトにその接続はないため、ボタンを押しても実行は行われず、Slackへの投稿もエージェントの起動もありません。依頼に秘密情報やトークンは含まれません。";
+
+const state = {
+  ledger: null,
+  filter: "すべて",
+  memos: {},
+  requests: {},
+  copiedId: null,
+  copySeq: 0,
+  copyTimer: 0,
+  storageError: false,
+};
+
+const app = document.querySelector("#app");
+
+init().catch((error) => {
+  console.error(error);
+  app.textContent = "台帳を読み込めませんでした。";
+  document.body.dataset.ready = "error";
+});
+
+async function init() {
+  const response = await fetch(new URL("../data/ledger.json", import.meta.url));
+  if (!response.ok) throw new Error(`ledger ${response.status}`);
+  state.ledger = await response.json();
+  for (const detail of state.ledger.details) {
+    const tx = state.ledger.transactions.find((row) => row.id === detail.transactionId);
+    state.memos[detail.transactionId] = initialMemo(tx.content);
+  }
+  state.requests = loadRequests();
+  render();
+  app.addEventListener("click", onClick);
+  app.addEventListener("input", onInput);
+  document.body.dataset.ready = "true";
+}
+
+function render() {
+  const { ledger } = state;
+  app.replaceChildren();
+
+  const header = el("header", { class: "page-header" });
+  header.append(
+    el("h1", {}, ledger.title),
+    el("p", { class: "summary" }, ledger.summary),
+    el("p", { class: "lead" }, ledger.lead),
+  );
+  app.append(header, renderMetrics(), renderAggregation());
+
+  for (const callout of ledger.callouts) {
+    const box = el("aside", { class: `callout ${callout.tone}` });
+    const body = el("p", {}, callout.body);
+    box.append(el("strong", {}, callout.lead), body);
+    app.append(box);
+  }
+
+  const list = el("section", { "aria-labelledby": "tx-heading" });
+  list.append(
+    el("h2", { id: "tx-heading" }, "取引一覧"),
+    renderFilters(),
+    renderTable(),
+  );
+  const empty = el("p", { class: "empty", "data-empty": "" }, "該当する取引はありません。");
+  empty.hidden = filterTransactions(ledger.transactions, state.filter).length !== 0;
+  list.append(empty);
+  app.append(list);
+
+  const detailIntro = el("section");
+  detailIntro.append(
+    el("h2", {}, ledger.detailHeading),
+    el("p", { class: "detail-intro" }, ledger.detailIntro),
+  );
+  app.append(detailIntro);
+
+  for (const detail of ledger.details) app.append(renderDetail(detail));
+
+  const caution = el("section", { class: "caution" });
+  caution.append(el("h2", {}, ledger.cautionHeading), el("p", {}, ledger.caution));
+  app.append(caution);
+}
+
+function renderMetrics() {
+  const wrap = el("div", { class: "metrics" });
+  for (const status of FILTERS.slice(1)) {
+    const card = el("article", { class: `metric ${statusTone(status)}` });
+    card.append(el("b", {}, String(countOf(state.ledger.transactions, status))), el("span", {}, status));
+    wrap.append(card);
+  }
+  return wrap;
+}
+
+function renderAggregation() {
+  const section = el("section", { "aria-labelledby": "agg-heading" });
+  const table = el("table", { class: "agg-table panel" });
+  const head = el("tr");
+  head.append(el("th", { scope: "col" }, "区分"), el("th", { scope: "col", class: "num" }, "件数"), el("th", { scope: "col", class: "num" }, "金額"));
+  table.append(el("caption", { class: "sr-only" }, "ステータス別の件数と金額"), el("thead", {}, head));
+  const body = el("tbody");
+  const rows = [["すべて", state.ledger.transactions.length, sumOf(state.ledger.transactions)]];
+  for (const status of FILTERS.slice(1)) {
+    rows.push([status, countOf(state.ledger.transactions, status), sumOf(state.ledger.transactions, status)]);
+  }
+  for (const [label, count, amount] of rows) {
+    const tr = el("tr");
+    tr.append(el("td", {}, label), el("td", { class: "num" }, String(count)), el("td", { class: "num" }, formatYen(amount)));
+    body.append(tr);
+  }
+  table.append(body);
+  section.append(el("h2", { id: "agg-heading" }, "集計"), table);
+  return section;
+}
+
+function renderFilters() {
+  const group = el("div", { class: "filters", role: "group", "aria-label": "ステータスフィルタ" });
+  for (const filter of FILTERS) {
+    const count = filter === "すべて"
+      ? state.ledger.transactions.length
+      : countOf(state.ledger.transactions, filter);
+    const button = el("button", {
+      type: "button",
+      "data-filter": filter,
+      "aria-pressed": filter === state.filter ? "true" : "false",
+    });
+    button.append(document.createTextNode(filter), el("span", { class: "count" }, String(count)));
+    group.append(button);
+  }
+  return group;
+}
+
+function renderTable() {
+  const table = el("table", { class: "tx-table panel" });
+  const head = el("tr");
+  const columns = [
+    ["日時", ""],
+    ["利用先", ""],
+    ["金額", "num"],
+    ["内容", ""],
+    ["ステータス", ""],
+    ["Slack", ""],
+    ["Drive証憑", ""],
+  ];
+  for (const [label, className] of columns) {
+    head.append(el("th", { scope: "col", class: className }, label));
+  }
+  table.append(el("caption", { class: "sr-only" }, "取引一覧"), el("thead", {}, head));
+  const body = el("tbody", { "data-tx-body": "" });
+  for (const tx of filterTransactions(state.ledger.transactions, state.filter)) {
+    body.append(renderRow(tx));
+  }
+  table.append(body);
+  return table;
+}
+
+function renderRow(tx) {
+  const tr = el("tr", { "data-tx-id": tx.id });
+  tr.append(
+    cell("日時", tx.datetime),
+    cell("利用先", tx.merchant),
+    cell("金額", tx.amount, "num"),
+    cell("内容", tx.content),
+    cell("ステータス", null, "", statusPill(tx.status)),
+    cell("Slack", null, "", slackLink(tx.slack)),
+    cell("Drive証憑", tx.drive),
+  );
+  return tr;
+}
+
+function renderDetail(detail) {
+  const tx = state.ledger.transactions.find((row) => row.id === detail.transactionId);
+  const article = el("article", { class: "detail", "data-detail": tx.id });
+  article.append(el("h2", {}, detail.heading), el("p", { class: "detail-intro" }, detail.intro));
+
+  const props = el("dl", { class: "props" });
+  for (const item of detail.properties) {
+    props.append(el("dt", {}, item.label));
+    const dd = el("dd", {});
+    if (item.kind === "slack") dd.append(slackLink(item.value));
+    else if (item.label === "ステータス") dd.append(statusPill(item.value));
+    else dd.textContent = item.value;
+    props.append(dd);
+  }
+  article.append(props);
+  if (detail.image) article.append(renderImage(detail.image));
+  article.append(renderMemo(tx));
+  return article;
+}
+
+function renderMemo(tx) {
+  const memo = state.memos[tx.id];
+  const box = el("div", { class: "memo" });
+  const fields = [
+    ["purpose", "用途："],
+    ["seg1", "セグメント1："],
+    ["seg2", "セグメント2："],
+    ["category", "分類："],
+    ["content", "内容："],
+  ];
+  for (const [field, label] of fields) {
+    const id = `memo-${tx.id}-${field}`;
+    const wrap = el("label", { class: "memo-field", for: id });
+    const input = el("input", {
+      id,
+      type: "text",
+      value: memo[field],
+      autocomplete: "off",
+      "data-memo-id": tx.id,
+      "data-memo-field": field,
+    });
+    wrap.append(el("span", {}, label), input);
+    box.append(wrap);
+  }
+
+  const actions = el("div", { class: "memo-actions" });
+  const noteId = `exec-note-${tx.id}`;
+  actions.append(
+    el("button", { type: "button", class: "btn primary", "data-copy": tx.id }, "クリップボードにコピー"),
+    el("button", {
+      type: "button",
+      class: "btn secondary",
+      "data-ai": tx.id,
+      "aria-describedby": noteId,
+    }, "AIがメモを追加する"),
+  );
+  const status = el("p", { class: "copy-status", "data-copy-status": "", role: "status" }, "");
+  status.hidden = true;
+  const fallback = el("div", { class: "copy-fallback", "data-copy-fallback": "" });
+  fallback.hidden = true;
+  fallback.append(
+    el("p", {}, "自動コピーに失敗しました。下の5行を選択してコピーしてください。"),
+    el("textarea", { readonly: "", "data-copy-fallback-text": "" }),
+  );
+  box.append(actions, status, fallback, el("p", { class: "exec-note", id: noteId }, EXEC_NOTE));
+  const slot = el("div", { "data-request-slot": tx.id });
+  slot.append(renderRequest(tx.id));
+  box.append(slot);
+  return box;
+}
+
+function renderImage(image) {
+  const figure = el("figure", { class: image.readable ? "shot" : "shot is-damaged" });
+  if (!image.readable) figure.append(el("p", { class: "shot-note" }, image.notice));
+  figure.append(el("img", {
+    src: image.src,
+    alt: image.alt,
+    width: String(image.width),
+    height: String(image.height),
+  }));
+  return figure;
+}
+
+function renderRequest(id) {
+  const request = state.requests[id];
+  const memo = state.memos[id];
+  if (!request) return document.createDocumentFragment();
+  const box = el("div", { class: "request", "data-request": id });
+  box.append(
+    el("h3", {}, "保持中の実行依頼"),
+    el("p", { class: "request-state" }, "未実行。バックエンド接続がないため、実行は行われていません。"),
+  );
+  const memoText = el("dd");
+  memoText.append(el("pre", {}, request.memoLines.join("\n")));
+  const dl = el("dl");
+  dl.append(
+    el("dt", {}, "取引ID"),
+    el("dd", {}, request.transactionId),
+    el("dt", {}, "Slackスレッド"),
+    el("dd", {}, request.slackThread),
+    el("dt", {}, "メモ"),
+    memoText,
+    el("dt", {}, "保持時刻"),
+    el("dd", {}, formatSavedAt(request.savedAt)),
+  );
+  box.append(dl);
+  if (memo && formatMemoText(memo) !== request.memoLines.join("\n")) {
+    box.append(el("p", { class: "mismatch" }, "編集中の5行と保持中の依頼は違います。反映するには、もう一度「AIがメモを追加する」を押してください。"));
+  }
+  if (state.storageError) {
+    box.append(el("p", { class: "mismatch" }, "このブラウザでは保存領域を使えないため、依頼はこの画面を開いている間だけ残ります。"));
+  }
+  return box;
+}
+
+function onClick(event) {
+  const filterButton = event.target.closest("[data-filter]");
+  if (filterButton) {
+    state.filter = filterButton.dataset.filter;
+    paintFilter();
+    return;
+  }
+  const copyButton = event.target.closest("[data-copy]");
+  if (copyButton) {
+    event.preventDefault();
+    copyMemo(copyButton.dataset.copy);
+    return;
+  }
+  const aiButton = event.target.closest("[data-ai]");
+  if (aiButton) {
+    event.preventDefault();
+    holdRequest(aiButton.dataset.ai);
+  }
+}
+
+function onInput(event) {
+  const input = event.target.closest("[data-memo-field]");
+  if (!input) return;
+  const id = input.dataset.memoId;
+  state.memos[id][input.dataset.memoField] = input.value;
+  replaceRequest(id);
+}
+
+function paintFilter() {
+  for (const button of app.querySelectorAll("[data-filter]")) {
+    button.setAttribute("aria-pressed", button.dataset.filter === state.filter ? "true" : "false");
+  }
+  const body = app.querySelector("[data-tx-body]");
+  body.replaceChildren();
+  const rows = filterTransactions(state.ledger.transactions, state.filter);
+  for (const tx of rows) body.append(renderRow(tx));
+  app.querySelector("[data-empty]").hidden = rows.length !== 0;
+}
+
+function copyMemo(id) {
+  const text = formatMemoText(state.memos[id]);
+  const legacyOk = execCommandCopy(text);
+  const clipboard = navigator.clipboard;
+  if (legacyOk) {
+    hideFallback(id);
+    markCopied(id);
+    if (clipboard && typeof clipboard.writeText === "function") {
+      clipboard.writeText(text).catch(() => {});
+    }
+    return;
+  }
+  if (clipboard && typeof clipboard.writeText === "function") {
+    clipboard.writeText(text).then(
+      () => {
+        hideFallback(id);
+        markCopied(id);
+      },
+      () => copyWithClipboardItem(id, text),
+    );
+    return;
+  }
+  copyWithClipboardItem(id, text);
+}
+
+function copyWithClipboardItem(id, text) {
+  const clipboard = navigator.clipboard;
+  if (clipboard && typeof clipboard.write === "function" && typeof ClipboardItem !== "undefined") {
+    const item = new ClipboardItem({ "text/plain": new Blob([text], { type: "text/plain" }) });
+    clipboard.write([item]).then(
+      () => {
+        hideFallback(id);
+        markCopied(id);
+      },
+      () => showFallback(id, text),
+    );
+    return;
+  }
+  showFallback(id, text);
+}
+
+function execCommandCopy(text) {
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.style.position = "fixed";
+  area.style.top = "0";
+  area.style.left = "0";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.focus();
+  area.select();
+  area.setSelectionRange(0, text.length);
+  let ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  }
+  area.remove();
+  return ok;
+}
+
+function markCopied(id) {
+  state.copiedId = id;
+  state.copySeq += 1;
+  const seq = state.copySeq;
+  for (const node of app.querySelectorAll("[data-copy-status]")) {
+    const active = node.closest("[data-detail]")?.dataset.detail === id;
+    node.hidden = !active;
+    node.textContent = active ? "コピーしました" : "";
+  }
+  window.clearTimeout(state.copyTimer);
+  state.copyTimer = window.setTimeout(() => {
+    if (seq !== state.copySeq) return;
+    state.copiedId = null;
+    for (const node of app.querySelectorAll("[data-copy-status]")) {
+      node.hidden = true;
+      node.textContent = "";
+    }
+  }, COPY_SUCCESS_MS);
+}
+
+function hideFallback(id) {
+  const node = detailOf(id)?.querySelector("[data-copy-fallback]");
+  if (node) node.hidden = true;
+}
+
+function showFallback(id, text) {
+  for (const node of app.querySelectorAll("[data-copy-status]")) {
+    node.hidden = true;
+    node.textContent = "";
+  }
+  state.copiedId = null;
+  const card = detailOf(id);
+  const fallback = card.querySelector("[data-copy-fallback]");
+  const area = fallback.querySelector("[data-copy-fallback-text]");
+  area.value = text;
+  fallback.hidden = false;
+  area.focus();
+  area.select();
+}
+
+function holdRequest(id) {
+  const tx = state.ledger.transactions.find((row) => row.id === id);
+  const request = buildExecutionRequest({
+    transactionId: tx.id,
+    slackThread: tx.slack,
+    memo: state.memos[id],
+    savedAt: new Date().toISOString(),
+  });
+  state.requests[id] = request;
+  saveRequests();
+  replaceRequest(id);
+}
+
+function replaceRequest(id) {
+  const slot = detailOf(id)?.querySelector("[data-request-slot]");
+  if (!slot) return;
+  slot.replaceChildren(renderRequest(id));
+}
+
+function detailOf(id) {
+  return app.querySelector(`[data-detail="${CSS.escape(id)}"]`);
+}
+
+function loadRequests() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || parsed.version !== 1 || typeof parsed.requests !== "object" || parsed.requests === null) {
+      return {};
+    }
+    const requests = {};
+    for (const [id, request] of Object.entries(parsed.requests)) {
+      if (isExecutionRequest(id, request)) requests[id] = request;
+    }
+    return requests;
+  } catch {
+    return {};
+  }
+}
+
+function saveRequests() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, requests: state.requests }));
+    state.storageError = false;
+  } catch {
+    state.storageError = true;
+  }
+}
+
+function formatSavedAt(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
+}
+
+function slackLink(url) {
+  const link = el("a", { href: url, target: "_blank", rel: "noopener noreferrer" }, url);
+  return link;
+}
+
+function statusPill(status) {
+  return el("span", { class: `status ${statusTone(status)}` }, status);
+}
+
+function cell(label, text, className = "", node) {
+  const attrs = { "data-label": label };
+  if (className) attrs.class = className;
+  const td = el("td", attrs);
+  if (node) td.append(node);
+  else td.textContent = text;
+  return td;
+}
+
+function el(tag, attrs = {}, text) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    if (value === undefined || value === null) continue;
+    if (key === "class") node.className = value;
+    else node.setAttribute(key, value === true ? "" : String(value));
+  }
+  if (text instanceof Node) node.append(text);
+  else if (text !== undefined) node.textContent = text;
+  return node;
+}
