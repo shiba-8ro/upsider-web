@@ -2,25 +2,36 @@ import {
   COPY_SUCCESS_MS,
   FILTERS,
   STORAGE_KEY,
-  buildExecutionRequest,
+  buildGasPayload,
   countOf,
+  createRequestId,
   filterTransactions,
   formatMemoText,
   formatYen,
   initialMemo,
-  isExecutionRequest,
+  isAllowedSlackThread,
+  loadStoredRequests,
+  normalizeGasUrl,
+  postGasPayload,
+  requestStateText,
+  resolveRequestId,
   statusTone,
   sumOf,
 } from "./logic.js";
 
-const EXEC_NOTE =
-  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼としてまとめ、このブラウザの中だけに保持します。実行にはバックエンド接続が必要です。この静的サイトにその接続はないため、ボタンを押しても実行は行われず、Slackへの投稿もエージェントの起動もありません。依頼に秘密情報やトークンは含まれません。";
+const UNCONFIGURED_NOTE =
+  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼としてまとめ、このブラウザの中だけに保持します。実行にはバックエンド接続が必要です。受付URLが未設定のため、ボタンを押しても実行は行われず、Slackへの投稿もエージェントの起動もありません。依頼に秘密情報やトークンは含まれません。";
+
+const CONFIGURED_NOTE =
+  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼として受付APIへ送ります。受付後の処理は証憑ゲッターロボ側で、このページは処理状況を問い合わせません。依頼IDを付けて二重送信を避けます。秘密情報やトークンは送りません。";
 
 const state = {
   ledger: null,
+  config: { gasUrl: "" },
   filter: "すべて",
   memos: {},
   requests: {},
+  inflight: new Set(),
   copiedId: null,
   copySeq: 0,
   copyTimer: 0,
@@ -36,6 +47,7 @@ init().catch((error) => {
 });
 
 async function init() {
+  state.config = await loadGasConfig();
   const response = await fetch(new URL("../data/ledger.json", import.meta.url));
   if (!response.ok) throw new Error(`ledger ${response.status}`);
   state.ledger = await response.json();
@@ -244,7 +256,7 @@ function renderMemo(tx) {
     el("p", {}, "自動コピーに失敗しました。下の5行を選択してコピーしてください。"),
     el("textarea", { readonly: "", "data-copy-fallback-text": "" }),
   );
-  box.append(actions, status, fallback, el("p", { class: "exec-note", id: noteId }, EXEC_NOTE));
+  box.append(actions, status, fallback, el("p", { class: "exec-note", id: noteId }, execNote()));
   const slot = el("div", { "data-request-slot": tx.id });
   slot.append(renderRequest(tx.id));
   box.append(slot);
@@ -267,11 +279,9 @@ function renderRequest(id) {
   const request = state.requests[id];
   const memo = state.memos[id];
   if (!request) return document.createDocumentFragment();
-  const box = el("div", { class: "request", "data-request": id });
-  box.append(
-    el("h3", {}, "保持中の実行依頼"),
-    el("p", { class: "request-state" }, "未実行。バックエンド接続がないため、実行は行われていません。"),
-  );
+  const box = el("div", { class: "request", "data-request": id, "data-request-status": request.status });
+  const stateLine = el("p", { class: "request-state", role: "status" }, requestStateText(request, Boolean(state.config.gasUrl)));
+  box.append(el("h3", {}, "保持中の実行依頼"), stateLine);
   const memoText = el("dd");
   memoText.append(el("pre", {}, request.memoLines.join("\n")));
   const dl = el("dl");
@@ -282,12 +292,17 @@ function renderRequest(id) {
     el("dd", {}, request.slackThread),
     el("dt", {}, "メモ"),
     memoText,
-    el("dt", {}, "保持時刻"),
-    el("dd", {}, formatSavedAt(request.savedAt)),
+    el("dt", {}, "依頼ID"),
+    el("dd", {}, request.requestId || "未採番"),
+    el("dt", {}, "最終更新"),
+    el("dd", {}, formatSavedAt(request.updatedAt || request.savedAt)),
   );
   box.append(dl);
   if (memo && formatMemoText(memo) !== request.memoLines.join("\n")) {
     box.append(el("p", { class: "mismatch" }, "編集中の5行と保持中の依頼は違います。反映するには、もう一度「AIがメモを追加する」を押してください。"));
+  }
+  if (request.status === "エラー" && request.errorMessage) {
+    box.append(el("p", { class: "mismatch" }, request.errorMessage));
   }
   if (state.storageError) {
     box.append(el("p", { class: "mismatch" }, "このブラウザでは保存領域を使えないため、依頼はこの画面を開いている間だけ残ります。"));
@@ -311,7 +326,7 @@ function onClick(event) {
   const aiButton = event.target.closest("[data-ai]");
   if (aiButton) {
     event.preventDefault();
-    holdRequest(aiButton.dataset.ai);
+    void submitMemoRequest(aiButton.dataset.ai);
   }
 }
 
@@ -437,17 +452,88 @@ function showFallback(id, text) {
   area.select();
 }
 
-function holdRequest(id) {
+async function submitMemoRequest(id) {
+  if (state.inflight.has(id)) return;
   const tx = state.ledger.transactions.find((row) => row.id === id);
-  const request = buildExecutionRequest({
-    transactionId: tx.id,
-    slackThread: tx.slack,
-    memo: state.memos[id],
-    savedAt: new Date().toISOString(),
+  if (!tx) return;
+  const memoLines = formatMemoText(state.memos[id]).split("\n");
+  const now = new Date().toISOString();
+  const previous = state.requests[id];
+  const sameMemo = Boolean(previous && previous.memoLines.join("\n") === memoLines.join("\n"));
+  const gasUrl = state.config.gasUrl;
+
+  if (!gasUrl) {
+    state.requests[id] = baseRequest(tx, memoLines, previous, now, {
+      status: "未実行",
+      requestId: null,
+      errorMessage: "",
+    });
+    saveRequests();
+    replaceRequest(id);
+    return;
+  }
+
+  if (sameMemo && previous.status === "受付済み") {
+    replaceRequest(id);
+    return;
+  }
+  if (sameMemo && previous.status === "送信中") return;
+  if (!isAllowedSlackThread(tx.slack, state.ledger.transactions, tx.id)) {
+    state.requests[id] = baseRequest(tx, memoLines, previous, now, {
+      status: "エラー",
+      requestId: previous?.requestId || null,
+      errorMessage: "Slackスレッドが取引一覧と一致しないため、送信していません。",
+    });
+    saveRequests();
+    replaceRequest(id);
+    return;
+  }
+
+  const request = baseRequest(tx, memoLines, previous, now, {
+    status: "送信中",
+    requestId: resolveRequestId(previous, memoLines, createRequestId),
+    errorMessage: "",
   });
+  state.inflight.add(id);
   state.requests[id] = request;
   saveRequests();
   replaceRequest(id);
+  setAiBusy(id, true);
+  try {
+    await postGasPayload(gasUrl, buildGasPayload(request));
+    request.status = "受付済み";
+    request.errorMessage = "";
+  } catch {
+    request.status = "エラー";
+    request.errorMessage = "受付APIの応答を確認できませんでした。同じ依頼IDで再試行できます。";
+  } finally {
+    request.updatedAt = new Date().toISOString();
+    state.inflight.delete(id);
+    setAiBusy(id, false);
+    saveRequests();
+    replaceRequest(id);
+  }
+}
+
+function baseRequest(tx, memoLines, previous, now, fields) {
+  return {
+    transactionId: tx.id,
+    slackThread: tx.slack,
+    memoLines,
+    savedAt: previous?.savedAt || now,
+    updatedAt: now,
+    status: fields.status,
+    requestId: fields.requestId,
+    errorMessage: fields.errorMessage,
+  };
+}
+
+function setAiBusy(id, busy) {
+  const button = detailOf(id)?.querySelector("[data-ai]");
+  if (!button) return;
+  button.disabled = busy;
+  if (busy) button.setAttribute("aria-busy", "true");
+  else button.removeAttribute("aria-busy");
 }
 
 function replaceRequest(id) {
@@ -462,17 +548,7 @@ function detailOf(id) {
 
 function loadRequests() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (!parsed || parsed.version !== 1 || typeof parsed.requests !== "object" || parsed.requests === null) {
-      return {};
-    }
-    const requests = {};
-    for (const [id, request] of Object.entries(parsed.requests)) {
-      if (isExecutionRequest(id, request)) requests[id] = request;
-    }
-    return requests;
+    return loadStoredRequests(localStorage.getItem(STORAGE_KEY));
   } catch {
     return {};
   }
@@ -480,11 +556,28 @@ function loadRequests() {
 
 function saveRequests() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, requests: state.requests }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 2, requests: state.requests }));
     state.storageError = false;
   } catch {
     state.storageError = true;
   }
+}
+
+async function loadGasConfig() {
+  try {
+    const response = await fetch(new URL("../config.js", import.meta.url), { cache: "no-store" });
+    if (!response.ok) return { gasUrl: "" };
+    const source = await response.text();
+    const readConfig = new Function(`${source}\n; return window.UPSIDER_CONFIG;`);
+    const config = readConfig();
+    return { gasUrl: normalizeGasUrl(config && config.gasUrl) };
+  } catch {
+    return { gasUrl: "" };
+  }
+}
+
+function execNote() {
+  return state.config.gasUrl ? CONFIGURED_NOTE : UNCONFIGURED_NOTE;
 }
 
 function formatSavedAt(iso) {
