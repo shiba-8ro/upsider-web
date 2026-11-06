@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
 import {
+  FILTERS,
   buildExecutionRequest,
   buildGasPayload,
   countOf,
@@ -22,6 +23,21 @@ import {
   slackChannelId,
   sumOf,
 } from "../js/logic.js";
+
+const EVIDENCE_URLS = {
+  "tx-20261105-2124-amazon-14680": "https://drive.google.com/file/d/1-lZG0HxIKsbPhlvU9ew3WJ5GoWKnjAhi/view?usp=drivesdk",
+  "tx-20261105-2312-amazon-9300": "https://drive.google.com/file/d/1VFMPsL4QpbZ7FRdDBjp7rcVM-ftFQCF6/view?usp=drivesdk",
+  "tx-20261105-2312-amazon-2117": "https://drive.google.com/file/d/16h4l3SGEsYCLrMz84jTQNJbTYVmOIXZi/view?usp=drivesdk",
+  "tx-20261106-0113-amazon-255": "https://drive.google.com/file/d/1k3LODOYl00RGWjzcYuZeFs5shMS3vrya/view?usp=drivesdk",
+};
+
+const REFUND_ID = "tx-20261104-0923-danballace-23960";
+const NEW_ORDER_ID = "tx-20261106-1553-danballace-7160";
+const REFUND_STATUS = "返金（メモ・証憑不要）";
+
+function hasEvidence(tx) {
+  return tx.drive === "あり" || tx.drive.startsWith("https://drive.google.com/");
+}
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ledger = JSON.parse(fs.readFileSync(path.join(root, "data/ledger.json"), "utf8"));
@@ -114,49 +130,91 @@ function startServer() {
 }
 
 async function assertLedger() {
-  check(ledger.transactions.length === 17, "ledger has 17 transactions");
-  check(ledger.asOf === "2026-11-06 09:10 Asia/Tokyo", "asOf");
+  check(ledger.transactions.length === 19, "ledger has 19 transactions");
+  check(ledger.asOf === "2026-11-06 19:25 Asia/Tokyo", "asOf");
+  check(ledger.lead.includes("2026-11-06 19:25 Asia/Tokyo"), "lead asOf");
+  check(ledger.lead.includes("19件"), "lead count");
   const counts = {
-    "登録完了": 5,
+    "登録完了": 9,
+    [REFUND_STATUS]: 1,
     "メモなし": 3,
     "証憑なし": 4,
-    "メモ・証憑なし": 5,
+    "メモ・証憑なし": 2,
     "証憑不一致": 0,
   };
+  check(JSON.stringify(FILTERS.slice(1)) === JSON.stringify(Object.keys(counts)), "filters match counted statuses");
   for (const [status, count] of Object.entries(counts)) {
     check(countOf(ledger.transactions, status) === count, `${status} count ${countOf(ledger.transactions, status)} !== ${count}`);
   }
-  check(sumOf(ledger.transactions) === 137414, `total ${sumOf(ledger.transactions)}`);
-  check(formatYen(137414) === "¥137,414", "yen format");
-  check(sumOf(ledger.transactions, "登録完了") === 19673, "sum 登録完了");
-  check(sumOf(ledger.transactions, "メモなし") === 25045, "sum メモなし");
-  check(sumOf(ledger.transactions, "証憑なし") === 48744, "sum 証憑なし");
-  check(sumOf(ledger.transactions, "メモ・証憑なし") === 43952, "sum メモ・証憑なし");
+  check(FILTERS.slice(1).reduce((total, status) => total + countOf(ledger.transactions, status), 0) === 19, "status counts sum to 19");
+  const sums = {
+    "登録完了": 46025,
+    [REFUND_STATUS]: -23960,
+    "メモなし": 25045,
+    "証憑なし": 48744,
+    "メモ・証憑なし": 24760,
+    "証憑不一致": 0,
+  };
+  check(sumOf(ledger.transactions) === 120614, `total ${sumOf(ledger.transactions)}`);
+  check(Object.values(sums).reduce((total, value) => total + value, 0) === 120614, "status sums");
+  for (const [status, amount] of Object.entries(sums)) {
+    check(sumOf(ledger.transactions, status) === amount, `sum ${status} ${sumOf(ledger.transactions, status)} !== ${amount}`);
+  }
+  check(formatYen(120614) === "¥120,614", "yen format");
+  check(formatYen(-23960) === "-¥23,960", "negative yen format");
   check(filterTransactions(ledger.transactions, "メモなし").every((tx) => tx.status === "メモなし"), "filter exact");
   check(filterTransactions(ledger.transactions, "証憑なし").length === 4, "証憑なし excludes メモ・証憑なし");
-  check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 17, "slack urls unique");
-  check(ledger.transactions.filter((tx) => tx.detailSection).length === 8, "8 detail sections");
+  check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 19, "slack urls unique");
+  const detailIds = ledger.transactions.filter((tx) => tx.detailSection).map((tx) => tx.id);
+  check(detailIds.length === 5, "5 detail sections");
+  check(JSON.stringify(detailIds) === JSON.stringify(ledger.details.map((detail) => detail.transactionId)), "details follow unhandled transactions");
 
-  const specPath = "/home/ubuntu/.cursor/projects/workspace/uploads/upsider-web-spec_79aa.md";
-  if (fs.existsSync(specPath)) {
-    const spec = fs.readFileSync(specPath, "utf8");
-    const blocks = [...spec.matchAll(/```json\n([\s\S]*?)```/g)].map((match) => match[1]);
-    const fromSpec = JSON.parse(blocks.find((block) => block.includes('"transactions"')));
-    check(JSON.stringify(ledger.transactions) === JSON.stringify(fromSpec.transactions), "transactions match spec JSON");
-    check(ledger.asOf === fromSpec.asOf, "asOf matches spec");
-  } else {
-    failures.push("spec file missing; transactions were not checked against the source markdown");
+  const completed = ledger.transactions.filter((tx) => tx.status === "登録完了");
+  const evidenced = ledger.transactions.filter(hasEvidence);
+  check(completed.length === 9 && evidenced.length === 9, `evidence pair ${completed.length}/${evidenced.length}`);
+  check(completed.every(hasEvidence), "登録完了 without evidence");
+  check(evidenced.every((tx) => tx.status === "登録完了"), "evidence without 登録完了");
+  check(Object.keys(EVIDENCE_URLS).length === 4, "four evidence urls");
+  for (const [id, url] of Object.entries(EVIDENCE_URLS)) {
+    const tx = ledger.transactions.find((row) => row.id === id);
+    check(Boolean(tx), `missing evidenced tx ${id}`);
+    check(tx?.status === "登録完了", `evidenced status ${id}`);
+    check(tx?.drive === url, `drive url ${id}`);
+    check(tx?.detailSection === false, `evidenced leaves unhandled details ${id}`);
+    check(!ledger.details.some((detail) => detail.transactionId === id), `detail removed ${id}`);
   }
+  check(ledger.transactions.find((tx) => tx.id === "tx-20261105-2124-amazon-14680")?.slack.endsWith("1793881469.106739"), "slack 14680");
+  check(ledger.transactions.find((tx) => tx.id === "tx-20261105-2312-amazon-9300")?.slack.endsWith("1793887975.184129"), "slack 9300");
+  check(ledger.transactions.find((tx) => tx.id === "tx-20261105-2312-amazon-2117")?.slack.endsWith("1793887975.859849"), "slack 2117");
+  check(ledger.transactions.find((tx) => tx.id === "tx-20261106-0113-amazon-255")?.slack.endsWith("1793895200.333029"), "slack 255");
+  check(ledger.transactions.filter((tx) => String(tx.drive).startsWith("https://")).length === 4, "only four drive urls");
+
+  const refund = ledger.transactions.find((tx) => tx.id === REFUND_ID);
+  check(Boolean(refund), "refund included");
+  check(refund?.merchant === "DANBALLACE" && refund?.datetime === "11/04 09:23", "refund identity");
+  check(refund?.amount === "-¥23,960" && refund?.amountYen === -23960, "refund amount");
+  check(refund?.status === REFUND_STATUS, "refund status");
+  check(refund?.drive === "証憑不要", "refund drive");
+  check(refund?.detailSection === false, "refund is not an unhandled detail");
+  check(refund?.slack.endsWith("1793751790.582399"), "refund slack");
+  check(filterTransactions(ledger.transactions, "すべて").some((tx) => tx.id === REFUND_ID), "refund stays in the full list");
+
+  const order = ledger.transactions.find((tx) => tx.id === NEW_ORDER_ID);
+  check(order?.merchant === "DANBALLACE" && order?.datetime === "11/06 15:53", "new order identity");
+  check(order?.amountYen === 7160 && order?.status === "メモ・証憑なし" && order?.drive === "なし", "new order status");
+  check(order?.slack.endsWith("1793948039.836289"), "new order slack");
+  check(order?.detailSection === true, "new order detail flag");
+  const orderDetail = ledger.details.find((detail) => detail.transactionId === NEW_ORDER_ID);
+  check(Boolean(orderDetail), "new order detail");
+  check(orderDetail?.properties.some((item) => item.label === "Drive証憑" && item.value === "なし"), "new order drive detail");
+  check(!ledger.details.some((detail) => detail.transactionId === REFUND_ID), "refund excluded from unhandled details");
 
   const memoByKey = {
     "17553": "パーツケース4段×2・ゴム切はさみ・L型カッターなど工具7点",
     "17600": "HyperVシート PX-10H 15 非耐油 W270×L270×H1.5mm ×5",
     "4833": "チャック付き袋 M8G×2・M8I×1",
     "2659": "NEEWER 六角ドライバー4本セット",
-    "14680": "UGREEN USB Type-Cケーブル 1m ×20",
-    "9300": "KIOXIA microSDカード64GB ×6",
-    "2117": "UGREEN SDカードリーダー 収納型",
-    "255": "輪ゴム オーバンド#16 100g箱",
+    "7160": "新規注文",
   };
   for (const tx of ledger.transactions.filter((row) => row.memoKey)) {
     check(tx.content === memoByKey[tx.memoKey], `content for ${tx.memoKey}`);
@@ -218,7 +276,7 @@ async function assertLedger() {
     check(isAllowedSlackThread(tx.slack, ledger.transactions, tx.id), `strict slack ${tx.id}`);
     check(!isAllowedSlackThread(tx.slack.replace("C0BG07UF1EY", "C0OTHER"), ledger.transactions, tx.id), `other channel ${tx.id}`);
   }
-  const sample = ledger.transactions.find((tx) => tx.memoKey === "255");
+  const sample = ledger.transactions.find((tx) => tx.memoKey === "2659");
   const held = buildExecutionRequest({
     transactionId: sample.id,
     slackThread: sample.slack,
@@ -328,25 +386,37 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最終更新: 2026-11-06 09:10 Asia/Tokyo。11月以降のAIハンド決済用取引17件のステータスです。",
+      "最終更新: 2026-11-06 19:25 Asia/Tokyo。11月以降のAIハンド決済用取引19件（返金1件を含む）のステータスです。",
       "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しました。",
       "日進ゴム ¥17,600 の誤添付 nisshin-4735.png を削除しました。",
+      "DANBALLACEの返金 -¥23,960（11/04 09:23）は除外せず、メモ・証憑が不要な返金として追加しました。",
+      "登録完了9件はすべて証憑ありで、証憑がある取引はすべて登録完了です。",
       "メモ入力欄とコピー機能を復活済み。",
       "要対応の取引です。Slackスレッドの下にメモ入力欄があり、スクショがある場合はその上に並びます。",
+      "内容: 新規注文。返信はなく、メモ・証憑はありません。Driveを検索しても証憑は見つかりませんでした。",
     ]) {
       check(bodyText.includes(phrase), `missing phrase: ${phrase}`);
+    }
+    const pageSourceText = await page.evaluate(() => document.body.textContent);
+    for (const url of Object.values(EVIDENCE_URLS)) {
+      check(pageSourceText.includes(url), `page missing evidence url ${url}`);
     }
 
     const rows = await page.$$eval("[data-tx-id]", (nodes) => nodes.map((node) => ({
       id: node.dataset.txId,
       cells: [...node.querySelectorAll("td")].map((td) => ({
         label: td.dataset.label,
-        text: td.dataset.label === "Slack" ? td.querySelector("a")?.href || "" : td.innerText.trim(),
+        text: td.dataset.label === "Slack"
+          ? td.querySelector("a")?.href || ""
+          : td.dataset.label === "Drive証憑"
+            ? (td.querySelector("a")?.textContent || td.textContent).trim()
+            : td.innerText.trim(),
+        href: td.querySelector("a")?.href || "",
         target: td.querySelector("a")?.target || "",
         rel: td.querySelector("a")?.rel || "",
       })),
     })));
-    check(rows.length === 17, `visible rows ${rows.length}`);
+    check(rows.length === 19, `visible rows ${rows.length}`);
     rows.forEach((row, index) => {
       const tx = ledger.transactions[index];
       const byLabel = Object.fromEntries(row.cells.map((cell) => [cell.label, cell]));
@@ -357,6 +427,13 @@ async function browserChecks(base) {
       check(byLabel["内容"].text === tx.content, `content ${tx.id}`);
       check(byLabel["ステータス"].text === tx.status, `status ${tx.id}`);
       check(byLabel["Drive証憑"].text === tx.drive, `drive ${tx.id}`);
+      if (tx.drive.startsWith("https://")) {
+        check(byLabel["Drive証憑"].href === tx.drive, `drive href ${tx.id} ${byLabel["Drive証憑"].href}`);
+        check(byLabel["Drive証憑"].target === "_blank", `drive target ${tx.id}`);
+        check(byLabel["Drive証憑"].rel.includes("noopener"), `drive rel ${tx.id}`);
+      } else {
+        check(byLabel["Drive証憑"].href === "", `drive should be plain text ${tx.id}`);
+      }
       check(byLabel.Slack.text === tx.slack, `slack ${tx.id} ${byLabel.Slack.text}`);
       check(byLabel.Slack.target === "_blank", `slack target ${tx.id}`);
       check(byLabel.Slack.rel.includes("noopener"), `slack rel ${tx.id}`);
@@ -369,10 +446,15 @@ async function browserChecks(base) {
     const leaked = await page.evaluate(() => document.body.innerText.includes("[object HTML"));
     check(!leaked, "object string leaked into the page");
     const agg = await page.$$eval(".agg-table tbody tr", (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent)));
-    check(agg[0][0] === "すべて" && agg[0][1] === "17" && agg[0][2] === "¥137,414", `agg total ${agg[0]}`);
+    check(agg[0][0] === "すべて" && agg[0][1] === "19" && agg[0][2] === "¥120,614", `agg total ${agg[0]}`);
+    check(agg.find((row) => row[0] === "登録完了")?.[1] === "9" && agg.find((row) => row[0] === "登録完了")?.[2] === "¥46,025", "agg 登録完了");
+    check(agg.find((row) => row[0] === REFUND_STATUS)?.[1] === "1" && agg.find((row) => row[0] === REFUND_STATUS)?.[2] === "-¥23,960", "agg refund");
+    check(agg.find((row) => row[0] === "メモなし")?.[1] === "3" && agg.find((row) => row[0] === "メモなし")?.[2] === "¥25,045", "agg メモなし");
+    check(agg.find((row) => row[0] === "証憑なし")?.[1] === "4" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥48,744", "agg 証憑なし");
+    check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "2" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥24,760", "agg メモ・証憑なし");
     check(agg.find((row) => row[0] === "証憑不一致")?.[1] === "0", "agg zero mismatch");
 
-    for (const filter of ["すべて", "登録完了", "メモなし", "証憑なし", "メモ・証憑なし", "証憑不一致"]) {
+    for (const filter of FILTERS) {
       await page.click(`[data-filter="${filter}"]`);
       const pressed = await page.$eval(`[data-filter="${filter}"]`, (button) => button.getAttribute("aria-pressed"));
       check(pressed === "true", `${filter} pressed`);
@@ -404,7 +486,7 @@ async function browserChecks(base) {
         note: card.querySelector(".exec-note")?.textContent || "",
       };
     }));
-    check(details.length === 8, `details ${details.length}`);
+    check(details.length === 5, `details ${details.length}`);
     for (const detail of ledger.details) {
       const found = details.find((card) => card.id === detail.transactionId);
       const tx = ledger.transactions.find((row) => row.id === detail.transactionId);
@@ -472,9 +554,9 @@ async function browserChecks(base) {
     await page.waitForFunction((id) => !document.querySelector(`[data-detail="${id}"] [data-copy-status]`).hidden, {}, copyId);
     await page.waitForFunction(() => navigator.clipboard.readText().then((text) => text.includes("セグメント2：試作\n")).catch(() => false), { timeout: 5000 });
 
-    const aiId = "tx-20261106-0113-amazon-255";
+    const aiId = NEW_ORDER_ID;
     await page.$eval(`[data-detail="${aiId}"] [data-memo-field="purpose"]`, (input) => {
-      input.value = "輪ゴムの補充";
+      input.value = "段ボールの追加注文";
       input.dispatchEvent(new Event("input", { bubbles: true }));
     });
     const before = network.length;
@@ -497,11 +579,11 @@ async function browserChecks(base) {
     check(opened.length === 0, "window.open was called");
     const requestText = await page.$eval(`[data-request="${aiId}"]`, (node) => node.innerText);
     check(requestText.includes(aiId), "request shows transaction id");
-    check(requestText.includes("https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793895200.333029"), "request shows slack");
-    check(requestText.includes("用途：輪ゴムの補充"), "request shows edited memo");
+    check(requestText.includes("https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793948039.836289"), "request shows slack");
+    check(requestText.includes("用途：段ボールの追加注文"), "request shows edited memo");
     check(requestText.includes("セグメント1：AIハンド"), "request seg1");
     check(requestText.includes("分類：消耗品"), "request category");
-    check(requestText.includes("内容：輪ゴム オーバンド#16 100g箱"), "request content");
+    check(requestText.includes("内容：新規注文"), "request content");
     check(requestText.includes("実行は行われていません"), "request not executed");
     check(!/投稿しました|実行しました|追加しました|連携しました/.test(requestText), `false success: ${requestText}`);
     const stored = await page.evaluate(() => localStorage.getItem("upsider-monitor.execution-requests.v1"));
@@ -518,10 +600,10 @@ async function browserChecks(base) {
     await page.reload({ waitUntil: "networkidle0" });
     await page.waitForSelector("body[data-ready='true']");
     const restored = await page.$eval(`[data-request="${aiId}"]`, (node) => node.innerText);
-    check(restored.includes("用途：輪ゴムの補充"), "request restored");
+    check(restored.includes("用途：段ボールの追加注文"), "request restored");
     check(restored.includes("編集中の5行と保持中の依頼は違います"), "mismatch after reload");
     const purposeAfterReload = await page.$eval(`[data-detail="${aiId}"] [data-memo-field="purpose"]`, (input) => input.value);
-    check(purposeAfterReload === "輪ゴム オーバンド#16 100g箱", "form resets to initial value");
+    check(purposeAfterReload === "新規注文", "form resets to initial value");
 
     await page.evaluate(() => {
       document.execCommand = () => false;
@@ -574,7 +656,7 @@ async function browserChecks(base) {
     await page.screenshot({ path: "/tmp/upsider-desktop-table.png" });
     await page.evaluate(() => document.querySelector('[data-detail="tx-20261105-1253-monotaro-17553"]').scrollIntoView());
     await page.screenshot({ path: "/tmp/upsider-desktop-memo.png" });
-    await page.evaluate(() => document.querySelector('[data-request="tx-20261106-0113-amazon-255"]').scrollIntoView({ block: "center" }));
+    await page.evaluate((id) => document.querySelector(`[data-request="${id}"]`).scrollIntoView({ block: "center" }), aiId);
     await page.screenshot({ path: "/tmp/upsider-request.png" });
     await page.setViewport({ width: 390, height: 844 });
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -604,7 +686,7 @@ async function connectionChecks(browser, base) {
   const note = await page.$eval(".exec-note", (node) => node.textContent);
   check(note.includes("受付API"), "configured note");
 
-  const legacyId = "tx-20261105-2312-amazon-2117";
+  const legacyId = "tx-20261105-1357-nisshin-17600";
   const legacyTx = ledger.transactions.find((tx) => tx.id === legacyId);
   const legacyLines = formatMemoText(initialMemo(legacyTx.content)).split("\n");
   await page.evaluate((id, slack, memoLines) => {
@@ -629,7 +711,7 @@ async function connectionChecks(browser, base) {
   const legacyStored = await page.evaluate(() => localStorage.getItem("upsider-monitor.execution-requests.v1"));
   check(JSON.parse(legacyStored).version === 1, "reload does not rewrite the old cache");
 
-  const sendId = "tx-20261105-2124-amazon-14680";
+  const sendId = NEW_ORDER_ID;
   gas.hits = [];
   await page.evaluate((id) => {
     const button = document.querySelector(`[data-detail="${id}"] [data-ai]`);
@@ -658,7 +740,7 @@ async function connectionChecks(browser, base) {
   await new Promise((resolve) => setTimeout(resolve, 250));
   check(gas.hits.length === afterAccept, "accepted memo is not sent again");
 
-  const retryId = "tx-20261105-2312-amazon-9300";
+  const retryId = "tx-20261105-1404-monotaro-4833";
   gas.behavior = "html";
   await page.click(`[data-detail="${retryId}"] [data-ai]`);
   await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, retryId);
@@ -672,13 +754,18 @@ async function connectionChecks(browser, base) {
   check(retryBodies.length === 2 && retryBodies[0] === retryBodies[1], `retry ids ${retryBodies}`);
 
   gas.behavior = "reject";
-  const rejectId = "tx-20261105-1404-monotaro-4833";
-  await page.click(`[data-detail="${rejectId}"] [data-ai]`);
-  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, rejectId);
-
-  gas.behavior = "mismatch";
   const mismatchId = "tx-20261105-1703-amazon-2659";
   await page.click(`[data-detail="${mismatchId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, mismatchId);
+
+  gas.behavior = "mismatch";
+  const hitsBeforeMismatch = gas.hits.length;
+  await page.click(`[data-detail="${mismatchId}"] [data-ai]`);
+  const mismatchStarted = Date.now();
+  while (gas.hits.length < hitsBeforeMismatch + 1 && Date.now() - mismatchStarted < 5000) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  check(gas.hits.length === hitsBeforeMismatch + 1, "mismatched response is still a retry post");
   await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, mismatchId);
 
   gas.behavior = "500";
@@ -708,4 +795,15 @@ if (failures.length) {
   console.error(failures.map((failure) => `- ${failure}`).join("\n"));
   process.exit(1);
 }
-console.log("ok: 17 transactions, links, initial memos, copy, filters, execution requests");
+const counts = Object.fromEntries(FILTERS.slice(1).map((status) => [status, countOf(ledger.transactions, status)]));
+const sums = Object.fromEntries(FILTERS.slice(1).map((status) => [status, sumOf(ledger.transactions, status)]));
+console.log(JSON.stringify({
+  asOf: ledger.asOf,
+  transactions: ledger.transactions.length,
+  details: ledger.details.length,
+  totalYen: sumOf(ledger.transactions),
+  counts,
+  sums,
+  evidenceUrls: EVIDENCE_URLS,
+}, null, 2));
+console.log("ok: 19 transactions, links, initial memos, copy, filters, execution requests");

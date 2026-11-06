@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-06 09:10 Asia/Tokyo",
+  "asOf": "2026-11-06 19:25 Asia/Tokyo",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最終更新: 2026-11-06 09:10 Asia/Tokyo。11月以降のAIハンド決済用取引17件のステータスです。",
+  "lead": "最終更新: 2026-11-06 19:25 Asia/Tokyo。11月以降のAIハンド決済用取引19件（返金1件を含む）のステータスです。",
   "callouts": [
     {
       "tone": "info",
@@ -11,8 +11,13 @@
     },
     {
       "tone": "warning",
-      "lead": "今回のチェック（11/06 AM9）",
+      "lead": "前回のチェック（11/06 AM9）",
       "body": "日進ゴム ¥17,600 の誤添付 nisshin-4735.png を削除しました。Driveに添付可能な会計上有効な領収書・請求書は見つかりませんでした（ミスミは注文確認書のみのため対象外）。新規4件（Amazon 14,680 / 9,300 / 2,117 / 255）を追加しています。"
+    },
+    {
+      "tone": "info",
+      "lead": "今回のチェック（11/06 19:25）",
+      "body": "DANBALLACEの返金 -¥23,960（11/04 09:23）は除外せず、メモ・証憑が不要な返金として追加しました。DANBALLACEの新規注文 ¥7,160（11/06 15:53）は返信・メモ・証憑がなく、Drive検索でも証憑は未発見のため、未対応の詳細に載せています。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）は本文なしのPDFをSlackへ添付済みのため登録完了です。登録完了9件はすべて証憑ありで、証憑がある取引はすべて登録完了です。"
     }
   ],
   "detailHeading": "メモなし／メモ・証憑なし（詳細）",
@@ -112,6 +117,19 @@
       "detailSection": false
     },
     {
+      "id": "tx-20261104-0923-danballace-23960",
+      "datetime": "11/04 09:23",
+      "merchant": "DANBALLACE",
+      "amount": "-¥23,960",
+      "amountYen": -23960,
+      "content": "返金",
+      "status": "返金（メモ・証憑不要）",
+      "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793751790.582399",
+      "drive": "証憑不要",
+      "memoKey": null,
+      "detailSection": false
+    },
+    {
       "id": "tx-20261104-2114-misumi-16614",
       "datetime": "11/04 21:14",
       "merchant": "ミスミ",
@@ -196,11 +214,11 @@
       "amount": "¥14,680",
       "amountYen": 14680,
       "content": "UGREEN USB Type-Cケーブル 1m ×20",
-      "status": "メモ・証憑なし",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793881469.106739",
-      "drive": "なし",
-      "memoKey": "14680",
-      "detailSection": true
+      "drive": "https://drive.google.com/file/d/1-lZG0HxIKsbPhlvU9ew3WJ5GoWKnjAhi/view?usp=drivesdk",
+      "memoKey": null,
+      "detailSection": false
     },
     {
       "id": "tx-20261105-2312-amazon-9300",
@@ -209,11 +227,11 @@
       "amount": "¥9,300",
       "amountYen": 9300,
       "content": "KIOXIA microSDカード64GB ×6",
-      "status": "メモ・証憑なし",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793887975.184129",
-      "drive": "なし",
-      "memoKey": "9300",
-      "detailSection": true
+      "drive": "https://drive.google.com/file/d/1VFMPsL4QpbZ7FRdDBjp7rcVM-ftFQCF6/view?usp=drivesdk",
+      "memoKey": null,
+      "detailSection": false
     },
     {
       "id": "tx-20261105-2312-amazon-2117",
@@ -222,11 +240,11 @@
       "amount": "¥2,117",
       "amountYen": 2117,
       "content": "UGREEN SDカードリーダー 収納型",
-      "status": "メモ・証憑なし",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793887975.859849",
-      "drive": "なし",
-      "memoKey": "2117",
-      "detailSection": true
+      "drive": "https://drive.google.com/file/d/16h4l3SGEsYCLrMz84jTQNJbTYVmOIXZi/view?usp=drivesdk",
+      "memoKey": null,
+      "detailSection": false
     },
     {
       "id": "tx-20261106-0113-amazon-255",
@@ -235,10 +253,23 @@
       "amount": "¥255",
       "amountYen": 255,
       "content": "輪ゴム オーバンド#16 100g箱",
-      "status": "メモ・証憑なし",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793895200.333029",
+      "drive": "https://drive.google.com/file/d/1k3LODOYl00RGWjzcYuZeFs5shMS3vrya/view?usp=drivesdk",
+      "memoKey": null,
+      "detailSection": false
+    },
+    {
+      "id": "tx-20261106-1553-danballace-7160",
+      "datetime": "11/06 15:53",
+      "merchant": "DANBALLACE",
+      "amount": "¥7,160",
+      "amountYen": 7160,
+      "content": "新規注文",
+      "status": "メモ・証憑なし",
+      "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793948039.836289",
       "drive": "なし",
-      "memoKey": "255",
+      "memoKey": "7160",
       "detailSection": true
     }
   ],
@@ -432,21 +463,21 @@
       }
     },
     {
-      "transactionId": "tx-20261105-2124-amazon-14680",
-      "heading": "11/05 21:24 · Amazon · ¥14,680",
-      "intro": "内容: UGREEN USB Type-Cケーブル 1m ×20",
+      "transactionId": "tx-20261106-1553-danballace-7160",
+      "heading": "11/06 15:53 · DANBALLACE · ¥7,160",
+      "intro": "内容: 新規注文。返信はなく、メモ・証憑はありません。Driveを検索しても証憑は見つかりませんでした。",
       "properties": [
         {
           "label": "利用先",
-          "value": "Amazon"
+          "value": "DANBALLACE"
         },
         {
           "label": "金額",
-          "value": "¥14,680"
+          "value": "¥7,160"
         },
         {
           "label": "内容",
-          "value": "UGREEN USB Type-Cケーブル 1m ×20"
+          "value": "新規注文"
         },
         {
           "label": "ステータス",
@@ -454,106 +485,7 @@
         },
         {
           "label": "Slackスレッド",
-          "value": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793881469.106739",
-          "kind": "slack"
-        },
-        {
-          "label": "Drive証憑",
-          "value": "なし"
-        }
-      ],
-      "image": null
-    },
-    {
-      "transactionId": "tx-20261105-2312-amazon-9300",
-      "heading": "11/05 23:12 · Amazon · ¥9,300",
-      "intro": "内容: KIOXIA microSDカード64GB ×6",
-      "properties": [
-        {
-          "label": "利用先",
-          "value": "Amazon"
-        },
-        {
-          "label": "金額",
-          "value": "¥9,300"
-        },
-        {
-          "label": "内容",
-          "value": "KIOXIA microSDカード64GB ×6"
-        },
-        {
-          "label": "ステータス",
-          "value": "メモ・証憑なし"
-        },
-        {
-          "label": "Slackスレッド",
-          "value": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793887975.184129",
-          "kind": "slack"
-        },
-        {
-          "label": "Drive証憑",
-          "value": "なし"
-        }
-      ],
-      "image": null
-    },
-    {
-      "transactionId": "tx-20261105-2312-amazon-2117",
-      "heading": "11/05 23:12 · Amazon · ¥2,117",
-      "intro": "内容: UGREEN SDカードリーダー 収納型",
-      "properties": [
-        {
-          "label": "利用先",
-          "value": "Amazon"
-        },
-        {
-          "label": "金額",
-          "value": "¥2,117"
-        },
-        {
-          "label": "内容",
-          "value": "UGREEN SDカードリーダー 収納型"
-        },
-        {
-          "label": "ステータス",
-          "value": "メモ・証憑なし"
-        },
-        {
-          "label": "Slackスレッド",
-          "value": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793887975.859849",
-          "kind": "slack"
-        },
-        {
-          "label": "Drive証憑",
-          "value": "なし"
-        }
-      ],
-      "image": null
-    },
-    {
-      "transactionId": "tx-20261106-0113-amazon-255",
-      "heading": "11/06 01:13 · Amazon · ¥255",
-      "intro": "内容: 輪ゴム オーバンド#16 100g箱",
-      "properties": [
-        {
-          "label": "利用先",
-          "value": "Amazon"
-        },
-        {
-          "label": "金額",
-          "value": "¥255"
-        },
-        {
-          "label": "内容",
-          "value": "輪ゴム オーバンド#16 100g箱"
-        },
-        {
-          "label": "ステータス",
-          "value": "メモ・証憑なし"
-        },
-        {
-          "label": "Slackスレッド",
-          "value": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793895200.333029",
+          "value": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793948039.836289",
           "kind": "slack"
         },
         {

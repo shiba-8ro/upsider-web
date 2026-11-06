@@ -52,7 +52,7 @@ body {
 }
 
 .app {
-  width: min(1120px, calc(100% - 32px));
+  width: min(1240px, calc(100% - 32px));
   margin: 20px auto 48px;
 }
 
@@ -163,17 +163,17 @@ table {
 @media (min-width: 721px) {
   .tx-table { table-layout: fixed; }
   .tx-table th:nth-child(1),
-  .tx-table td:nth-child(1) { width: 7.8em; }
+  .tx-table td:nth-child(1) { width: 7.5em; }
   .tx-table th:nth-child(2),
-  .tx-table td:nth-child(2) { width: 10em; }
+  .tx-table td:nth-child(2) { width: 8.5em; }
   .tx-table th:nth-child(3),
-  .tx-table td:nth-child(3) { width: 6em; }
+  .tx-table td:nth-child(3) { width: 7em; }
   .tx-table th:nth-child(5),
-  .tx-table td:nth-child(5) { width: 8.2em; }
+  .tx-table td:nth-child(5) { width: 11em; }
   .tx-table th:nth-child(6),
-  .tx-table td:nth-child(6) { width: 15rem; }
+  .tx-table td:nth-child(6) { width: 11rem; }
   .tx-table th:nth-child(7),
-  .tx-table td:nth-child(7) { width: 8em; }
+  .tx-table td:nth-child(7) { width: 16rem; }
 }
 
 .tx-table th, .tx-table td, .agg-table th, .agg-table td {
@@ -366,7 +366,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 @media (max-width: 720px) {
-  .app { width: min(1120px, calc(100% - 20px)); margin-top: 12px; }
+  .app { width: min(1240px, calc(100% - 20px)); margin-top: 12px; }
   .props, .request dl { grid-template-columns: 1fr; gap: 2px 0; }
   .props dt, .request dt { margin-top: 8px; }
   .memo-actions .btn { flex: 1 1 0; min-width: 0; padding: 8px 10px; }
