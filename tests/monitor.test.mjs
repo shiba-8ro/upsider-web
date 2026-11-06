@@ -82,7 +82,7 @@ function startServer() {
         }
         let requestId = "";
         try {
-          requestId = JSON.parse(body).requestId;
+          requestId = JSON.parse(new URLSearchParams(body).get("payload")).requestId;
         } catch {
           requestId = "";
         }
@@ -198,10 +198,20 @@ async function assertLedger() {
   check(gasSource.includes("【UPSIDERメモ登録依頼】"), "gas title");
   check(gasSource.includes("postSlack_("), "gas uses existing postSlack_");
   check(!/SpreadsheetApp|getActiveSpreadsheet|UrlFetchApp|hooks\.slack\.com/.test(gasSource), "gas does not touch sheets or embed a webhook");
-  check(fs.readFileSync(path.join(root, ".gitignore"), "utf8").includes("config.js"), "config.js ignored");
-  check(!fs.existsSync(path.join(root, "config.js")), "config.js is not committed");
+  const ignore = fs.readFileSync(path.join(root, ".gitignore"), "utf8");
+  check(!/^config\.js$/m.test(ignore), "published config.js is not gitignored");
+  const publishedConfig = fs.readFileSync(path.join(root, "config.js"), "utf8");
+  check(publishedConfig.includes("https://script.google.com/macros/s/AKfycbwJp3mFMSCeX5uxXEuqxWAexx8VRsQMTcA5GnTbriNh-vCayiy1b2slo_cZ5YFlgDHdYQ/exec"), "config.js has the public reception url");
+  check(!/hooks\.slack\.com|xox[baprs]-|Bearer\s+\S/.test(publishedConfig), "config.js has no secret");
   const example = fs.readFileSync(path.join(root, "config.example.js"), "utf8");
   check(/gasUrl:\s*""/.test(example), "example gas url empty");
+  check(!example.includes("AKfycbw"), "example does not contain the live url");
+  check(gasSource.includes("e.parameter.payload") || gasSource.includes("e.parameter && e.parameter.payload"), "gas reads parameter payload");
+  check(gasSource.includes("PropertiesService") && gasSource.includes("LockService"), "gas lock and property dedup");
+  check(gasSource.includes("200") && gasSource.includes("30"), "gas caps ids and hourly rate");
+  check(gasSource.includes("C0BG07UF1EY-\\d{10}\\.\\d{6}"), "gas slack pattern");
+  check(!gasSource.includes("CacheService"), "gas does not use the old cache dedup");
+  check(!/text\/plain/.test(fs.readFileSync(path.join(root, "js/logic.js"), "utf8")), "client does not post text/plain");
 
   for (const tx of ledger.transactions) {
     check(slackChannelId(tx.slack) === "C0BG07UF1EY", `channel ${tx.id}`);
@@ -232,19 +242,25 @@ async function assertLedger() {
   check(resolveRequestId(interrupted, interrupted.memoLines, () => "new-id") === "same-id", "retry reuses id");
   check(resolveRequestId(interrupted, ["用途：別", "セグメント1：AIハンド", "セグメント2：", "分類：消耗品", "内容：別"], () => "new-id") === "new-id", "edited memo gets a new id");
   const payload = buildGasPayload({ ...held, requestId: "req-1" });
-  check(JSON.stringify(Object.keys(payload).sort()) === JSON.stringify(["memo", "requestId", "slackThread", "transactionId"]), "payload keys");
-  check(!("amount" in payload) && !("merchant" in payload), "payload omits amount and merchant");
-  check(payload.memo.split("\n").length === 5 && payload.memo.startsWith("用途："), "payload memo");
+  check(JSON.stringify(Object.keys(payload).sort()) === JSON.stringify(["memoLines", "requestId", "savedAt", "slackThread", "transactionId"]), "payload keys");
+  check(!("amount" in payload) && !("merchant" in payload) && !("memo" in payload), "payload omits amount, merchant, and joined memo");
+  check(payload.memoLines.length === 5 && payload.memoLines[0].startsWith("用途："), "payload memo lines");
+  check(payload.savedAt === "2026-11-06T00:00:00.000Z", "payload savedAt");
   check(normalizeGasUrl("") === "" && normalizeGasUrl("javascript:alert(1)") === "", "blank url stays unset");
-  check(normalizeGasUrl("https://script.google.com/macros/s/abc/exec").startsWith("https://"), "https gas url");
+  check(normalizeGasUrl("http://127.0.0.1:9/mock-gas") === "http://127.0.0.1:9/mock-gas", "local test url");
 
   const calls = [];
-  await postGasPayload("https://script.google.com/macros/s/abc/exec", payload, async (url, init) => {
+  await postGasPayload("http://127.0.0.1:9/mock-gas", payload, async (url, init) => {
     calls.push({ url, init });
+    check(!String(url).includes("AKfycbw"), "unit test does not call the live reception url");
     return { ok: true, text: async () => JSON.stringify({ ok: true, requestId: payload.requestId }) };
   });
   check(calls[0].init.method === "POST", "post method");
-  check(String(calls[0].init.headers["Content-Type"]).startsWith("text/plain"), "simple content type");
+  check(calls[0].init.headers["Content-Type"] === "application/x-www-form-urlencoded", "form content type");
+  const encoded = new URLSearchParams(calls[0].init.body);
+  const decoded = JSON.parse(encoded.get("payload"));
+  check(JSON.stringify(decoded.memoLines) === JSON.stringify(payload.memoLines), "form payload memo lines");
+  check(decoded.savedAt === payload.savedAt, "form payload savedAt");
   check(calls[0].init.credentials === "omit", "no credentials");
   check(!calls[0].init.headers.Authorization && !calls[0].init.headers["X-Api-Key"], "no secret headers");
   let abnormal = false;
@@ -294,6 +310,12 @@ async function browserChecks(base) {
   });
   try {
     const page = await browser.newPage();
+    page.on("request", (request) => {
+      const url = request.url();
+      if (url.includes("script.google.com") || url.includes("AKfycbwJp3mFMSCeX5uxXEuqxWAexx8VRsQMTcA5GnTbriNh-vCayiy1b2slo_cZ5YFlgDHdYQ")) {
+        failures.push(`live reception url was contacted: ${request.method()} ${url}`);
+      }
+    });
     await browser.defaultBrowserContext().overridePermissions(base, ["clipboard-read", "clipboard-write"]);
     await page.setViewport({ width: 1280, height: 900 });
     const network = [];
@@ -568,6 +590,15 @@ async function connectionChecks(browser, base) {
   gas.behavior = "ok";
   gas.hits = [];
   const page = await browser.newPage();
+  page.on("request", (request) => {
+    const url = request.url();
+    if (url.includes("script.google.com") || url.includes("AKfycbwJp3mFMSCeX5uxXEuqxWAexx8VRsQMTcA5GnTbriNh-vCayiy1b2slo_cZ5YFlgDHdYQ")) {
+      failures.push(`live reception url was contacted: ${request.method()} ${url}`);
+    }
+    if (request.method() !== "GET" && request.method() !== "POST") {
+      failures.push(`unexpected method ${request.method()} ${url}`);
+    }
+  });
   await page.goto(base, { waitUntil: "networkidle0" });
   await page.waitForSelector("body[data-ready='true']");
   const note = await page.$eval(".exec-note", (node) => node.textContent);
@@ -609,17 +640,18 @@ async function connectionChecks(browser, base) {
   check(gas.hits.length === 1, `double click posts ${gas.hits.length}`);
   const hit = gas.hits[0];
   check(hit.method === "POST", "gas method");
-  check(hit.contentType.startsWith("text/plain"), `content type ${hit.contentType}`);
+  check(hit.contentType.startsWith("application/x-www-form-urlencoded"), `content type ${hit.contentType}`);
   check(!hit.headers.authorization && !Object.keys(hit.headers).some((key) => key.startsWith("x-")), "no custom headers");
-  const body = JSON.parse(hit.body);
+  const body = JSON.parse(new URLSearchParams(hit.body).get("payload"));
   const sendTx = ledger.transactions.find((tx) => tx.id === sendId);
   check(body.transactionId === sendId, "posted id");
   check(body.slackThread === sendTx.slack, "posted slack matches ledger");
-  check(body.slackThread.includes("/C0BG07UF1EY/thread/C0BG07UF1EY-"), "posted channel");
-  check(body.memo.split("\n").length === 5, "posted five lines");
-  check(body.memo.startsWith(`用途：${sendTx.content}\nセグメント1：AIハンド\n`), `posted memo ${body.memo}`);
+  check(/^https:\/\/app\.slack\.com\/client\/T0AS9K3390T\/C0BG07UF1EY\/thread\/C0BG07UF1EY-\d{10}\.\d{6}$/.test(body.slackThread), "posted thread pattern");
+  check(Array.isArray(body.memoLines) && body.memoLines.length === 5, "posted five lines");
+  check(body.memoLines[0] === `用途：${sendTx.content}` && body.memoLines[1] === "セグメント1：AIハンド", `posted memo ${body.memoLines}`);
+  check(typeof body.savedAt === "string" && !Number.isNaN(Date.parse(body.savedAt)), "posted savedAt");
   check(typeof body.requestId === "string" && body.requestId.length > 0, "posted request id");
-  check(!("amount" in body) && !("merchant" in body), "posted body omits amount and merchant");
+  check(!("amount" in body) && !("merchant" in body) && !("memo" in body), "posted body omits amount, merchant, and joined memo");
   const acceptedId = body.requestId;
   const afterAccept = gas.hits.length;
   await page.click(`[data-detail="${sendId}"] [data-ai]`);
@@ -636,7 +668,7 @@ async function connectionChecks(browser, base) {
   await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "受付済み", {}, retryId);
   const retriedId = await page.evaluate((id) => JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1")).requests[id].requestId, retryId);
   check(failedId === retriedId, "retry keeps request id");
-  const retryBodies = gas.hits.filter((item) => JSON.parse(item.body).transactionId === retryId).map((item) => JSON.parse(item.body).requestId);
+  const retryBodies = gas.hits.map((item) => JSON.parse(new URLSearchParams(item.body).get("payload"))).filter((item) => item.transactionId === retryId).map((item) => item.requestId);
   check(retryBodies.length === 2 && retryBodies[0] === retryBodies[1], `retry ids ${retryBodies}`);
 
   gas.behavior = "reject";

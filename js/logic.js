@@ -26,7 +26,9 @@ const REQUEST_KEYS = [
   "errorMessage",
 ];
 
-const PAYLOAD_KEYS = ["requestId", "transactionId", "slackThread", "memo"];
+const PAYLOAD_KEYS = ["requestId", "transactionId", "slackThread", "memoLines", "savedAt"];
+
+export const SLACK_THREAD_PATTERN = /^https:\/\/app\.slack\.com\/client\/T0AS9K3390T\/C0BG07UF1EY\/thread\/C0BG07UF1EY-\d{10}\.\d{6}$/;
 
 export function statusTone(status) {
   if (status === "登録完了") return "success";
@@ -135,23 +137,13 @@ export function loadStoredRequests(raw) {
 }
 
 export function slackChannelId(url) {
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:" || parsed.hostname !== "app.slack.com") return "";
-    const parts = parsed.pathname.split("/").filter(Boolean);
-    if (parts[0] !== "client" || parts[3] !== "thread") return "";
-    if (parts[2] !== SLACK_CHANNEL_ID) return "";
-    if (!String(parts[4] || "").startsWith(`${SLACK_CHANNEL_ID}-`)) return "";
-    return SLACK_CHANNEL_ID;
-  } catch {
-    return "";
-  }
+  return SLACK_THREAD_PATTERN.test(url) ? SLACK_CHANNEL_ID : "";
 }
 
 export function isAllowedSlackThread(url, transactions, transactionId) {
   const tx = transactions.find((row) => row.id === transactionId);
   if (!tx || url !== tx.slack) return false;
-  return slackChannelId(url) === SLACK_CHANNEL_ID;
+  return SLACK_THREAD_PATTERN.test(url);
 }
 
 export function normalizeGasUrl(value) {
@@ -191,22 +183,29 @@ export function buildGasPayload(request) {
     requestId: request.requestId,
     transactionId: request.transactionId,
     slackThread: request.slackThread,
-    memo: request.memoLines.join("\n"),
+    memoLines: request.memoLines.slice(),
+    savedAt: request.savedAt,
   };
-  if (Object.keys(payload).some((key) => !PAYLOAD_KEYS.includes(key))) {
+  const keys = Object.keys(payload);
+  if (keys.length !== PAYLOAD_KEYS.length || PAYLOAD_KEYS.some((key) => !keys.includes(key))) {
     throw new Error("payload keys");
   }
-  if (payload.memo.split("\n").length !== 5) throw new Error("memo lines");
+  if (!Array.isArray(payload.memoLines) || payload.memoLines.length !== 5) throw new Error("memo lines");
+  if (payload.memoLines.some((line) => typeof line !== "string")) throw new Error("memo lines");
+  if (typeof payload.savedAt !== "string" || Number.isNaN(Date.parse(payload.savedAt))) throw new Error("savedAt");
   return payload;
+}
+
+export function encodeGasBody(payload) {
+  return new URLSearchParams({ payload: JSON.stringify(payload) }).toString();
 }
 
 export async function postGasPayload(gasUrl, payload, fetchImpl = globalThis.fetch) {
   if (!normalizeGasUrl(gasUrl)) throw new Error("unconfigured");
-  const body = JSON.stringify(payload);
   const response = await fetchImpl(gasUrl, {
     method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body,
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: encodeGasBody(payload),
     mode: "cors",
     credentials: "omit",
     redirect: "follow",
