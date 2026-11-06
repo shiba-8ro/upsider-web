@@ -6,18 +6,27 @@ import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
 import {
   buildExecutionRequest,
+  buildGasPayload,
   countOf,
   filterTransactions,
   formatMemoText,
   formatYen,
   initialMemo,
+  isAllowedSlackThread,
   isExecutionRequest,
+  loadStoredRequests,
+  migrateExecutionRequest,
+  normalizeGasUrl,
+  postGasPayload,
+  resolveRequestId,
+  slackChannelId,
   sumOf,
 } from "../js/logic.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ledger = JSON.parse(fs.readFileSync(path.join(root, "data/ledger.json"), "utf8"));
 const failures = [];
+const gas = { configUrl: "", behavior: "ok", hits: [] };
 
 function check(condition, message) {
   if (!condition) failures.push(message);
@@ -34,6 +43,54 @@ function startServer() {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, "http://127.0.0.1");
     const pathname = decodeURIComponent(url.pathname);
+    if (pathname === "/config.js") {
+      const source = `window.UPSIDER_CONFIG = { gasUrl: ${JSON.stringify(gas.configUrl)} };\n`;
+      res.writeHead(200, { "content-type": "text/javascript; charset=utf-8" });
+      res.end(source);
+      return;
+    }
+    if (pathname === "/mock-gas") {
+      const chunks = [];
+      req.on("data", (chunk) => chunks.push(chunk));
+      req.on("end", () => {
+        const body = Buffer.concat(chunks).toString("utf8");
+        gas.hits.push({
+          method: req.method,
+          contentType: req.headers["content-type"] || "",
+          headers: req.headers,
+          body,
+        });
+        if (gas.behavior === "500") {
+          res.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
+          res.end("error");
+          return;
+        }
+        if (gas.behavior === "html") {
+          res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+          res.end("<html>bad</html>");
+          return;
+        }
+        if (gas.behavior === "reject") {
+          res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+          res.end(JSON.stringify({ ok: false }));
+          return;
+        }
+        if (gas.behavior === "mismatch") {
+          res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+          res.end(JSON.stringify({ ok: true, requestId: "other-id" }));
+          return;
+        }
+        let requestId = "";
+        try {
+          requestId = JSON.parse(body).requestId;
+        } catch {
+          requestId = "";
+        }
+        res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+        res.end(JSON.stringify({ ok: true, requestId }));
+      });
+      return;
+    }
     const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
     const file = path.resolve(root, relative);
     if (!file.startsWith(root + path.sep) && file !== root) {
@@ -56,7 +113,7 @@ function startServer() {
   });
 }
 
-function assertLedger() {
+async function assertLedger() {
   check(ledger.transactions.length === 17, "ledger has 17 transactions");
   check(ledger.asOf === "2026-11-06 09:10 Asia/Tokyo", "asOf");
   const counts = {
@@ -136,6 +193,97 @@ function assertLedger() {
   const sources = fs.readFileSync(path.join(root, "js/app.js"), "utf8")
     + fs.readFileSync(path.join(root, "js/logic.js"), "utf8");
   check(!/hooks\.slack|api\.slack|chat\.postMessage|xox[baprs]-/.test(sources), "no slack posting or token");
+  check(!fs.existsSync(path.join(root, ".github")), "no GitHub Actions");
+  const gasSource = fs.readFileSync(path.join(root, "gas/Code.gs"), "utf8");
+  check(gasSource.includes("【UPSIDERメモ登録依頼】"), "gas title");
+  check(gasSource.includes("postSlack_("), "gas uses existing postSlack_");
+  check(!/SpreadsheetApp|getActiveSpreadsheet|UrlFetchApp|hooks\.slack\.com/.test(gasSource), "gas does not touch sheets or embed a webhook");
+  check(fs.readFileSync(path.join(root, ".gitignore"), "utf8").includes("config.js"), "config.js ignored");
+  check(!fs.existsSync(path.join(root, "config.js")), "config.js is not committed");
+  const example = fs.readFileSync(path.join(root, "config.example.js"), "utf8");
+  check(/gasUrl:\s*""/.test(example), "example gas url empty");
+
+  for (const tx of ledger.transactions) {
+    check(slackChannelId(tx.slack) === "C0BG07UF1EY", `channel ${tx.id}`);
+    check(isAllowedSlackThread(tx.slack, ledger.transactions, tx.id), `strict slack ${tx.id}`);
+    check(!isAllowedSlackThread(tx.slack.replace("C0BG07UF1EY", "C0OTHER"), ledger.transactions, tx.id), `other channel ${tx.id}`);
+  }
+  const sample = ledger.transactions.find((tx) => tx.memoKey === "255");
+  const held = buildExecutionRequest({
+    transactionId: sample.id,
+    slackThread: sample.slack,
+    memo: initialMemo(sample.content),
+    savedAt: "2026-11-06T00:00:00.000Z",
+  });
+  const legacy = {
+    transactionId: sample.id,
+    slackThread: sample.slack,
+    memoLines: held.memoLines,
+    savedAt: held.savedAt,
+    status: "未実行",
+  };
+  const migrated = migrateExecutionRequest(sample.id, legacy);
+  check(migrated.status === "未実行" && migrated.requestId === null, "v1 migrates");
+  check(migrated.memoLines.join("\n") === held.memoLines.join("\n"), "v1 memo kept");
+  check(loadStoredRequests(JSON.stringify({ version: 1, requests: { [sample.id]: legacy } }))[sample.id].memoLines[0] === legacy.memoLines[0], "v1 load");
+  check(migrateExecutionRequest(sample.id, { ...legacy, token: "x" }) === null, "token dropped");
+  const interrupted = migrateExecutionRequest(sample.id, { ...held, status: "送信中", requestId: "same-id" });
+  check(interrupted.status === "エラー" && interrupted.requestId === "same-id", "interrupted send keeps id");
+  check(resolveRequestId(interrupted, interrupted.memoLines, () => "new-id") === "same-id", "retry reuses id");
+  check(resolveRequestId(interrupted, ["用途：別", "セグメント1：AIハンド", "セグメント2：", "分類：消耗品", "内容：別"], () => "new-id") === "new-id", "edited memo gets a new id");
+  const payload = buildGasPayload({ ...held, requestId: "req-1" });
+  check(JSON.stringify(Object.keys(payload).sort()) === JSON.stringify(["memo", "requestId", "slackThread", "transactionId"]), "payload keys");
+  check(!("amount" in payload) && !("merchant" in payload), "payload omits amount and merchant");
+  check(payload.memo.split("\n").length === 5 && payload.memo.startsWith("用途："), "payload memo");
+  check(normalizeGasUrl("") === "" && normalizeGasUrl("javascript:alert(1)") === "", "blank url stays unset");
+  check(normalizeGasUrl("https://script.google.com/macros/s/abc/exec").startsWith("https://"), "https gas url");
+
+  const calls = [];
+  await postGasPayload("https://script.google.com/macros/s/abc/exec", payload, async (url, init) => {
+    calls.push({ url, init });
+    return { ok: true, text: async () => JSON.stringify({ ok: true, requestId: payload.requestId }) };
+  });
+  check(calls[0].init.method === "POST", "post method");
+  check(String(calls[0].init.headers["Content-Type"]).startsWith("text/plain"), "simple content type");
+  check(calls[0].init.credentials === "omit", "no credentials");
+  check(!calls[0].init.headers.Authorization && !calls[0].init.headers["X-Api-Key"], "no secret headers");
+  let abnormal = false;
+  try {
+    await postGasPayload("https://script.google.com/macros/s/abc/exec", payload, async () => ({
+      ok: true,
+      text: async () => "<html>nope</html>",
+    }));
+  } catch {
+    abnormal = true;
+  }
+  check(abnormal, "html response is an error");
+  abnormal = false;
+  try {
+    await postGasPayload("https://script.google.com/macros/s/abc/exec", payload, async () => ({
+      ok: true,
+      text: async () => JSON.stringify({ ok: false }),
+    }));
+  } catch {
+    abnormal = true;
+  }
+  check(abnormal, "ok false is an error");
+  abnormal = false;
+  try {
+    await postGasPayload("https://script.google.com/macros/s/abc/exec", payload, async () => ({
+      ok: false,
+      text: async () => JSON.stringify({ ok: true, requestId: payload.requestId }),
+    }));
+  } catch {
+    abnormal = true;
+  }
+  check(abnormal, "http error is an error");
+  abnormal = false;
+  try {
+    await postGasPayload("", payload, async () => { throw new Error("should not send"); });
+  } catch (error) {
+    abnormal = error.message === "unconfigured";
+  }
+  check(abnormal, "unset url does not send");
 }
 
 async function browserChecks(base) {
@@ -337,9 +485,12 @@ async function browserChecks(base) {
     const stored = await page.evaluate(() => localStorage.getItem("upsider-monitor.execution-requests.v1"));
     const parsed = JSON.parse(stored);
     const saved = parsed.requests[aiId];
-    check(JSON.stringify(Object.keys(saved).sort()) === JSON.stringify(["memoLines", "savedAt", "slackThread", "status", "transactionId"]), `stored keys ${Object.keys(saved)}`);
+    check(parsed.version === 2, "storage version");
     check(saved.status === "未実行", "stored status");
+    check(saved.requestId === null, "unset request has no id");
+    check(typeof saved.updatedAt === "string", "stored updatedAt");
     check(saved.memoLines.length === 5, "stored five lines");
+    check(!("amount" in saved) && !("merchant" in saved), "stored request omits amount and merchant");
     check(!/token|secret|password|authorization|api[_-]?key/i.test(stored), "stored secrets");
 
     await page.reload({ waitUntil: "networkidle0" });
@@ -406,12 +557,111 @@ async function browserChecks(base) {
     await page.setViewport({ width: 390, height: 844 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: "/tmp/upsider-mobile-top.png" });
+    await connectionChecks(browser, page.url());
   } finally {
     await browser.close();
   }
 }
 
-assertLedger();
+async function connectionChecks(browser, base) {
+  gas.configUrl = new URL("/mock-gas", base).toString();
+  gas.behavior = "ok";
+  gas.hits = [];
+  const page = await browser.newPage();
+  await page.goto(base, { waitUntil: "networkidle0" });
+  await page.waitForSelector("body[data-ready='true']");
+  const note = await page.$eval(".exec-note", (node) => node.textContent);
+  check(note.includes("受付API"), "configured note");
+
+  const legacyId = "tx-20261105-2312-amazon-2117";
+  const legacyTx = ledger.transactions.find((tx) => tx.id === legacyId);
+  const legacyLines = formatMemoText(initialMemo(legacyTx.content)).split("\n");
+  await page.evaluate((id, slack, memoLines) => {
+    localStorage.setItem("upsider-monitor.execution-requests.v1", JSON.stringify({
+      version: 1,
+      requests: {
+        [id]: {
+          transactionId: id,
+          slackThread: slack,
+          memoLines,
+          savedAt: "2026-11-06T00:00:00.000Z",
+          status: "未実行",
+        },
+      },
+    }));
+  }, legacyId, legacyTx.slack, legacyLines);
+  await page.reload({ waitUntil: "networkidle0" });
+  await page.waitForSelector("body[data-ready='true']");
+  const legacyText = await page.$eval(`[data-request="${legacyId}"]`, (node) => node.innerText);
+  check(legacyText.includes(legacyLines[0]), "migrated memo visible");
+  check(legacyText.includes("実行は行われていません"), "migrated request stays unsent");
+  const legacyStored = await page.evaluate(() => localStorage.getItem("upsider-monitor.execution-requests.v1"));
+  check(JSON.parse(legacyStored).version === 1, "reload does not rewrite the old cache");
+
+  const sendId = "tx-20261105-2124-amazon-14680";
+  gas.hits = [];
+  await page.evaluate((id) => {
+    const button = document.querySelector(`[data-detail="${id}"] [data-ai]`);
+    button.click();
+    button.click();
+  }, sendId);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "受付済み", {}, sendId);
+  check(gas.hits.length === 1, `double click posts ${gas.hits.length}`);
+  const hit = gas.hits[0];
+  check(hit.method === "POST", "gas method");
+  check(hit.contentType.startsWith("text/plain"), `content type ${hit.contentType}`);
+  check(!hit.headers.authorization && !Object.keys(hit.headers).some((key) => key.startsWith("x-")), "no custom headers");
+  const body = JSON.parse(hit.body);
+  const sendTx = ledger.transactions.find((tx) => tx.id === sendId);
+  check(body.transactionId === sendId, "posted id");
+  check(body.slackThread === sendTx.slack, "posted slack matches ledger");
+  check(body.slackThread.includes("/C0BG07UF1EY/thread/C0BG07UF1EY-"), "posted channel");
+  check(body.memo.split("\n").length === 5, "posted five lines");
+  check(body.memo.startsWith(`用途：${sendTx.content}\nセグメント1：AIハンド\n`), `posted memo ${body.memo}`);
+  check(typeof body.requestId === "string" && body.requestId.length > 0, "posted request id");
+  check(!("amount" in body) && !("merchant" in body), "posted body omits amount and merchant");
+  const acceptedId = body.requestId;
+  const afterAccept = gas.hits.length;
+  await page.click(`[data-detail="${sendId}"] [data-ai]`);
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  check(gas.hits.length === afterAccept, "accepted memo is not sent again");
+
+  const retryId = "tx-20261105-2312-amazon-9300";
+  gas.behavior = "html";
+  await page.click(`[data-detail="${retryId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, retryId);
+  const failedId = await page.evaluate((id) => JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1")).requests[id].requestId, retryId);
+  gas.behavior = "ok";
+  await page.click(`[data-detail="${retryId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "受付済み", {}, retryId);
+  const retriedId = await page.evaluate((id) => JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1")).requests[id].requestId, retryId);
+  check(failedId === retriedId, "retry keeps request id");
+  const retryBodies = gas.hits.filter((item) => JSON.parse(item.body).transactionId === retryId).map((item) => JSON.parse(item.body).requestId);
+  check(retryBodies.length === 2 && retryBodies[0] === retryBodies[1], `retry ids ${retryBodies}`);
+
+  gas.behavior = "reject";
+  const rejectId = "tx-20261105-1404-monotaro-4833";
+  await page.click(`[data-detail="${rejectId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, rejectId);
+
+  gas.behavior = "mismatch";
+  const mismatchId = "tx-20261105-1703-amazon-2659";
+  await page.click(`[data-detail="${mismatchId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, mismatchId);
+
+  gas.behavior = "500";
+  const httpId = "tx-20261105-1253-monotaro-17553";
+  await page.click(`[data-detail="${httpId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "エラー", {}, httpId);
+
+  const kept = await page.evaluate((id) => JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1")).requests[id], legacyId);
+  check(kept.memoLines.join("\n") === legacyLines.join("\n"), "later saves keep the old held memo");
+  check(kept.status === "未実行", "old held request was not sent");
+  check(kept.requestId === null, "old held request stays unnumbered");
+  await page.close();
+}
+
+await assertLedger();
 const server = await startServer();
 try {
   const { port } = server.address();
