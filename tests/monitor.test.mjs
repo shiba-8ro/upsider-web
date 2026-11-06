@@ -781,7 +781,12 @@ async function resultFlowChecks(browser, base) {
   const waitId = "tx-20261105-1703-amazon-2659";
 
   await page.click(`[data-detail="${noopId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "受付済み", {}, noopId);
+  const acceptedLine = await page.$eval(`[data-request="${noopId}"] .request-state`, (node) => node.textContent);
+  check(acceptedLine.startsWith("受付済み"), `shows 受付済み before the first check ${acceptedLine}`);
   await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "処理中", {}, noopId);
+  const processingLine = await page.$eval(`[data-request="${noopId}"] .request-state`, (node) => node.textContent);
+  check(processingLine.startsWith("処理中"), `shows 処理中 once checking ${processingLine}`);
   const processingBg = await page.$eval(`[data-request="${noopId}"]`, (node) => getComputedStyle(node).backgroundColor);
   check(processingBg === "rgb(232, 241, 251)", `processing info-bg ${processingBg}`);
   const idA = await reqId(noopId);

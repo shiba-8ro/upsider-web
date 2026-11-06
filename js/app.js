@@ -560,10 +560,8 @@ async function submitMemoRequest(id) {
     setAiBusy(id, false);
     saveRequests();
     replaceRequest(id);
+    // 結果が返るまでは成否を出さない。受付直後は「受付済み」、照会を始めたら「処理中」。
     if (request.status === "受付済み" && state.requests[id] === request) {
-      request.status = "処理中";
-      saveRequests();
-      replaceRequest(id);
       schedulePoll(id, state.config.pollFastMs);
     }
   }
@@ -614,6 +612,11 @@ async function runPoll(id, requestId) {
     return;
   }
   if (state.pollInflight.has(id)) return;
+  if (current.status === "受付済み") {
+    current.status = "処理中";
+    saveRequests();
+    replaceRequest(id);
+  }
   state.pollInflight.add(id);
   replaceRequest(id);
   let outcome;
@@ -661,10 +664,6 @@ function resumePolling() {
   for (const [id, request] of Object.entries(state.requests)) {
     if (!WAITING_REQUEST_STATUSES.includes(request.status)) continue;
     if (shouldResumePolling(request) && nextPollDelay(request.pollAttempts, request.acceptedAt) !== null) {
-      if (request.status === "受付済み") {
-        request.status = "処理中";
-        changed = true;
-      }
       schedulePoll(id, stagger);
       stagger += 500;
     } else if (request.status !== "確認停止") {

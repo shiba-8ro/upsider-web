@@ -29,9 +29,9 @@ Slack スレッドは `https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thre
 
 受付後、ページは同じ受付URLへ `GET ?op=result&requestId=<uuid>` を送ります。パラメータはこの2つだけです。秘密鍵やトークンは付けません。15秒間隔で20回、その後は60秒間隔、受付から30分で自動確認を止めます。「結果を再確認」はそのとき1回だけ照会します。タブを隠している間は問い合わせません。終了した依頼は localStorage から復帰し、結果があるものは自動では再POSTしません。
 
-表示に使うのは、`requestId` が一致するサーバー応答だけです。`state:"done"` の `result.status` が `success` / `noop` / `failed` のときだけ、成功・変更なし・失敗と日本時間、`message` を出します。`message` は textContent で出します。`pending` と不正な応答では成否を出しません。`unknown` のときは記録がまだない注記だけです。成功などの文言をページ側で固定しません。色は成功と変更なしが薄緑、失敗が赤、処理中と確認停止が青系です。
+表示に使うのは、`requestId` が一致するサーバー応答だけです。受付直後の表示は「受付済み」、照会を始めたあとは「処理中」です。`state:"done"` の `result.status` が `success` / `noop` / `failed` のときだけ、成功・変更なし・失敗と日本時間、`message` を出します。`message` は textContent で出します。`pending` と不正な応答では成否を出しません。`unknown` のときは記録がまだない注記だけです。成功などの文言をページ側で固定しません。色は成功と変更なしが薄緑、失敗が赤、処理中と確認停止が青系です。
 
-`gas/Code.gs` はこの照会をまだ実装しません。デプロイ済みの受付は requestId を `up_rid_` で管理しており、リポジトリの雛形（`UPSIDER_MEMO_REQUEST_IDS`）とは差があります。その統合は別作業です。ページが期待する応答と、テストの範囲は `docs/result-retrieval.md` にあります。
+デプロイ済みの同じ受付URLは、この照会を返します。未登録の UUID は `state:"unknown"`、結果がまだ無い受付は `state:"pending"`、終わった依頼は `state:"done"` です。`gas/Code.gs` はリポジトリ上の受付雛形のままで、実デプロイの `up_rid_` 管理とは別に置いてあります。ページが期待する応答と、テストの範囲は `docs/result-retrieval.md` にあります。
 
 GitHub Actions などの自動デプロイは使いません。`main` への反映は手作業です。GAS のデプロイもこのリポジトリからは行いません。
 

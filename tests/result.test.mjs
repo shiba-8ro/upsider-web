@@ -30,6 +30,23 @@ check(parseResultResponse(JSON.stringify({ ...done, result: { ...done.result, ex
 check(validateResult({ ...done.result, message: "あ".repeat(401) }) === null, "message > 400");
 check(validateResult({ ...done.result, finishedAt: "yesterday" }) === null, "bad date");
 
+const liveId = "2c8c7bde-ac56-47d4-a921-aba4870d49fb";
+const liveBody = JSON.stringify({
+  ok: true,
+  requestId: liveId,
+  state: "done",
+  result: {
+    status: "noop",
+    finishedAt: "2026-11-06T10:13:00.000Z",
+    message: "19:13（日本時間）に実行して処理済みです。そのスレッドには既に同じ5項目のメモと、UPSIDERの「決済メモを追加しました！」の返信があり、重複防止のため新規投稿はしていません。既存メモは16:40ごろにシバタさんご自身が投稿したものです。",
+  },
+});
+const live = parseResultResponse(liveBody, liveId);
+check(live.kind === "done" && live.result.status === "noop", "live done body");
+check(resultHeadline(live.result) === "変更なし：2026/11/06 19:13（日本時間）に実行。変更はありませんでした。", `live headline ${live.kind === "done" ? resultHeadline(live.result) : live.kind}`);
+check(parseResultResponse(JSON.stringify({ ok: true, requestId: liveId, state: "pending" }), liveId).kind === "pending", "pending body stays pending");
+check(parseResultResponse(JSON.stringify({ ok: true, requestId: "11111111-2222-4333-8444-555555555555", state: "unknown" }), "11111111-2222-4333-8444-555555555555").kind === "unknown", "unknown body");
+
 const h = resultHeadline(done.result);
 check(h === "変更なし：2026/11/06 19:13（日本時間）に実行。変更はありませんでした。", `headline ${h}`);
 check(resultHeadline({ ...done.result, status: "failed" }).startsWith("失敗：2026/11/06 19:13（日本時間）"), "failed headline");
