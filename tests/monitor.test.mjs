@@ -42,7 +42,7 @@ function hasEvidence(tx) {
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ledger = JSON.parse(fs.readFileSync(path.join(root, "data/ledger.json"), "utf8"));
 const failures = [];
-const gas = { configUrl: "", behavior: "ok", hits: [] };
+const gas = { configUrl: "", behavior: "ok", hits: [], gets: [], results: {} };
 
 function check(condition, message) {
   if (!condition) failures.push(message);
@@ -60,12 +60,31 @@ function startServer() {
     const url = new URL(req.url, "http://127.0.0.1");
     const pathname = decodeURIComponent(url.pathname);
     if (pathname === "/config.js") {
-      const source = `window.UPSIDER_CONFIG = { gasUrl: ${JSON.stringify(gas.configUrl)} };\n`;
+      const source = `window.UPSIDER_CONFIG = { gasUrl: ${JSON.stringify(gas.configUrl)}, testPollMs: 150 };\n`;
       res.writeHead(200, { "content-type": "text/javascript; charset=utf-8" });
       res.end(source);
       return;
     }
     if (pathname === "/mock-gas") {
+      if (req.method === "GET") {
+        const params = [...url.searchParams.keys()];
+        const requestId = url.searchParams.get("requestId");
+        const queue = gas.results[requestId];
+        // テストが脚本を入れる前の確認は pending を返して数えない。脚本の件数と競合させない。
+        if (!queue) {
+          res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+          res.end(JSON.stringify({ ok: true, requestId, state: "pending" }));
+          return;
+        }
+        gas.gets.push({ params, requestId });
+        const next = queue.length > 1 ? queue.shift() : queue[0] || { state: "pending" };
+        const body = next.raw !== undefined
+          ? next.raw
+          : JSON.stringify({ ok: true, requestId: next.requestId || requestId, ...next });
+        res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+        res.end(body);
+        return;
+      }
       const chunks = [];
       req.on("data", (chunk) => chunks.push(chunk));
       req.on("end", () => {
@@ -249,8 +268,12 @@ async function assertLedger() {
   }
 
   const sources = fs.readFileSync(path.join(root, "js/app.js"), "utf8")
-    + fs.readFileSync(path.join(root, "js/logic.js"), "utf8");
+    + fs.readFileSync(path.join(root, "js/logic.js"), "utf8")
+    + fs.readFileSync(path.join(root, "js/result.js"), "utf8");
   check(!/hooks\.slack|api\.slack|chat\.postMessage|xox[baprs]-/.test(sources), "no slack posting or token");
+  check(!/UPSIDER_RESULT_WRITE_KEY|Bearer\s+\S|AIza/.test(sources), "result client has no write key");
+  check(fs.readFileSync(path.join(root, "index.html"), "utf8").includes('src="js/app.js"'), "pages entry stays js/app.js");
+  check(fs.readFileSync(path.join(root, "js/logic.js"), "utf8").includes('from "./result.js"'), "result.js is loaded from the page module");
   check(!fs.existsSync(path.join(root, ".github")), "no GitHub Actions");
   const gasSource = fs.readFileSync(path.join(root, "gas/Code.gs"), "utf8");
   check(gasSource.includes("【UPSIDERメモ登録依頼】"), "gas title");
@@ -260,6 +283,7 @@ async function assertLedger() {
   check(!/^config\.js$/m.test(ignore), "published config.js is not gitignored");
   const publishedConfig = fs.readFileSync(path.join(root, "config.js"), "utf8");
   check(publishedConfig.includes("https://script.google.com/macros/s/AKfycbwJp3mFMSCeX5uxXEuqxWAexx8VRsQMTcA5GnTbriNh-vCayiy1b2slo_cZ5YFlgDHdYQ/exec"), "config.js has the public reception url");
+  check(!publishedConfig.includes("testPollMs"), "production config has no test poll interval");
   check(!/hooks\.slack\.com|xox[baprs]-|Bearer\s+\S/.test(publishedConfig), "config.js has no secret");
   const example = fs.readFileSync(path.join(root, "config.example.js"), "utf8");
   check(/gasUrl:\s*""/.test(example), "example gas url empty");
@@ -299,6 +323,63 @@ async function assertLedger() {
   check(interrupted.status === "エラー" && interrupted.requestId === "same-id", "interrupted send keeps id");
   check(resolveRequestId(interrupted, interrupted.memoLines, () => "new-id") === "same-id", "retry reuses id");
   check(resolveRequestId(interrupted, ["用途：別", "セグメント1：AIハンド", "セグメント2：", "分類：消耗品", "内容：別"], () => "new-id") === "new-id", "edited memo gets a new id");
+  const sampleUuid = "11111111-2222-4333-8444-555555555555";
+  const v3 = migrateExecutionRequest(sample.id, {
+    ...held,
+    status: "処理中",
+    requestId: sampleUuid,
+    acceptedAt: "2026-11-06T01:00:00.000Z",
+    pollAttempts: 2,
+    lastCheckedAt: "2026-11-06T01:00:15.000Z",
+    result: null,
+  });
+  check(v3.acceptedAt === "2026-11-06T01:00:00.000Z" && v3.pollAttempts === 2, "v3 acceptedAt and pollAttempts");
+  check(v3.lastCheckedAt === "2026-11-06T01:00:15.000Z" && v3.result === null, "v3 lastCheckedAt without result");
+  const acceptedLegacy = migrateExecutionRequest(sample.id, {
+    ...held,
+    status: "受付済み",
+    requestId: sampleUuid,
+    updatedAt: "2026-11-06T02:00:00.000Z",
+  });
+  check(acceptedLegacy.status === "受付済み" && acceptedLegacy.acceptedAt === "2026-11-06T02:00:00.000Z", "v2 accepted uses updatedAt");
+  const bareSuccess = migrateExecutionRequest(sample.id, {
+    ...held,
+    status: "成功",
+    requestId: sampleUuid,
+    acceptedAt: "2026-11-06T01:00:00.000Z",
+  });
+  check(bareSuccess.status === "処理中" && bareSuccess.result === null, "terminal without result returns to 処理中");
+  const badResult = migrateExecutionRequest(sample.id, {
+    ...held,
+    status: "成功",
+    requestId: sampleUuid,
+    acceptedAt: "2026-11-06T01:00:00.000Z",
+    result: { status: "success", finishedAt: "yesterday", message: "x" },
+  });
+  check(badResult === null, "invalid result dropped");
+  const mismatchedResult = migrateExecutionRequest(sample.id, {
+    ...held,
+    status: "成功",
+    requestId: sampleUuid,
+    acceptedAt: "2026-11-06T01:00:00.000Z",
+    result: { status: "noop", finishedAt: "2026-11-06T01:00:00.000Z", message: "変更なし。" },
+  });
+  check(mismatchedResult === null, "status and result label must match");
+  const failedHeld = {
+    ...held,
+    status: "失敗",
+    requestId: sampleUuid,
+    result: { status: "failed", finishedAt: "2026-11-06T01:00:00.000Z", message: "失敗しました。" },
+  };
+  check(migrateExecutionRequest(sample.id, failedHeld).status === "失敗", "failed with result kept");
+  check(resolveRequestId(failedHeld, failedHeld.memoLines, () => "new-id") === "new-id", "failure gets a new id");
+  const noopHeld = {
+    ...held,
+    status: "変更なし",
+    requestId: sampleUuid,
+    result: { status: "noop", finishedAt: "2026-11-06T01:00:00.000Z", message: "変更はありませんでした。" },
+  };
+  check(resolveRequestId(noopHeld, noopHeld.memoLines, () => "new-id") === sampleUuid, "noop keeps id");
   const payload = buildGasPayload({ ...held, requestId: "req-1" });
   check(JSON.stringify(Object.keys(payload).sort()) === JSON.stringify(["memoLines", "requestId", "savedAt", "slackThread", "transactionId"]), "payload keys");
   check(!("amount" in payload) && !("merchant" in payload) && !("memo" in payload), "payload omits amount, merchant, and joined memo");
@@ -573,6 +654,7 @@ async function browserChecks(base) {
     await page.waitForSelector(`[data-request="${aiId}"]`);
     await new Promise((resolve) => setTimeout(resolve, 300));
     const newRequests = network.slice(before);
+    check(network.some((url) => url.includes("/js/result.js")), "published page loads result.js");
     check(newRequests.length === 0, `network after AI button: ${newRequests.join(", ")}`);
     check(popups.length === 0, `popup ${popups.join(",")}`);
     const opened = await page.evaluate(() => window.__opened);
@@ -589,7 +671,7 @@ async function browserChecks(base) {
     const stored = await page.evaluate(() => localStorage.getItem("upsider-monitor.execution-requests.v1"));
     const parsed = JSON.parse(stored);
     const saved = parsed.requests[aiId];
-    check(parsed.version === 2, "storage version");
+    check(parsed.version === 3, "storage version");
     check(saved.status === "未実行", "stored status");
     check(saved.requestId === null, "unset request has no id");
     check(typeof saved.updatedAt === "string", "stored updatedAt");
@@ -662,9 +744,170 @@ async function browserChecks(base) {
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: "/tmp/upsider-mobile-top.png" });
     await connectionChecks(browser, page.url());
+    await resultFlowChecks(browser, page.url());
   } finally {
     await browser.close();
   }
+}
+
+async function resultFlowChecks(browser, base) {
+  gas.configUrl = new URL("/mock-gas", base).toString();
+  gas.behavior = "ok";
+  gas.hits = [];
+  gas.gets = [];
+  gas.results = {};
+  const page = await browser.newPage();
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  page.on("request", (request) => {
+    const url = request.url();
+    if (url.includes("script.google.com") || url.includes("AKfycbwJp3mFMSCeX5uxXEuqxWAexx8VRsQMTcA5GnTbriNh-vCayiy1b2slo_cZ5YFlgDHdYQ")) {
+      failures.push(`live reception url was contacted: ${request.method()} ${url}`);
+    }
+  });
+  page.on("pageerror", (error) => failures.push(`pageerror ${error.message}`));
+  await page.emulateMediaFeatures([{ name: "prefers-color-scheme", value: "light" }]);
+  await page.setViewport({ width: 1280, height: 900 });
+  await page.goto(base, { waitUntil: "networkidle0" });
+  await page.evaluate(() => localStorage.removeItem("upsider-monitor.execution-requests.v1"));
+  await page.reload({ waitUntil: "networkidle0" });
+  await page.waitForSelector("body[data-ready='true']");
+  gas.hits = [];
+  gas.gets = [];
+  gas.results = {};
+  const statusOf = (id) => page.$eval(`[data-request="${id}"]`, (node) => node.dataset.requestStatus).catch(() => null);
+  const reqId = (id) => page.evaluate((key) => JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1")).requests[key].requestId, id);
+  const noopId = "tx-20261105-1253-monotaro-17553";
+  const failId = "tx-20261105-1404-monotaro-4833";
+  const waitId = "tx-20261105-1703-amazon-2659";
+
+  await page.click(`[data-detail="${noopId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "受付済み", {}, noopId);
+  const acceptedLine = await page.$eval(`[data-request="${noopId}"] .request-state`, (node) => node.textContent);
+  check(acceptedLine.startsWith("受付済み"), `shows 受付済み before the first check ${acceptedLine}`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "処理中", {}, noopId);
+  const processingLine = await page.$eval(`[data-request="${noopId}"] .request-state`, (node) => node.textContent);
+  check(processingLine.startsWith("処理中"), `shows 処理中 once checking ${processingLine}`);
+  const processingBg = await page.$eval(`[data-request="${noopId}"]`, (node) => getComputedStyle(node).backgroundColor);
+  check(processingBg === "rgb(232, 241, 251)", `processing info-bg ${processingBg}`);
+  const idA = await reqId(noopId);
+  check(gas.hits.length === 1 && JSON.parse(new URLSearchParams(gas.hits[0].body).get("payload")).requestId === idA, "one POST with request id");
+  const posted = JSON.parse(new URLSearchParams(gas.hits[0].body).get("payload"));
+  check(Object.keys(posted).sort().join(",") === "memoLines,requestId,savedAt,slackThread,transactionId", "result flow keeps the 5 payload fields");
+  const msg = "19:13（日本時間）に実行して処理済みです。\nそのスレッドには既に同じ5項目のメモと、UPSIDERの「決済メモを追加しました！」の返信があり、重複防止のため新規投稿はしていません。<b>x</b>";
+  gas.results[idA] = [{ state: "pending" }, { state: "pending" }, { state: "done", result: { status: "noop", finishedAt: "2026-11-06T10:13:05.000Z", message: msg } }];
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "変更なし", { timeout: 10000 }, noopId);
+  const card = await page.$eval(`[data-request="${noopId}"]`, (node) => ({
+    text: node.innerText,
+    bg: getComputedStyle(node).backgroundColor,
+    html: node.querySelector("[data-request-result]").innerHTML,
+  }));
+  check(card.text.includes("変更なし：2026/11/06 19:13（日本時間）に実行。変更はありませんでした。"), `headline ${card.text.slice(0, 160)}`);
+  check(card.text.includes("重複防止のため新規投稿はしていません。"), "message shown");
+  check(card.text.includes("最終確認:"), "last check time shown");
+  check(card.text.includes(idA) && card.text.includes(noopId), "request id and tx kept");
+  check(!card.html.includes("<b>"), "message rendered as text, not HTML");
+  check(card.bg === "rgb(231, 246, 238)", `success-bg ${card.bg}`);
+  const getsA = gas.gets.filter((item) => item.requestId === idA);
+  check(getsA.length === 3, `3 GETs until done (${getsA.length})`);
+  check(getsA.every((item) => item.params.join(",") === "op,requestId"), "GET params only op,requestId");
+  await sleep(600);
+  check(gas.gets.filter((item) => item.requestId === idA).length === 3, "no GET after terminal");
+  const postsAfter = gas.hits.length;
+  await page.click(`[data-detail="${noopId}"] [data-ai]`);
+  await sleep(300);
+  check(gas.hits.length === postsAfter, "terminal result not POSTed again");
+
+  await page.click(`[data-detail="${failId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "処理中", {}, failId);
+  const idB = await reqId(failId);
+  gas.results[idB] = [{ state: "done", result: { status: "failed", finishedAt: "2026-11-06T10:20:00Z", message: "UPSIDERの画面を開けず、メモを追加できませんでした。" } }];
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "失敗", { timeout: 10000 }, failId);
+  const failCard = await page.$eval(`[data-request="${failId}"]`, (node) => ({
+    text: node.innerText,
+    bg: getComputedStyle(node).backgroundColor,
+    border: getComputedStyle(node).borderTopColor,
+  }));
+  check(failCard.text.includes("失敗：2026/11/06 19:20（日本時間）に実行。実行に失敗しました。"), `fail headline ${failCard.text.slice(0, 120)}`);
+  check(failCard.bg === "rgb(253, 236, 236)", `danger-bg ${failCard.bg}`);
+  check(failCard.border === "rgb(159, 45, 45)", `danger border ${failCard.border}`);
+  await page.click(`[data-detail="${failId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "処理中", {}, failId);
+  const idB2 = await reqId(failId);
+  check(idB2 !== idB && JSON.parse(new URLSearchParams(gas.hits.at(-1).body).get("payload")).requestId === idB2, "retry after failure uses new id");
+
+  await page.click(`[data-detail="${waitId}"] [data-ai]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "処理中", {}, waitId);
+  const idC = await reqId(waitId);
+  gas.results[idC] = [
+    { requestId: "11111111-2222-4333-8444-555555555555", state: "done", result: { status: "success", finishedAt: "2026-11-06T10:00:00Z", message: "他人の結果" } },
+    { raw: "<html>bad</html>" },
+    { state: "done", result: { status: "success", finishedAt: "2026-11-06T10:00:00Z", message: "x", extra: 1 } },
+    { state: "unknown" },
+  ];
+  await sleep(1200);
+  const waitText = await page.$eval(`[data-request="${waitId}"]`, (node) => node.innerText);
+  check((await statusOf(waitId)) === "処理中", `mismatched/invalid/unknown keep 処理中 (${await statusOf(waitId)})`);
+  check(!waitText.includes("他人の結果") && !waitText.includes("成功："), "foreign result not shown");
+  check(waitText.includes("記録を返していません"), "unknown note shown");
+
+  gas.results[idC] = [{ state: "pending" }];
+  const before = gas.gets.length;
+  await page.reload({ waitUntil: "networkidle0" });
+  await page.waitForSelector("body[data-ready='true']");
+  check((await statusOf(noopId)) === "変更なし" && (await statusOf(failId)) === "処理中", "states restored");
+  await sleep(1000);
+  const after = gas.gets.slice(before);
+  check(!after.some((item) => item.requestId === idA || item.requestId === idB), "terminal / superseded ids not polled after reload");
+  check(after.some((item) => item.requestId === idC), "waiting request resumed after reload");
+  const stored = JSON.parse(await page.evaluate(() => localStorage.getItem("upsider-monitor.execution-requests.v1")));
+  check(stored.version === 3 && stored.requests[noopId].result.status === "noop", "stored v3 with result");
+  check(!/token|secret|password|authorization|api[_-]?key/i.test(JSON.stringify(stored)), "no secrets in storage");
+
+  await page.evaluate((id) => {
+    const saved = JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1"));
+    saved.requests[id].acceptedAt = new Date(Date.now() - 31 * 60000).toISOString();
+    localStorage.setItem("upsider-monitor.execution-requests.v1", JSON.stringify(saved));
+  }, waitId);
+  await page.reload({ waitUntil: "networkidle0" });
+  await page.waitForSelector("body[data-ready='true']");
+  check((await statusOf(waitId)) === "確認停止", "old wait becomes 確認停止");
+  const stoppedGets = gas.gets.filter((item) => item.requestId === idC).length;
+  await sleep(500);
+  check(gas.gets.filter((item) => item.requestId === idC).length === stoppedGets, "no auto polling when stopped");
+  gas.results[idC] = [{ state: "done", result: { status: "success", finishedAt: "2026-11-06T10:30:00Z", message: "メモを追加しました。" } }];
+  await page.click(`[data-recheck="${waitId}"]`);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "成功", { timeout: 5000 }, waitId);
+  check(gas.gets.filter((item) => item.requestId === idC).length === stoppedGets + 1, "recheck = exactly one GET");
+  const successText = await page.$eval(`[data-request="${waitId}"]`, (node) => node.innerText);
+  check(successText.includes("成功：2026/11/06 19:30（日本時間）に実行。処理済みです。"), `success headline ${successText.slice(0, 80)}`);
+  check(successText.includes("メモを追加しました。"), "success message from server");
+
+  await page.setViewport({ width: 390, height: 844 });
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  check(overflow <= 1, `result mobile overflow ${overflow}`);
+  await page.setViewport({ width: 1280, height: 900 });
+  fs.mkdirSync("/opt/cursor/artifacts", { recursive: true });
+  await page.evaluate((id) => document.querySelector(`[data-request="${id}"]`).scrollIntoView({ block: "center" }), noopId);
+  await page.screenshot({ path: "/opt/cursor/artifacts/result-noop.png" });
+  await page.evaluate((id) => document.querySelector(`[data-request="${id}"]`).scrollIntoView({ block: "center" }), waitId);
+  await page.screenshot({ path: "/opt/cursor/artifacts/result-success.png" });
+  await page.evaluate((id) => {
+    const saved = JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1"));
+    saved.requests[id].status = "失敗";
+    saved.requests[id].result = { status: "failed", finishedAt: "2026-11-06T10:20:00.000Z", message: "UPSIDERの画面を開けず、メモを追加できませんでした。" };
+    localStorage.setItem("upsider-monitor.execution-requests.v1", JSON.stringify(saved));
+  }, failId);
+  await page.reload({ waitUntil: "networkidle0" });
+  await page.waitForSelector("body[data-ready='true']");
+  await page.evaluate((id) => document.querySelector(`[data-request="${id}"]`).scrollIntoView({ block: "center" }), failId);
+  await page.screenshot({ path: "/opt/cursor/artifacts/result-failed.png" });
+
+  gas.configUrl = "";
+  const traffic = gas.gets.length + gas.hits.length;
+  await page.reload({ waitUntil: "networkidle0" });
+  await sleep(500);
+  check(gas.gets.length + gas.hits.length === traffic, "no GAS traffic when unconfigured");
+  await page.close();
 }
 
 async function connectionChecks(browser, base) {
@@ -718,7 +961,7 @@ async function connectionChecks(browser, base) {
     button.click();
     button.click();
   }, sendId);
-  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "受付済み", {}, sendId);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "処理中", {}, sendId);
   check(gas.hits.length === 1, `double click posts ${gas.hits.length}`);
   const hit = gas.hits[0];
   check(hit.method === "POST", "gas method");
@@ -747,7 +990,7 @@ async function connectionChecks(browser, base) {
   const failedId = await page.evaluate((id) => JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1")).requests[id].requestId, retryId);
   gas.behavior = "ok";
   await page.click(`[data-detail="${retryId}"] [data-ai]`);
-  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "受付済み", {}, retryId);
+  await page.waitForFunction((id) => document.querySelector(`[data-request="${id}"]`)?.dataset.requestStatus === "処理中", {}, retryId);
   const retriedId = await page.evaluate((id) => JSON.parse(localStorage.getItem("upsider-monitor.execution-requests.v1")).requests[id].requestId, retryId);
   check(failedId === retriedId, "retry keeps request id");
   const retryBodies = gas.hits.map((item) => JSON.parse(new URLSearchParams(item.body).get("payload"))).filter((item) => item.transactionId === retryId).map((item) => item.requestId);

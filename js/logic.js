@@ -1,3 +1,13 @@
+import {
+  RESULT_LABELS,
+  TERMINAL_REQUEST_STATUSES,
+  formatJst,
+  resultHeadline,
+  validateResult,
+} from "./result.js";
+
+export * from "./result.js";
+
 export const FILTERS = [
   "すべて",
   "登録完了",
@@ -14,7 +24,9 @@ export const STORAGE_KEY = "upsider-monitor.execution-requests.v1";
 
 export const SLACK_CHANNEL_ID = "C0BG07UF1EY";
 
-export const REQUEST_STATUSES = ["未実行", "送信中", "受付済み", "エラー"];
+export const REQUEST_STATUSES = ["未実行", "送信中", "受付済み", "処理中", "確認停止", "成功", "変更なし", "失敗", "エラー"];
+
+export const STORAGE_VERSION = 3;
 
 const REQUEST_KEYS = [
   "transactionId",
@@ -25,6 +37,10 @@ const REQUEST_KEYS = [
   "status",
   "requestId",
   "errorMessage",
+  "acceptedAt",
+  "pollAttempts",
+  "lastCheckedAt",
+  "result",
 ];
 
 const PAYLOAD_KEYS = ["requestId", "transactionId", "slackThread", "memoLines", "savedAt"];
@@ -88,6 +104,10 @@ export function buildExecutionRequest({ transactionId, slackThread, memo, savedA
     status: "未実行",
     requestId: null,
     errorMessage: "",
+    acceptedAt: null,
+    pollAttempts: 0,
+    lastCheckedAt: null,
+    result: null,
   };
 }
 
@@ -109,6 +129,10 @@ export function migrateExecutionRequest(id, request) {
   }
   if (request.requestId !== undefined && request.requestId !== null && typeof request.requestId !== "string") return null;
   if (request.errorMessage !== undefined && typeof request.errorMessage !== "string") return null;
+  if (!isOptionalIso(request.acceptedAt) || !isOptionalIso(request.lastCheckedAt)) return null;
+  if (request.pollAttempts !== undefined && (!Number.isInteger(request.pollAttempts) || request.pollAttempts < 0)) return null;
+  const result = request.result === undefined || request.result === null ? null : validateResult(request.result);
+  if (request.result !== undefined && request.result !== null && !result) return null;
   const migrated = {
     transactionId: request.transactionId,
     slackThread: request.slackThread,
@@ -118,18 +142,30 @@ export function migrateExecutionRequest(id, request) {
     status: request.status,
     requestId: request.requestId || null,
     errorMessage: request.errorMessage || "",
+    acceptedAt: request.acceptedAt || null,
+    pollAttempts: request.pollAttempts || 0,
+    lastCheckedAt: request.lastCheckedAt || null,
+    result,
   };
   if (migrated.status === "送信中") {
     migrated.status = "エラー";
     migrated.errorMessage = migrated.errorMessage || "送信結果が残っていません。同じ依頼IDで再試行できます。";
   }
+  // v2 までの「受付済み」は受付時刻を持たない。最終更新を受付時刻とみなし、結果の確認対象にする。
+  if (migrated.status === "受付済み" && !migrated.acceptedAt) migrated.acceptedAt = migrated.updatedAt;
+  // 結果のない終了状態はありえないので、結果待ちに戻す（表示は確認後まで出さない）。
+  if (TERMINAL_REQUEST_STATUSES.includes(migrated.status) && !migrated.result) {
+    migrated.status = migrated.acceptedAt ? "処理中" : "エラー";
+  }
+  if (!TERMINAL_REQUEST_STATUSES.includes(migrated.status)) migrated.result = null;
+  if (migrated.result && RESULT_LABELS[migrated.result.status] !== migrated.status) return null;
   return migrated;
 }
 
 export function loadStoredRequests(raw) {
   if (!raw) return {};
   const parsed = JSON.parse(raw);
-  if (!parsed || (parsed.version !== 1 && parsed.version !== 2)) return {};
+  if (!parsed || ![1, 2, STORAGE_VERSION].includes(parsed.version)) return {};
   if (typeof parsed.requests !== "object" || parsed.requests === null || Array.isArray(parsed.requests)) return {};
   const requests = {};
   for (const [id, request] of Object.entries(parsed.requests)) {
@@ -177,7 +213,8 @@ export function resolveRequestId(previous, memoLines, createId = createRequestId
     && previous.requestId
     && previous.memoLines.join("\n") === memoLines.join("\n"),
   );
-  if (sameMemo && previous.status !== "未実行") return previous.requestId;
+  // 失敗した依頼を同じメモでもう一度押したときは、新しい依頼として新しいIDを振る（GASは同じIDを重複として捨てるため）。
+  if (sameMemo && previous.status !== "未実行" && previous.status !== "失敗") return previous.requestId;
   return createId();
 }
 
@@ -231,8 +268,21 @@ export async function postGasPayload(gasUrl, payload, fetchImpl = globalThis.fet
 export function requestStateText(request, configured) {
   if (!request) return "";
   if (request.status === "送信中") return "送信中。受付APIへ実行依頼を送っています。";
-  if (request.status === "受付済み") return "受付済み。証憑ゲッターロボへ受け渡しました。処理状況の問い合わせはこのページでは行いません。";
+  if (request.status === "受付済み") return "受付済み。証憑ゲッターロボへ受け渡しました。実行結果を確認します。";
+  if (request.status === "処理中") return "処理中。証憑ゲッターロボの実行結果を確認しています。";
+  if (request.status === "確認停止") return "結果待ち。実行結果がまだ届いていないため、自動確認を停止しました。「結果を再確認」で確認できます。";
+  if (TERMINAL_REQUEST_STATUSES.includes(request.status) && request.result) return resultHeadline(request.result);
   if (request.status === "エラー") return "エラー。受付APIの応答を確認できませんでした。同じ依頼IDで再試行できます。";
   if (!configured) return "未実行。受付URLが未設定のため、実行は行われていません。";
   return "未実行。実行は行われていません。";
+}
+
+function isOptionalIso(value) {
+  if (value === undefined || value === null) return true;
+  return typeof value === "string" && !Number.isNaN(Date.parse(value));
+}
+
+export function resultCheckedText(request) {
+  if (!request || !request.lastCheckedAt) return "";
+  return `最終確認: ${formatJst(request.lastCheckedAt)}`;
 }
