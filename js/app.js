@@ -175,7 +175,7 @@ function renderRow(tx) {
     cell("内容", tx.content),
     cell("ステータス", null, "", statusPill(tx.status)),
     cell("Slack", null, "", slackLink(tx.slack)),
-    cell("Drive証憑", tx.drive),
+    renderDrive(tx),
   );
   return tr;
 }
@@ -500,6 +500,17 @@ function formatSavedAt(iso) {
     second: "2-digit",
     hourCycle: "h23",
   }).format(date);
+}
+
+function renderDrive(tx) {
+  if (typeof tx.drive === "string" && tx.drive.startsWith("https://")) {
+    return cell("Drive証憑", null, "", el("a", {
+      href: tx.drive,
+      target: "_blank",
+      rel: "noopener noreferrer",
+    }, tx.drive));
+  }
+  return cell("Drive証憑", tx.drive);
 }
 
 function slackLink(url) {

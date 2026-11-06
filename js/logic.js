@@ -1,6 +1,7 @@
 export const FILTERS = [
   "すべて",
   "登録完了",
+  "返金（メモ・証憑不要）",
   "メモなし",
   "証憑なし",
   "メモ・証憑なし",
@@ -30,7 +31,9 @@ export function sumOf(transactions, status) {
 }
 
 export function formatYen(amount) {
-  return `¥${Number(amount).toLocaleString("ja-JP")}`;
+  const value = Number(amount);
+  const body = Math.abs(value).toLocaleString("ja-JP");
+  return value < 0 ? `-¥${body}` : `¥${body}`;
 }
 
 export function filterTransactions(transactions, filter) {
