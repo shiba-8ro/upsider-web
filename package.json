@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/monitor.test.mjs"
+    "test": "node tests/result.test.mjs && node tests/monitor.test.mjs"
   },
   "devDependencies": {
     "puppeteer-core": "^24.15.0"

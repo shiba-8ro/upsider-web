@@ -306,6 +306,32 @@ table {
 .request[data-request-status="受付済み"] .request-state { color: var(--success); }
 .request[data-request-status="エラー"] .request-state { color: var(--danger); }
 
+/* 実行結果: 処理中・結果待ちは青系、成功・変更なしは受付済みと同じ薄緑、失敗は赤系 */
+.request[data-request-status="処理中"],
+.request[data-request-status="確認停止"] { border-color: var(--info); background: var(--info-bg); }
+.request[data-request-status="処理中"] .request-state,
+.request[data-request-status="確認停止"] .request-state { color: var(--info); }
+.request[data-request-status="成功"],
+.request[data-request-status="変更なし"] {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+.request[data-request-status="成功"] .request-state,
+.request[data-request-status="変更なし"] .request-state { color: var(--success); font-weight: 700; }
+.request[data-request-status="失敗"] {
+  border-color: var(--danger);
+  border-width: 2px;
+  background: var(--danger-bg);
+}
+.request[data-request-status="失敗"] .request-state { color: var(--danger); font-weight: 700; }
+.request-result {
+  margin: 6px 0 10px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.request-note { margin: 6px 0 0; color: var(--muted); font-size: 0.85rem; }
+.request [data-recheck] { margin-top: 8px; }
+
 .btn:disabled { opacity: 0.65; cursor: progress; }
 
 .request dl {

@@ -1,20 +1,30 @@
 import {
   COPY_SUCCESS_MS,
   FILTERS,
+  POLL,
   STORAGE_KEY,
+  STORAGE_VERSION,
+  TERMINAL_REQUEST_STATUSES,
+  WAITING_REQUEST_STATUSES,
   buildGasPayload,
   countOf,
   createRequestId,
+  fetchResult,
   filterTransactions,
   formatMemoText,
   formatYen,
   initialMemo,
   isAllowedSlackThread,
+  isRequestId,
   loadStoredRequests,
+  nextPollDelay,
   normalizeGasUrl,
   postGasPayload,
   requestStateText,
+  requestStatusForResult,
   resolveRequestId,
+  resultCheckedText,
+  shouldResumePolling,
   statusTone,
   sumOf,
 } from "./logic.js";
@@ -23,15 +33,19 @@ const UNCONFIGURED_NOTE =
   "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼としてまとめ、このブラウザの中だけに保持します。実行にはバックエンド接続が必要です。受付URLが未設定のため、ボタンを押しても実行は行われず、Slackへの投稿もエージェントの起動もありません。依頼に秘密情報やトークンは含まれません。";
 
 const CONFIGURED_NOTE =
-  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼として受付APIへ送ります。受付後の処理は証憑ゲッターロボ側で、このページは処理状況を問い合わせません。依頼IDを付けて二重送信を避けます。秘密情報やトークンは送りません。";
+  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼として受付APIへ送ります。受付後の処理は証憑ゲッターロボ側で、このページは依頼IDだけを使って実行結果（成功・変更なし・失敗）を確認し、この欄に表示します。依頼IDを付けて二重送信を避けます。秘密情報やトークンは送りません。";
 
 const state = {
   ledger: null,
-  config: { gasUrl: "" },
+  config: { gasUrl: "", pollFastMs: POLL.fastIntervalMs },
   filter: "すべて",
   memos: {},
   requests: {},
   inflight: new Set(),
+  polls: new Map(),
+  pollInflight: new Set(),
+  deferredPolls: new Set(),
+  unknownIds: new Set(),
   copiedId: null,
   copySeq: 0,
   copyTimer: 0,
@@ -59,6 +73,8 @@ async function init() {
   render();
   app.addEventListener("click", onClick);
   app.addEventListener("input", onInput);
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  resumePolling();
   document.body.dataset.ready = "true";
 }
 
@@ -281,7 +297,21 @@ function renderRequest(id) {
   if (!request) return document.createDocumentFragment();
   const box = el("div", { class: "request", "data-request": id, "data-request-status": request.status });
   const stateLine = el("p", { class: "request-state", role: "status" }, requestStateText(request, Boolean(state.config.gasUrl)));
+  if (request.result) box.dataset.resultStatus = request.result.status;
   box.append(el("h3", {}, "保持中の実行依頼"), stateLine);
+  if (request.result && TERMINAL_REQUEST_STATUSES.includes(request.status)) {
+    // 本文はサーバーが返した詳細。textContent で出し、HTMLとしては解釈しない。
+    box.append(el("p", { class: "request-result", "data-request-result": "" }, request.result.message));
+  } else if (WAITING_REQUEST_STATUSES.includes(request.status) && state.unknownIds.has(request.requestId)) {
+    box.append(el("p", { class: "request-note" }, "受付APIはまだこの依頼IDの記録を返していません。結果が届くまで表示しません。"));
+  }
+  const checked = resultCheckedText(request);
+  if (checked && request.status !== "未実行") box.append(el("p", { class: "request-note" }, checked));
+  if (request.status === "確認停止" && state.config.gasUrl) {
+    const recheck = el("button", { type: "button", class: "btn secondary", "data-recheck": id }, "結果を再確認");
+    if (state.pollInflight.has(id)) recheck.disabled = true;
+    box.append(recheck);
+  }
   const memoText = el("dd");
   memoText.append(el("pre", {}, request.memoLines.join("\n")));
   const dl = el("dl");
@@ -327,6 +357,17 @@ function onClick(event) {
   if (aiButton) {
     event.preventDefault();
     void submitMemoRequest(aiButton.dataset.ai);
+    return;
+  }
+  const recheckButton = event.target.closest("[data-recheck]");
+  if (recheckButton) {
+    event.preventDefault();
+    const id = recheckButton.dataset.recheck;
+    const request = state.requests[id];
+    if (request && request.status === "確認停止" && !state.pollInflight.has(id)) {
+      cancelPoll(id);
+      void runPoll(id, request.requestId);
+    }
   }
 }
 
@@ -468,12 +509,14 @@ async function submitMemoRequest(id) {
       requestId: null,
       errorMessage: "",
     });
+    cancelPoll(id);
     saveRequests();
     replaceRequest(id);
     return;
   }
 
-  if (sameMemo && previous.status === "受付済み") {
+  // 受付済み・処理中・結果待ち・成功・変更なしの同じメモは再送しない。結果が出るまで自動再投稿しない。
+  if (sameMemo && ["受付済み", "処理中", "確認停止", "成功", "変更なし"].includes(previous.status)) {
     replaceRequest(id);
     return;
   }
@@ -494,6 +537,7 @@ async function submitMemoRequest(id) {
     requestId: resolveRequestId(previous, memoLines, createRequestId),
     errorMessage: "",
   });
+  cancelPoll(id);
   state.inflight.add(id);
   state.requests[id] = request;
   saveRequests();
@@ -503,6 +547,10 @@ async function submitMemoRequest(id) {
     await postGasPayload(gasUrl, buildGasPayload(request));
     request.status = "受付済み";
     request.errorMessage = "";
+    request.acceptedAt = new Date().toISOString();
+    request.pollAttempts = 0;
+    request.lastCheckedAt = null;
+    request.result = null;
   } catch {
     request.status = "エラー";
     request.errorMessage = "受付APIの応答を確認できませんでした。同じ依頼IDで再試行できます。";
@@ -512,6 +560,12 @@ async function submitMemoRequest(id) {
     setAiBusy(id, false);
     saveRequests();
     replaceRequest(id);
+    if (request.status === "受付済み" && state.requests[id] === request) {
+      request.status = "処理中";
+      saveRequests();
+      replaceRequest(id);
+      schedulePoll(id, state.config.pollFastMs);
+    }
   }
 }
 
@@ -525,7 +579,110 @@ function baseRequest(tx, memoLines, previous, now, fields) {
     status: fields.status,
     requestId: fields.requestId,
     errorMessage: fields.errorMessage,
+    acceptedAt: null,
+    pollAttempts: 0,
+    lastCheckedAt: null,
+    result: null,
   };
+}
+
+function schedulePoll(id, delay) {
+  cancelPoll(id);
+  const request = state.requests[id];
+  if (!state.config.gasUrl || !request || !isRequestId(request.requestId)) return;
+  if (!WAITING_REQUEST_STATUSES.includes(request.status)) return;
+  const requestId = request.requestId;
+  const timer = window.setTimeout(() => {
+    state.polls.delete(id);
+    void runPoll(id, requestId);
+  }, Math.max(0, delay));
+  state.polls.set(id, { timer, requestId });
+}
+
+function cancelPoll(id) {
+  const poll = state.polls.get(id);
+  if (poll) window.clearTimeout(poll.timer);
+  state.polls.delete(id);
+  state.deferredPolls.delete(id);
+}
+
+async function runPoll(id, requestId) {
+  const current = state.requests[id];
+  if (!current || current.requestId !== requestId || !WAITING_REQUEST_STATUSES.includes(current.status)) return;
+  if (document.hidden && current.status !== "確認停止") {
+    state.deferredPolls.add(id);
+    return;
+  }
+  if (state.pollInflight.has(id)) return;
+  state.pollInflight.add(id);
+  replaceRequest(id);
+  let outcome;
+  try {
+    outcome = await fetchResult(state.config.gasUrl, requestId);
+  } catch {
+    outcome = { kind: "invalid" };
+  } finally {
+    state.pollInflight.delete(id);
+  }
+  const latest = state.requests[id];
+  // 確認中に依頼IDが変わった応答は捨てる。サーバーの requestId 一致は fetchResult 側でも見る。
+  if (!latest || latest.requestId !== requestId || !WAITING_REQUEST_STATUSES.includes(latest.status)) {
+    replaceRequest(id);
+    return;
+  }
+  const now = new Date().toISOString();
+  latest.pollAttempts += 1;
+  latest.lastCheckedAt = now;
+  if (outcome.kind === "done") {
+    state.unknownIds.delete(requestId);
+    latest.status = requestStatusForResult(outcome.result.status);
+    latest.result = outcome.result;
+    latest.updatedAt = now;
+    saveRequests();
+    replaceRequest(id);
+    return;
+  }
+  if (outcome.kind === "unknown") state.unknownIds.add(requestId);
+  else if (outcome.kind === "pending") state.unknownIds.delete(requestId);
+  const delay = nextPollDelay(latest.pollAttempts, latest.acceptedAt);
+  latest.status = delay === null ? "確認停止" : "処理中";
+  saveRequests();
+  replaceRequest(id);
+  if (delay !== null) {
+    const fast = latest.pollAttempts < POLL.fastAttempts;
+    schedulePoll(id, fast ? state.config.pollFastMs : delay);
+  }
+}
+
+function resumePolling() {
+  if (!state.config.gasUrl) return;
+  let changed = false;
+  let stagger = 0;
+  for (const [id, request] of Object.entries(state.requests)) {
+    if (!WAITING_REQUEST_STATUSES.includes(request.status)) continue;
+    if (shouldResumePolling(request) && nextPollDelay(request.pollAttempts, request.acceptedAt) !== null) {
+      if (request.status === "受付済み") {
+        request.status = "処理中";
+        changed = true;
+      }
+      schedulePoll(id, stagger);
+      stagger += 500;
+    } else if (request.status !== "確認停止") {
+      request.status = "確認停止";
+      changed = true;
+    }
+  }
+  if (changed) {
+    saveRequests();
+    for (const id of Object.keys(state.requests)) replaceRequest(id);
+  }
+}
+
+function onVisibilityChange() {
+  if (document.hidden) return;
+  const ids = [...state.deferredPolls];
+  state.deferredPolls.clear();
+  ids.forEach((id, index) => schedulePoll(id, index * 500));
 }
 
 function setAiBusy(id, busy) {
@@ -556,7 +713,7 @@ function loadRequests() {
 
 function saveRequests() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 2, requests: state.requests }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, requests: state.requests }));
     state.storageError = false;
   } catch {
     state.storageError = true;
@@ -566,14 +723,22 @@ function saveRequests() {
 async function loadGasConfig() {
   try {
     const response = await fetch(new URL("../config.js", import.meta.url), { cache: "no-store" });
-    if (!response.ok) return { gasUrl: "" };
+    if (!response.ok) return { gasUrl: "", pollFastMs: POLL.fastIntervalMs };
     const source = await response.text();
     const readConfig = new Function(`${source}\n; return window.UPSIDER_CONFIG;`);
     const config = readConfig();
-    return { gasUrl: normalizeGasUrl(config && config.gasUrl) };
+    const gasUrl = normalizeGasUrl(config && config.gasUrl);
+    return { gasUrl, pollFastMs: testPollMs(gasUrl, config && config.testPollMs) };
   } catch {
-    return { gasUrl: "" };
+    return { gasUrl: "", pollFastMs: POLL.fastIntervalMs };
   }
+}
+
+// テスト用の短い確認間隔は、ローカルの模擬受付URLのときだけ使う。公開URLでは常に15秒。
+function testPollMs(gasUrl, value) {
+  if (!gasUrl || !Number.isInteger(value) || value < 50 || value > POLL.fastIntervalMs) return POLL.fastIntervalMs;
+  const host = new URL(gasUrl).hostname;
+  return host === "127.0.0.1" || host === "localhost" ? value : POLL.fastIntervalMs;
 }
 
 function execNote() {
