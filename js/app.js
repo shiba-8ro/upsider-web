@@ -6,7 +6,9 @@ import {
   STORAGE_VERSION,
   TERMINAL_REQUEST_STATUSES,
   WAITING_REQUEST_STATUSES,
+  INSTRUCTION_TEXT_MAX,
   buildGasPayload,
+  buildInstructionPayload,
   countOf,
   createRequestId,
   fetchResult,
@@ -158,6 +160,8 @@ function renderAcquiredAt(ledger) {
   return box;
 }
 
+const instructionState = { inflight: false, requestId: null, text: "", accepted: false };
+
 function renderInstruction() {
   const box = el("form", { class: "instruction-box", "data-instruction-form": "" });
   box.addEventListener("submit", (event) => event.preventDefault());
@@ -171,12 +175,68 @@ function renderInstruction() {
     enterkeyhint: "enter",
     inputmode: "text",
   });
+  const send = el("button", { type: "button", class: "btn primary", "data-instruction-send": "" }, "指示を送る");
   box.append(
     el("label", { for: "instruction-text" }, "指示"),
     area,
-    el("p", { class: "instruction-note", "data-instruction-status": "" }, "この欄はまだ受付へ送れません。現行の受付は、取引ごとのメモ5行（用途・セグメント1・セグメント2・分類・内容）だけを受けます。自由な指示は送りません。"),
+    send,
+    el("p", { class: "instruction-note", "data-instruction-status": "" }, "送信は「指示を送る」を押したときだけです。入力や Enter では送りません。受付は作業の完了ではありません。"),
   );
   return box;
+}
+
+function setInstructionStatus(text) {
+  const node = document.querySelector("[data-instruction-status]");
+  if (node) node.textContent = text;
+}
+
+async function sendInstruction() {
+  if (instructionState.inflight) return;
+  const area = document.querySelector("[data-instruction]");
+  const button = document.querySelector("[data-instruction-send]");
+  const text = area ? area.value.trim() : "";
+  if (!text) {
+    setInstructionStatus("空の指示は送れません。");
+    return;
+  }
+  if (text.length > INSTRUCTION_TEXT_MAX) {
+    setInstructionStatus(`${INSTRUCTION_TEXT_MAX}字を超える指示は送れません。`);
+    return;
+  }
+  if (!state.config.gasUrl) {
+    setInstructionStatus("受付URLが未設定のため、送信していません。");
+    return;
+  }
+  if (instructionState.accepted && instructionState.text === text) {
+    setInstructionStatus("受付済み。同じ依頼は再送していません。作業は完了していません。");
+    return;
+  }
+  if (instructionState.text !== text || !instructionState.requestId) {
+    instructionState.requestId = createRequestId();
+    instructionState.text = text;
+    instructionState.accepted = false;
+  }
+  instructionState.inflight = true;
+  if (button) button.disabled = true;
+  setInstructionStatus("送信中。受付へ渡しています。作業は完了していません。");
+  try {
+    const payload = buildInstructionPayload({
+      requestId: instructionState.requestId,
+      text,
+      savedAt: new Date().toISOString(),
+    });
+    const result = await postGasPayload(state.config.gasUrl, payload);
+    instructionState.accepted = true;
+    setInstructionStatus(result && result.duplicate
+      ? "受付済み。同じ依頼は再送していません。作業は完了していません。"
+      : "受付済み。作業は完了していません。本文は確認後に実行します。");
+  } catch {
+    instructionState.accepted = false;
+    setInstructionStatus("エラー。受付を確認できませんでした。同じ依頼IDで再試行できます。");
+  } finally {
+    instructionState.inflight = false;
+    if (button) button.disabled = false;
+  }
 }
 
 function renderMetrics() {
@@ -413,6 +473,12 @@ function onClick(event) {
   if (filterButton) {
     state.filter = filterButton.dataset.filter;
     paintFilter();
+    return;
+  }
+  const instructionButton = event.target.closest("[data-instruction-send]");
+  if (instructionButton) {
+    event.preventDefault();
+    void sendInstruction();
     return;
   }
   const copyButton = event.target.closest("[data-copy]");

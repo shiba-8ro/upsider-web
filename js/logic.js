@@ -2,6 +2,7 @@ import {
   RESULT_LABELS,
   TERMINAL_REQUEST_STATUSES,
   formatJst,
+  isRequestId,
   resultHeadline,
   validateResult,
 } from "./result.js";
@@ -45,6 +46,9 @@ const REQUEST_KEYS = [
 ];
 
 const PAYLOAD_KEYS = ["requestId", "transactionId", "slackThread", "memoLines", "savedAt"];
+const INSTRUCTION_KEYS = ["kind", "requestId", "text", "savedAt"];
+
+export const INSTRUCTION_TEXT_MAX = 400;
 
 export const SLACK_THREAD_PATTERN = /^https:\/\/app\.slack\.com\/client\/T0AS9K3390T\/C0BG07UF1EY\/thread\/C0BG07UF1EY-\d{10}\.\d{6}$/;
 
@@ -234,6 +238,23 @@ export function buildGasPayload(request) {
   if (!Array.isArray(payload.memoLines) || payload.memoLines.length !== 5) throw new Error("memo lines");
   if (payload.memoLines.some((line) => typeof line !== "string")) throw new Error("memo lines");
   if (typeof payload.savedAt !== "string" || Number.isNaN(Date.parse(payload.savedAt))) throw new Error("savedAt");
+  return payload;
+}
+
+export function buildInstructionPayload({ requestId, text, savedAt }) {
+  const body = typeof text === "string" ? text.trim() : "";
+  if (!body) throw new Error("empty");
+  if (body.length > INSTRUCTION_TEXT_MAX) throw new Error("text length");
+  if (!isRequestId(requestId)) throw new Error("requestId");
+  if (typeof savedAt !== "string" || Number.isNaN(Date.parse(savedAt))) throw new Error("savedAt");
+  const payload = { kind: "instruction", requestId, text: body, savedAt };
+  const keys = Object.keys(payload);
+  if (keys.length !== INSTRUCTION_KEYS.length || INSTRUCTION_KEYS.some((key) => !keys.includes(key))) {
+    throw new Error("payload keys");
+  }
+  if ("memoLines" in payload || "transactionId" in payload || "slackThread" in payload) {
+    throw new Error("memo fields");
+  }
   return payload;
 }
 

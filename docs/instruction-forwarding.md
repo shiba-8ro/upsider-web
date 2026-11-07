@@ -1,34 +1,42 @@
-# 指示欄と受付の現状
+# 指示の転送
 
-公開ページ上部の「指示」は、複数行の入力欄だけです。送信ボタンは置いていません。入力や Enter では何も送りません。
+公開ページの「指示を送る」は、メモ登録とは別の payload を既存の受付 URL へ POST します。入力や Enter では送りません。受付に成功しても作業完了ではありません。本文は受信後、このチャットで確認してから実行します。
 
-## 現行の受付
+`gas/Code.gs` は雛形です。本番に入れる全文は `gas/live-getter-with-instruction.gs` で、現行 `getter.gs` に `kind=instruction` だけを足したものです。`result.gs` は変えていません。
 
-ページが送れるのは、取引詳細の「AIがメモを追加する」から出る次の JSON だけです。`gas/Code.gs` の `parseUpsiderMemo_` は、キーがこの5つ以外だと `unexpected field` で拒みます。
+## フロントが送る payload
 
-- `requestId`
-- `transactionId`（`tx-` で始まる取引ID）
-- `slackThread`（取引スレッドの URL だけ）
-- `memoLines`（ちょうど5行。先頭は `用途：` `セグメント1：` `セグメント2：` `分類：` `内容：`）
-- `savedAt`（UTC の ISO 時刻）
+`application/x-www-form-urlencoded` の `payload` に、次の JSON だけを入れます。
 
-通った依頼は `postSlack_` で、件名 `【UPSIDERメモ登録依頼】` として Slack に出します。同じ `requestId` は再送せず、1時間30件までです。実行結果の照会 `GET ?op=result&requestId=` は、このメモ依頼の成否を見るもので、自由な指示の結果は返しません。
+```json
+{
+  "kind": "instruction",
+  "requestId": "11111111-2222-4333-8444-555555555555",
+  "text": "段ボールを確認",
+  "savedAt": "2026-11-07T13:20:00.000Z"
+}
+```
 
-実デプロイの重複管理は `up_rid_` で、このリポジトリの雛形とは違います。どちらも、自由な指示を受ける口ではありません。自由な文を5行のメモに見せかけて送ることはしません。
+- `kind` は `instruction` のみ
+- `requestId` は UUID
+- `text` は前後の空白を除いて1〜400字。改行は残せます
+- `savedAt` は UTC の ISO 時刻
+- `transactionId`、`slackThread`、`memoLines` は付けません
 
-## 自由な指示を送るために必要な拡張
+## Slack に渡す JSON
 
-親側の GAS と、Slack を受けるルーチンの変更が必要です。このリポジトリではまだ送っていません。
+既存の `postSlack_` が送る形のままです。Webhook の URL はスクリプトプロパティ `SLACK_WEBHOOK_URL` だけを読み、ソースには書きません。
 
-受付は今のメモ依頼と混ぜず、別の payload にしてください。例は次です。
+```json
+{
+  "text": "【モニターからの指示】\n段ボールを確認"
+}
+```
 
-- `kind`: `instruction`
-- `requestId`: 既存と同じ UUID
-- `text`: 指示本文。空は拒む。上限は400字など、メモ本文と同じ桁
-- `savedAt`: UTC の ISO 時刻
+見出しの次の行からが指示本文です。旧 `sendInstruction(text)` と同じ見出しですが、その関数は呼びません。シートへの読み書きもありません。
 
-`transactionId`、`slackThread`、`memoLines` は付けません。件名は `【UPSIDERメモ登録依頼】` にしないでください。
+メモ受付の見出し `【UPSIDERメモ登録依頼】` と JSON 本文は、これまでどおりです。
 
-重複は `requestId` で捨て、回数制限はメモ依頼と共有するか、指示用に別枠かを決めてください。認証のない公開ページから届く文なので、受信側は人が確認してから実行し、ページの文だけで特権操作を始めないでください。成否をページへ返すなら、既存の `op=result` とは別の `kind` で、成功と見せる固定文言はページに置かないでください。
+## 本番 doPost の差分
 
-ページ側は、その受付が実在してから、明示の送信ボタンだけを足します。入力中や Enter では送りません。
+検証と投稿文の分岐だけを、既存の `up_rid_` / `up_rate_` のロックの前に足します。重複、1時間30件、古いプロパティの整理、Slack 失敗時に `up_rid_` を書かない順序はメモ受付と同じです。`op=result` は従来の結果関数へ渡します。`getData`、`sendAnswer`、`sendInstruction` は起動しません。

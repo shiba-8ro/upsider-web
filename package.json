@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/memo-presence.test.mjs && node tests/acquired-at.test.mjs && node tests/result.test.mjs && node tests/monitor.test.mjs"
+    "test": "node tests/memo-presence.test.mjs && node tests/acquired-at.test.mjs && node tests/instruction.test.mjs && node tests/result.test.mjs && node tests/monitor.test.mjs"
   },
   "devDependencies": {
     "puppeteer-core": "^24.15.0"

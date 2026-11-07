@@ -19,21 +19,14 @@ function doPost(e) {
     return respond_({ ok: false, error: "lock" });
   }
   try {
-    var data = parseUpsiderMemo_(e);
+    if (!(e && e.parameter && e.parameter.payload)) throw new Error("missing payload");
+    var raw = JSON.parse(e.parameter.payload);
     var props = PropertiesService.getScriptProperties();
-    var ids = readIds_(props);
-    if (ids.indexOf(data.requestId) !== -1) {
-      return respond_({ ok: true, requestId: data.requestId, duplicate: true });
+    if (raw && raw.kind === "instruction") {
+      return respond_(deliver_(props, parseInstruction_(raw), buildInstructionMessage_));
     }
-    if (rateCount_(props) >= RATE_LIMIT_) {
-      return respond_({ ok: false, error: "rate" });
-    }
-    postSlack_(buildUpsiderMemoMessage_(data));
-    ids.push(data.requestId);
-    if (ids.length > MAX_IDS_) ids = ids.slice(ids.length - MAX_IDS_);
-    props.setProperty(PROP_IDS_, JSON.stringify(ids));
-    incrementRate_(props);
-    return respond_({ ok: true, requestId: data.requestId });
+    if (raw && Object.prototype.hasOwnProperty.call(raw, "kind")) throw new Error("unexpected field");
+    return respond_(deliver_(props, parseUpsiderMemo_(e), buildUpsiderMemoMessage_));
   } catch (error) {
     return respond_({ ok: false, error: String(error && error.message ? error.message : error) });
   } finally {
@@ -66,6 +59,45 @@ function parseUpsiderMemo_(e) {
     throw new Error("savedAt");
   }
   return data;
+}
+
+function parseInstruction_(data) {
+  var allowed = { kind: true, requestId: true, text: true, savedAt: true };
+  var keys = Object.keys(data);
+  if (keys.length !== 4) throw new Error("unexpected field");
+  for (var i = 0; i < keys.length; i += 1) {
+    if (!allowed[keys[i]]) throw new Error("unexpected field");
+  }
+  if (data.kind !== "instruction") throw new Error("kind");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(data.requestId)) {
+    throw new Error("requestId");
+  }
+  if (typeof data.text !== "string") throw new Error("text");
+  var text = data.text.trim();
+  if (!text) throw new Error("empty");
+  if (text.length > 400) throw new Error("text length");
+  if (typeof data.savedAt !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(data.savedAt)) {
+    throw new Error("savedAt");
+  }
+  return { kind: "instruction", requestId: data.requestId, text: text, savedAt: data.savedAt };
+}
+
+function buildInstructionMessage_(data) {
+  return "【モニターからの指示】\n" + data.text;
+}
+
+function deliver_(props, data, buildMessage) {
+  var ids = readIds_(props);
+  if (ids.indexOf(data.requestId) !== -1) {
+    return { ok: true, requestId: data.requestId, duplicate: true };
+  }
+  if (rateCount_(props) >= RATE_LIMIT_) return { ok: false, error: "rate" };
+  postSlack_(buildMessage(data));
+  ids.push(data.requestId);
+  if (ids.length > MAX_IDS_) ids = ids.slice(ids.length - MAX_IDS_);
+  props.setProperty(PROP_IDS_, JSON.stringify(ids));
+  incrementRate_(props);
+  return { ok: true, requestId: data.requestId };
 }
 
 function buildUpsiderMemoMessage_(data) {
