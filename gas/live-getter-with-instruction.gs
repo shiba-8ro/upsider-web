@@ -113,7 +113,9 @@ function doPost(e) {
     const rids = Object.keys(all).filter(function (k) { return k.indexOf('up_rid_') === 0; });
     if (rids.length > 300) { rids.sort(function (a, b) { return Number(all[a]) - Number(all[b]); }); rids.slice(0, rids.length - 200).forEach(function (k) { props.deleteProperty(k); }); }
     Object.keys(all).forEach(function (k) { if (k.indexOf('up_rate_') === 0 && k !== hour) props.deleteProperty(k); });
-    const upSlackText = (p.kind === 'instruction') ? ('【モニターからの指示】\n' + p.text) : ('【UPSIDERメモ登録依頼】\n' + JSON.stringify(p));
+    const upSlackText = (p.kind === 'instruction')
+      ? ('【モニターからの指示】\n' + JSON.stringify({ kind: 'instruction', requestId: p.requestId, text: p.text, savedAt: p.savedAt }))
+      : ('【UPSIDERメモ登録依頼】\n' + JSON.stringify(p));
     try { postSlack_(upSlackText); } catch (x) { return upJson_({ ok: false, error: 'Slack送信に失敗しました' }); }
     props.setProperty(key, String(Date.now()));
     props.setProperty(hour, String(cnt + 1));

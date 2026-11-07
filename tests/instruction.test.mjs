@@ -94,18 +94,25 @@ function memo(requestId) {
   };
 }
 const posted = () => slack.map((item) => JSON.parse(item.init.payload).text);
+function instructionJson(slackText) {
+  check(slackText.startsWith("【モニターからの指示】\n"), `heading ${slackText}`);
+  return JSON.parse(slackText.slice("【モニターからの指示】\n".length));
+}
 
 const accepted = post({ kind: "instruction", requestId: id, text: "  段ボールを確認\n在庫だけ  ", savedAt });
 check(accepted.ok === true && accepted.duplicate === false && accepted.requestId === id && accepted.transactionId === undefined, `accept ${JSON.stringify(accepted)}`);
-check(posted()[0] === "【モニターからの指示】\n段ボールを確認\n在庫だけ", `slack text ${posted()[0]}`);
-check(slack[0].init.contentType === "application/json" && !posted()[0].includes("【UPSIDERメモ登録依頼】"), "slack json is the instruction text");
+const first = instructionJson(posted()[0]);
+check(first.kind === "instruction" && first.requestId === id && first.text === "段ボールを確認\n在庫だけ" && first.savedAt === savedAt, `slack json ${JSON.stringify(first)}`);
+check(slack[0].init.contentType === "application/json" && JSON.parse(slack[0].init.payload).text === posted()[0], "webhook envelope stays text");
+check(!posted()[0].includes("【UPSIDERメモ登録依頼】"), "instruction is not a memo heading");
 check(sheets.length === 0 && calls.sendInstruction === 0 && calls.getData === 0 && calls.sendAnswer === 0, "instruction path does not touch the sheet or old functions");
 
 const duplicate = post({ kind: "instruction", requestId: id, text: "段ボールを確認", savedAt });
 check(duplicate.duplicate === true && posted().length === 1, "duplicate requestId is not posted again");
 
 const again = post({ kind: "instruction", requestId: "22222222-3333-4444-8555-666666666666", text: "別の指示", savedAt });
-check(again.ok === true && posted().at(-1) === "【モニターからの指示】\n別の指示", "second instruction");
+const second = instructionJson(posted().at(-1));
+check(again.ok === true && second.kind === "instruction" && second.text === "別の指示" && second.requestId === "22222222-3333-4444-8555-666666666666", "second instruction");
 
 const memoResult = post(memo("33333333-4444-4555-8666-777777777777"));
 check(memoResult.ok === true && memoResult.transactionId === "tx-20261105-1703-amazon-2659", "memo still accepted");

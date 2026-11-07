@@ -83,7 +83,12 @@ function parseInstruction_(data) {
 }
 
 function buildInstructionMessage_(data) {
-  return "【モニターからの指示】\n" + data.text;
+  return "【モニターからの指示】\n" + JSON.stringify({
+    kind: "instruction",
+    requestId: data.requestId,
+    text: data.text,
+    savedAt: data.savedAt,
+  });
 }
 
 function deliver_(props, data, buildMessage) {

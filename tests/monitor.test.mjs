@@ -609,6 +609,8 @@ async function browserChecks(base) {
     check(instructionValue.includes("あいうえお\nかきくけこ"), `instruction input ${JSON.stringify(instructionValue)}`);
     const sent = network.slice(beforeRequests).filter((url) => /mock-gas|script\.google|slack\.com\/api|hooks\.slack/.test(url));
     check(sent.length === 0, `instruction typed without send ${sent.join(",")}`);
+    const limitNote = await page.$eval("[data-instruction-status]", (node) => node.textContent);
+    check(limitNote.includes("暫定で400字まで") && limitNote.includes("切らず"), limitNote);
     const sendButton = await page.$eval("[data-instruction-send]", (node) => ({ text: node.textContent, type: node.getAttribute("type") }));
     check(sendButton.text === "指示を送る" && sendButton.type === "button", `instruction button ${JSON.stringify(sendButton)}`);
     await page.click("[data-instruction-send]");
@@ -1093,6 +1095,8 @@ async function instructionPostChecks(browser, base) {
   await page.$eval("[data-instruction]", (node) => { node.value = "あ".repeat(401); });
   await page.click("[data-instruction-send]");
   check(gas.hits.length === 0, "long instruction is not posted");
+  check((await page.$eval("[data-instruction]", (node) => node.value)).length === 401, "over-limit text is not cut");
+  check((await page.$eval("[data-instruction-status]", (node) => node.textContent)).includes("400字を超える指示は送れません。"), "limit is shown");
   await page.$eval("[data-instruction]", (node) => { node.value = "段ボールを確認"; });
   await page.evaluate(() => {
     const button = document.querySelector("[data-instruction-send]");

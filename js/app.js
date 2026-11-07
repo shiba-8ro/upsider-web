@@ -180,7 +180,7 @@ function renderInstruction() {
     el("label", { for: "instruction-text" }, "指示"),
     area,
     send,
-    el("p", { class: "instruction-note", "data-instruction-status": "" }, "送信は「指示を送る」を押したときだけです。入力や Enter では送りません。受付は作業の完了ではありません。"),
+    el("p", { class: "instruction-note", "data-instruction-status": "" }, `送信は「指示を送る」を押したときだけです。入力や Enter では送りません。暫定で${INSTRUCTION_TEXT_MAX}字までです。超えた文は切らず、送れません。受付は作業の完了ではありません。`),
   );
   return box;
 }
