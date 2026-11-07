@@ -108,7 +108,7 @@ function startServer() {
         }
         if (gas.behavior === "reject") {
           res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
-          res.end(JSON.stringify({ ok: false }));
+          res.end(JSON.stringify(gas.rejectError ? { ok: false, error: gas.rejectError } : { ok: false }));
           return;
         }
         if (gas.behavior === "mismatch") {
@@ -1116,9 +1116,17 @@ async function instructionPostChecks(browser, base) {
   await new Promise((resolve) => setTimeout(resolve, 200));
   check(gas.hits.length === 1, "accepted instruction is not posted again");
   await page.$eval("[data-instruction]", (node) => { node.value = "段ボールを再確認"; });
-  gas.behavior = "500";
+  gas.behavior = "reject";
+  gas.rejectError = "項目が不正です";
   await page.click("[data-instruction-send]");
-  await page.waitForFunction(() => document.querySelector("[data-instruction-status]").textContent.includes("エラー"));
+  await page.waitForFunction(() => document.querySelector("[data-instruction-status]").textContent.includes("受付は拒否されました"));
+  const rejected = await page.$eval("[data-instruction-status]", (node) => node.textContent);
+  check(rejected.includes("項目が不正です") && rejected.includes("Slackへは送られていません") && !/完了しました|実行しました/.test(rejected), rejected);
+  gas.rejectError = "";
+  gas.behavior = "500";
+  await page.$eval("[data-instruction]", (node) => { node.value = "成否不明の確認"; });
+  await page.click("[data-instruction-send]");
+  await page.waitForFunction(() => document.querySelector("[data-instruction-status]").textContent.includes("成否を確認できませんでした"));
   const failedId = JSON.parse(new URLSearchParams(gas.hits.at(-1).body).get("payload")).requestId;
   gas.behavior = "ok";
   await page.click("[data-instruction-send]");

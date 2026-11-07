@@ -230,9 +230,14 @@ async function sendInstruction() {
     setInstructionStatus(result && result.duplicate
       ? "受付済み。同じ依頼は再送していません。作業は完了していません。"
       : "受付済み。作業は完了していません。本文は確認後に実行します。");
-  } catch {
+  } catch (error) {
     instructionState.accepted = false;
-    setInstructionStatus("エラー。受付を確認できませんでした。同じ依頼IDで再試行できます。");
+    if (error && error.message === "rejected") {
+      const reason = error.serverError ? `理由: ${error.serverError}` : "理由は返されませんでした。";
+      setInstructionStatus(`受付は拒否されました。Slackへは送られていません。${reason}`);
+      return;
+    }
+    setInstructionStatus("受付の成否を確認できませんでした。同じ依頼IDは保持しています。自動では再送しません。");
   } finally {
     instructionState.inflight = false;
     if (button) button.disabled = false;

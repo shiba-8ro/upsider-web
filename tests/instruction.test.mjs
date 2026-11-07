@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
-import { INSTRUCTION_TEXT_MAX, buildInstructionPayload } from "../js/logic.js";
+import { INSTRUCTION_TEXT_MAX, buildInstructionPayload, postGasPayload } from "../js/logic.js";
 
 const failures = [];
 let passed = 0;
@@ -149,6 +149,25 @@ check(limited.ok === false && String(limited.error).includes("多すぎます"),
 const memoLimited = post(memo("66666666-7777-4888-8999-aaaaaaaaaaaa"));
 check(memoLimited.ok === false, "instruction and memo share the hourly cap");
 
+const reported = {
+  kind: "instruction",
+  requestId: id,
+  text: "今後は、証憑なしに アースダンボール ￥23,960を含めることを禁止する。",
+  savedAt,
+};
+context.upValidateInstruction_(reported);
+check(reported.text.includes("アースダンボール") && reported.text.length <= 400, "reported sentence is accepted by the validator");
+let rejectedError = "";
+try {
+  await postGasPayload("http://127.0.0.1/mock-gas", payload, async () => ({
+    ok: true,
+    status: 200,
+    text: async () => JSON.stringify({ ok: false, error: "項目が不正です" }),
+  }));
+} catch (error) {
+  rejectedError = `${error.message}:${error.serverError}`;
+}
+check(rejectedError === "rejected:項目が不正です", rejectedError);
 const result = context.doPost({ parameter: { op: "result", payload: "{}" } });
 check(result.op === "post" && calls.resultPost === 1 && calls.resultGet === 0, "result op stays on the result handler");
 check(sheets.length === 0 && calls.sendInstruction === 0, "no sheet access across the mock");
