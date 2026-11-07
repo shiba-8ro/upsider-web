@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-07 22:06:03 JST",
+  "asOf": "2026-11-07 22:20:00 JST",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最新データ取得・確認: 2026-11-07 22:06:03 JST。今回、正式領収証2件・22,386円をDriveへ保存。Slack未添付。メモあり18件・返金不要1件。ミスミはサイト403で未取得。",
+  "lead": "最新データ取得・確認: 2026-11-07 22:20:00 JST。正式領収書は今回巡回分で計3件・39,000円をDrive保存確認。Slack未添付。メモあり18件・返金不要1件。ミスミ正式領収書を確認済、納入は11/9予定。",
   "callouts": [
     {
       "tone": "info",
@@ -26,8 +26,13 @@
     },
     {
       "tone": "info",
-      "lead": "証憑ゲット巡回結果",
-      "body": "最新データ取得・確認: 2026-11-07 22:06:03 JST。今回、正式領収証2件・22,386円をDriveへ保存。Slack未添付。メモあり18件・返金不要1件。ミスミはサイト403で未取得。 モノタロウ17,553円・4,833円の正式領収証はカード額と一致。UPSIDER登録完了にはしていません。"
+      "lead": "過去の取得経路の記録（解消済）",
+      "body": "履歴：最新データ取得・確認: 2026-11-07 22:06:03 JST。今回、正式領収証2件・22,386円をDriveへ保存。Slack未添付。メモあり18件・返金不要1件。ミスミはサイト403で未取得。 モノタロウ17,553円・4,833円の正式領収証はカード額と一致。UPSIDER登録完了にはしていません。 その後、ミスミ正式領収書の取得成功を確認。現在はDrive保存済・Slack未添付。"
+    },
+    {
+      "tone": "info",
+      "lead": "ミスミ領収書取得成功",
+      "body": "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。"
     }
   ],
   "detailHeading": "メモ未確認（詳細）",
@@ -245,10 +250,10 @@
       "merchant": "ミスミ",
       "amount": "¥16,614",
       "amountYen": 16614,
-      "content": "トヨタ版YUBI Glove用ねじ類（注文確認書のみ・正式証憑なし）",
-      "status": "証憑なし",
+      "content": "YUBI Glove用ねじ・ブシュ類（正式領収書保存済、Slack未添付）",
+      "status": "証憑保存済・Slack未添付",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793794487.621929",
-      "drive": "なし",
+      "drive": "https://drive.google.com/file/d/1HfunjbtjE_pIRvdzKBPvUjmkMzO55b3-/view?usp=drivesdk",
       "memoKey": null,
       "detailSection": false,
       "upSiderTransactionId": "4224295f-093e-4eb8-9393-bce132c2d2f8",
@@ -263,8 +268,19 @@
       ],
       "ledgerId": "TX-20261104-MSM-001",
       "orderNumber": "AB256FB3F5",
-      "evidenceAcquisitionStatus": "未取得（サイトリソース403・親browser確認）",
-      "evidenceAcquisitionReason": "ミスミ注文履歴のサイトリソース403で今回未取得。"
+      "evidenceAcquisitionStatus": "正式領収書の取得・保存確認済",
+      "evidenceAcquisitionReason": "トップ→担当名メニュー→注文履歴→注文書・領収書からDL成功。PDF実読と既存Driveの同内容を確認。",
+      "evidenceStorageStatus": "取得・Drive保存済",
+      "slackAttachmentStatus": "未添付",
+      "accountingPdfAcquiredAt": "2026-11-07 22:11:16 JST",
+      "accountingPdfVerifiedAt": "2026-11-07 22:19:29 JST",
+      "evidenceType": "領収書・ご注文明細書",
+      "receiptNumber": "AB256FB3F5",
+      "accountingAmountYen": 16614,
+      "accountingTaxYen": 1510,
+      "deliveryStatus": "配送中",
+      "expectedDeliveryDate": "2026-11-09",
+      "evidenceCheck": "クレジットカード支払、最終出荷日後の税込合計受領文言あり。注文番号・税込額・税額・登録番号を実読確認。納入済とはしない。"
     },
     {
       "id": "tx-20261105-1241-akizuki-2600",
@@ -556,17 +572,17 @@
     "lastIncrementalThreadsScanned": 1
   },
   "evidencePatrol": {
-    "checkedAt": "2026-11-07 22:06:03 JST",
-    "newAcquired": 2,
+    "checkedAt": "2026-11-07 22:20:00 JST",
+    "newAcquired": 3,
     "guiPending": 0,
     "scope": "Drive _inbox・本日更新PDF・仕事用Gmail・台帳・7160円取引Slack1回",
     "slackAttachmentsSent": 0,
-    "dataCheckedAt": "2026-11-07 22:06:03 JST",
-    "guiBlocked": 1,
-    "lastSuccessfulAcquisitionAt": "2026-11-07 22:05:13 JST",
-    "lastSuccessfulAcquisitionMeaning": "会計証憑PDFをDrive月次フォルダへ保存した実測時刻（Drive modifiedTime確認）"
+    "dataCheckedAt": "2026-11-07 22:20:00 JST",
+    "guiBlocked": 0,
+    "lastSuccessfulAcquisitionAt": "2026-11-07 22:11:16 JST",
+    "lastSuccessfulAcquisitionMeaning": "最新会計証憑PDFの元Drive保存日時（createdTime実測）。月次への命名整理・実読確認はaccountingPdfVerifiedAtで別管理。"
   },
-  "dataAcquiredAt": "2026-11-07 22:06:03 JST",
+  "dataAcquiredAt": "2026-11-07 22:20:00 JST",
   "dataAcquiredAtLabel": "最新データ取得・確認日時（Slack・Gmail・Drive・台帳／会計証憑PDFの取得成功時刻ではない）",
   "previousDataAcquiredAt": "2026-11-07 13:59 Asia/Tokyo"
 }
