@@ -1,5 +1,7 @@
 # 指示の転送
 
+この手順は停止しています。公開モニターは受付URLへ送りません。本番へ適用する停止版は `gas/live-getter-reception-stopped.gs` で、まだデプロイしていません。以下は停止前の記録です。
+
 公開ページの「指示を送る」は、メモ登録とは別の payload を既存の受付 URL へ POST します。入力や Enter では送りません。受付に成功しても作業完了ではありません。本文は受信後、このチャットで確認してから実行します。
 
 `gas/Code.gs` は雛形です。本番に入れる全文は `gas/live-getter-with-instruction.gs` で、現行 `getter.gs` に `kind=instruction` だけを足したものです。`result.gs` は変えていません。
