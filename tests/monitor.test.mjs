@@ -468,10 +468,8 @@ async function browserChecks(base) {
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
       "最終更新: 2026-11-07 13:59 Asia/Tokyo。メモあり17件・未確認1件・返金不要1件。証憑状態変更なし。",
       "UPSIDER完了通知のみでメモあり。5項目本文不要。",
-      "トークン使用量（この更新）",
-      "取得源: Cursorの正規利用量レポートは週次の割合のみで、1更新あたりの入力・出力・合計・cacheのトークン数は返さない。実行結果の照会も成否とメッセージだけで、トークン数はない。秘密のAPIや請求画面からは取っていない。",
-      "範囲: この台帳更新1回に記録された実測。チェックとコード変更を分けた数は持たない。週次使用率、他の更新、推定差分はトークンに換算していない。",
-      "過去の更新は実測値が残っていないため載せていない。0埋めはしていない。",
+      "最終取得日時",
+      "2026-11-07 13:59（日本時間）",
       "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。メモ作成は停止中です。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
@@ -533,9 +531,14 @@ async function browserChecks(base) {
     check(aggHead.join(",") === "区分,件数,金額", `agg head ${aggHead.join(",")}`);
     const txHead = await page.$$eval(".tx-table th", (nodes) => nodes.map((node) => node.textContent));
     check(txHead.join(",") === "日時,利用先,金額,内容,ステータス,メモ,Slack,Drive証憑", `tx head ${txHead.join(",")}`);
-    const tokenFields = await page.$$eval("[data-token-field]", (nodes) => nodes.map((node) => [node.dataset.tokenField, node.textContent]));
-    check(tokenFields.map((item) => item[0]).join(",") === "input,output,total,cacheRead,cacheWrite", `token fields ${tokenFields}`);
-    check(tokenFields.every((item) => item[1] === "取得不可"), `token values ${tokenFields}`);
+    const acquired = await page.$eval("[data-acquired-value]", (node) => ({
+      text: node.textContent,
+      datetime: node.getAttribute("datetime"),
+    }));
+    check(acquired.text === "2026-11-07 13:59（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-07 13:59 Asia/Tokyo", `acquired source ${acquired.datetime}`);
+    check(!bodyText.includes("トークン使用量"), "token heading removed");
+    check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
     const leaked = await page.evaluate(() => document.body.innerText.includes("[object HTML"));
     check(!leaked, "object string leaked into the page");
     const agg = await page.$$eval(".agg-table tbody tr", (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent)));

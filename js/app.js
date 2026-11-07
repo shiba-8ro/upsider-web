@@ -28,8 +28,8 @@ import {
   statusTone,
   sumOf,
 } from "./logic.js";
+import { ledgerAcquiredAt } from "./acquired-at.js";
 import { memoTone } from "./memo-presence.js";
-import { TOKEN_FIELDS, currentTokenUpdate, tokenCountText } from "./token-usage.js";
 
 const UNCONFIGURED_NOTE =
   "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼としてまとめ、このブラウザの中だけに保持します。実行にはバックエンド接続が必要です。受付URLが未設定のため、ボタンを押しても実行は行われず、Slackへの投稿もエージェントの起動もありません。依頼に秘密情報やトークンは含まれません。";
@@ -89,8 +89,9 @@ function render() {
     el("h1", {}, ledger.title),
     el("p", { class: "summary" }, ledger.summary),
     el("p", { class: "lead" }, ledger.lead),
+    renderAcquiredAt(ledger),
   );
-  app.append(header, renderTokenUsage(ledger), renderMetrics(), renderAggregation());
+  app.append(header, renderMetrics(), renderAggregation());
 
   for (const callout of ledger.callouts) {
     const box = el("aside", { class: `callout ${callout.tone}` });
@@ -124,22 +125,20 @@ function render() {
   app.append(caution);
 }
 
-function renderTokenUsage(ledger) {
-  const section = el("section", { class: "token-usage", "data-token-usage": "" });
-  const usage = ledger.tokenUsage || {};
-  const update = currentTokenUpdate(usage);
-  section.append(el("h2", {}, "トークン使用量（この更新）"));
-  const list = el("dl", { class: "token-counts" });
-  for (const [key, label] of TOKEN_FIELDS) {
-    list.append(el("dt", {}, label), el("dd", { "data-token-field": key }, tokenCountText(update && update[key])));
-  }
-  section.append(list);
-  if (update) {
-    section.append(el("p", { class: "token-source" }, `取得源: ${update.source}`));
-    section.append(el("p", { class: "token-scope" }, `範囲: ${update.scope}`));
-  }
-  if (usage.history) section.append(el("p", {}, usage.history));
-  return section;
+function renderAcquiredAt(ledger) {
+  const acquired = ledgerAcquiredAt(ledger);
+  const recorded = acquired.source === "asOf"
+    ? ledger.asOf
+    : acquired.source === "memoCheck.asOf"
+      ? ledger.memoCheck.asOf
+      : undefined;
+  const line = el("p", { class: "acquired-at", "data-acquired-at": "" });
+  line.append(
+    el("span", {}, "最終取得日時"),
+    document.createTextNode(" "),
+    el("time", { "data-acquired-value": "", datetime: recorded }, acquired.text),
+  );
+  return line;
 }
 
 function renderMetrics() {

@@ -178,18 +178,8 @@ table {
   .tx-table td:nth-child(8) { width: 14rem; }
 }
 
-.token-usage {
-  margin: 0 0 18px;
-  padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-.token-usage h2 { margin: 0 0 8px; font-size: 1.05rem; }
-.token-counts { display: grid; grid-template-columns: 7.5em 1fr; gap: 4px 12px; margin: 0; }
-.token-counts dt { color: var(--muted); }
-.token-counts dd { margin: 0; }
-.token-usage p { margin: 8px 0 0; color: var(--muted); }
+.acquired-at { margin: 8px 0 0; color: var(--muted); }
+.acquired-at time { color: var(--ink); font-variant-numeric: tabular-nums; }
 .memo-note { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
 
 .tx-table th, .tx-table td, .agg-table th, .agg-table td {
