@@ -315,6 +315,8 @@ async function assertLedger() {
   check(!fs.existsSync(path.join(root, ".github")), "no GitHub Actions");
   const gasSource = fs.readFileSync(path.join(root, "gas/Code.gs"), "utf8");
   check(gasSource.includes("【UPSIDERメモ登録依頼】"), "gas title");
+  check(gasSource.includes("【モニターからの指示】"), "instruction title");
+  check(!gasSource.includes("sendInstruction("), "template does not call the sheet writer");
   check(gasSource.includes("postSlack_("), "gas uses existing postSlack_");
   check(!/SpreadsheetApp|getActiveSpreadsheet|UrlFetchApp|hooks\.slack\.com/.test(gasSource), "gas does not touch sheets or embed a webhook");
   const ignore = fs.readFileSync(path.join(root, ".gitignore"), "utf8");
@@ -583,6 +585,39 @@ async function browserChecks(base) {
     check(pdfSaved.includes("2026-11-07 22:11:16（日本時間）") && !pdfSaved.includes("22:20:00"), `pdf time ${pdfSaved}`);
     check(!bodyText.includes("トークン使用量"), "token heading removed");
     check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
+    const instruction = await page.$eval("[data-instruction]", (node) => ({
+      rows: node.getAttribute("rows"),
+      labelled: document.querySelector("label[for='instruction-text']")?.textContent || "",
+      overflow: getComputedStyle(node).overflowY,
+      height: node.clientHeight,
+    }));
+    check(instruction.rows === "4" && instruction.labelled === "指示", `instruction box ${JSON.stringify(instruction)}`);
+    check(instruction.overflow === "auto" || instruction.overflow === "scroll", `instruction overflow ${instruction.overflow}`);
+    const tall = await page.$eval("[data-instruction]", (node) => {
+      const before = node.clientHeight;
+      node.value = Array.from({ length: 20 }, (_, index) => `指示${index}`).join("\n");
+      return { before, client: node.clientHeight, scroll: node.scrollHeight };
+    });
+    check(tall.client === tall.before && tall.scroll > tall.client, `instruction stays four lines ${JSON.stringify(tall)}`);
+    const beforeRequests = network.length;
+    await page.focus("[data-instruction]");
+    await page.keyboard.type("あいうえお");
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("かきくけこ");
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const instructionValue = await page.$eval("[data-instruction]", (node) => node.value);
+    check(instructionValue.includes("あいうえお\nかきくけこ"), `instruction input ${JSON.stringify(instructionValue)}`);
+    const sent = network.slice(beforeRequests).filter((url) => /mock-gas|script\.google|slack\.com\/api|hooks\.slack/.test(url));
+    check(sent.length === 0, `instruction typed without send ${sent.join(",")}`);
+    const limitNote = await page.$eval("[data-instruction-status]", (node) => node.textContent);
+    check(limitNote.includes("暫定で400字まで") && limitNote.includes("切らず"), limitNote);
+    const sendButton = await page.$eval("[data-instruction-send]", (node) => ({ text: node.textContent, type: node.getAttribute("type") }));
+    check(sendButton.text === "指示を送る" && sendButton.type === "button", `instruction button ${JSON.stringify(sendButton)}`);
+    await page.click("[data-instruction-send]");
+    const unconfigured = await page.$eval("[data-instruction-status]", (node) => node.textContent);
+    check(unconfigured.includes("受付URLが未設定のため、送信していません。"), unconfigured);
+    const stillUnsent = network.slice(beforeRequests).filter((url) => /mock-gas|script\.google|slack\.com\/api|hooks\.slack/.test(url));
+    check(stillUnsent.length === 0, `unconfigured send stayed local ${stillUnsent.join(",")}`);
     const leaked = await page.evaluate(() => document.body.innerText.includes("[object HTML"));
     check(!leaked, "object string leaked into the page");
     const agg = await page.$$eval(".agg-table tbody tr", (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent)));
@@ -809,6 +844,7 @@ async function browserChecks(base) {
     await page.setViewport({ width: 390, height: 844 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: "/tmp/upsider-mobile-top.png" });
+    await instructionPostChecks(browser, page.url());
     await connectionChecks(browser, page.url());
     await resultFlowChecks(browser, page.url());
   } finally {
@@ -1036,6 +1072,63 @@ async function resultFlowChecks(browser, base) {
   await sleep(500);
   check(gas.gets.length + gas.hits.length === traffic, "no GAS traffic when unconfigured");
   await page.close();
+}
+
+async function instructionPostChecks(browser, base) {
+  const previous = gas.configUrl;
+  gas.configUrl = new URL("/mock-gas", base).toString();
+  gas.behavior = "ok";
+  gas.hits = [];
+  const page = await browser.newPage();
+  page.on("request", (request) => {
+    const url = request.url();
+    if (url.includes("script.google.com") || url.includes("AKfycbwJp3mFMSCeX5uxXEuqxWAexx8VRsQMTcA5GnTbriNh-vCayiy1b2slo_cZ5YFlgDHdYQ")) {
+      failures.push(`live reception url was contacted: ${request.method()} ${url}`);
+    }
+  });
+  await page.goto(base, { waitUntil: "networkidle0" });
+  await page.waitForSelector("[data-instruction-send]");
+  gas.hits = [];
+  await page.click("[data-instruction-send]");
+  check(gas.hits.length === 0, "blank instruction is not posted");
+  check((await page.$eval("[data-instruction-status]", (node) => node.textContent)).includes("空の指示は送れません。"), "blank instruction");
+  await page.$eval("[data-instruction]", (node) => { node.value = "あ".repeat(401); });
+  await page.click("[data-instruction-send]");
+  check(gas.hits.length === 0, "long instruction is not posted");
+  check((await page.$eval("[data-instruction]", (node) => node.value)).length === 401, "over-limit text is not cut");
+  check((await page.$eval("[data-instruction-status]", (node) => node.textContent)).includes("400字を超える指示は送れません。"), "limit is shown");
+  await page.$eval("[data-instruction]", (node) => { node.value = "段ボールを確認"; });
+  await page.evaluate(() => {
+    const button = document.querySelector("[data-instruction-send]");
+    button.click();
+    button.click();
+  });
+  await page.waitForFunction(() => document.querySelector("[data-instruction-status]").textContent.includes("受付済み"));
+  check(gas.hits.length === 1, `instruction posts ${gas.hits.length}`);
+  const body = JSON.parse(new URLSearchParams(gas.hits[0].body).get("payload"));
+  check(Object.keys(body).sort().join(",") === "kind,requestId,savedAt,text", `instruction keys ${Object.keys(body)}`);
+  check(body.kind === "instruction" && body.text === "段ボールを確認", `instruction body ${JSON.stringify(body)}`);
+  check(!("memoLines" in body) && !("transactionId" in body) && !("slackThread" in body), "instruction is not a memo payload");
+  const status = await page.$eval("[data-instruction-status]", (node) => node.textContent);
+  check(status.includes("受付済み") && status.includes("作業は完了していません") && status.includes("確認後に実行"), status);
+  check(!/実行しました|登録しました|完了しました/.test(status), `false completion ${status}`);
+  await page.click("[data-instruction-send]");
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  check(gas.hits.length === 1, "accepted instruction is not posted again");
+  await page.$eval("[data-instruction]", (node) => { node.value = "段ボールを再確認"; });
+  gas.behavior = "500";
+  await page.click("[data-instruction-send]");
+  await page.waitForFunction(() => document.querySelector("[data-instruction-status]").textContent.includes("エラー"));
+  const failedId = JSON.parse(new URLSearchParams(gas.hits.at(-1).body).get("payload")).requestId;
+  gas.behavior = "ok";
+  await page.click("[data-instruction-send]");
+  await page.waitForFunction(() => document.querySelector("[data-instruction-status]").textContent.includes("受付済み"));
+  const retried = JSON.parse(new URLSearchParams(gas.hits.at(-1).body).get("payload")).requestId;
+  check(failedId === retried, `instruction retry id ${failedId} ${retried}`);
+  await page.close();
+  gas.configUrl = previous;
+  gas.behavior = "ok";
+  gas.hits = [];
 }
 
 async function connectionChecks(browser, base) {
