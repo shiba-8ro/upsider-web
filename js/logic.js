@@ -280,9 +280,17 @@ export async function postGasPayload(gasUrl, payload, fetchImpl = globalThis.fet
   } catch {
     data = null;
   }
-  if (!response.ok || !data || data.ok !== true) throw new Error("abnormal-response");
+  if (!response.ok || !data || data.ok !== true) {
+    const error = new Error(data && data.ok === false ? "rejected" : "abnormal-response");
+    error.serverError = data && typeof data.error === "string" ? data.error : "";
+    error.httpStatus = response.status;
+    throw error;
+  }
   if (typeof data.requestId === "string" && data.requestId !== payload.requestId) {
-    throw new Error("request-id-mismatch");
+    const error = new Error("request-id-mismatch");
+    error.serverError = "";
+    error.httpStatus = response.status;
+    throw error;
   }
   return data;
 }
