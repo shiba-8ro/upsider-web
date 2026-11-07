@@ -1,5 +1,5 @@
-// 公開サイトが読む受付設定です。記載するのは秘密ではない受付URLだけです。
-// URLを空にした見本は config.example.js です。Webhook やトークンは書きません。
+// モニターは受付URLを読みません。連携機能は使いません。
+// この値は空のままにします。Webhook やトークンは書きません。
 window.UPSIDER_CONFIG = {
-  gasUrl: "https://script.google.com/macros/s/AKfycbwJp3mFMSCeX5uxXEuqxWAexx8VRsQMTcA5GnTbriNh-vCayiy1b2slo_cZ5YFlgDHdYQ/exec",
+  gasUrl: "",
 };

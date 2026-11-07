@@ -11,7 +11,7 @@ GitHub Pages は `main` ブランチのルートを公開します。`main` へ�
 - 全19取引の一覧、ステータスフィルタ、件数と金額の集計
 - 要対応の詳細、Slackスレッド（新しいタブ）、Drive証憑、参照用の注文画像
 - メモ5欄と「クリップボードにコピー」（成功表示は2秒で消えます）
-- 「AIがメモを追加する」は、取引ID・Slackスレッド・編集中の5行メモ（用途、セグメント1、セグメント2、分類、内容）を1件の実行依頼にします。`config.js` の受付URLが空のときは送信せず、未実行のままブラウザ内に保持します。URLがあるときは `application/x-www-form-urlencoded` の `payload` に JSON を入れて受付APIへ送り、カードに送信中・処理中・確認停止・成功・変更なし・失敗・エラーを出します。受付後の実行そのものは証憑ゲッターロボ側です。このページは依頼IDだけで実行結果を照会し、保持中の実行依頼欄に成否・日本時間・詳細を表示します
+- メモ5欄はブラウザの中だけで編集できます。受付APIへは送りません
 
 正本データは `data/ledger.json` です。`assets/17600.jpg` と `assets/2659.jpg` は抽出元のJPEGが破損しているため、再生成せず破損のまま表示します。
 
@@ -27,25 +27,11 @@ GitHub Pages は `main` ブランチのルートを公開します。`main` へ�
 
 「証憑保存済・Slack未添付」は、正式領収証をDriveへ保存したがSlackにはまだ添付していない状態です。登録完了にはしません。
 
-上部の「指示」は4行の入力欄です。送信は「指示を送る」を押したときだけで、Enter や入力の途中では送りません。送る JSON は `kind` が `instruction` の別依頼で、メモ5行には混ぜません。本文フィールドは `text` です。暫定で400字までで、超えた文は切らずに送れない旨を出します。受付に成功しても作業完了ではありません。詳しくは `docs/instruction-forwarding.md` です。
+上部の入力欄は4行の手元のメモです。送信ボタンはなく、入力してもどこへも送りません。
 
-## 受付API
+Slackの参照、メモ追加、証憑添付はブラウザだけで行います。このモニターは API、MCP、Webhook などの連携機能を使いません。`config.js` の受付URLは空で、ページは読みません。
 
-公開サイトが読むのは `config.js` です。ここには秘密ではない受付URLだけを書いてリポジトリに含めます。GitHub Pages は gitignore でファイルを落とさないので、公開するURLは `config.js` にコミットします。
-
-`config.example.js` は形だけの見本です。`gasUrl` は空で、サイトはこちらを読みません。空のURLでは送信せず、未実行のままにします。
-
-Webhook やトークンはどちらにも書きません。`SLACK_WEBHOOK_URL` は GAS のスクリプトプロパティだけに置きます。
-
-`gas/Code.gs` は既存の `postSlack_` があるプロジェクトへ足す雛形です。進捗シートは読み書きしません。受付は `e.parameter.payload` の JSON です。項目は `requestId`、`transactionId`、`slackThread`、5行の `memoLines`、`savedAt` です。金額と利用先は送りません。ブラウザは `application/x-www-form-urlencoded` の `payload` にその JSON を入れ、`text/plain` では送りません。
-
-Slack スレッドは `https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-` に10桁、小数、6桁が続くものだけです。取引一覧のURLと一致しないものは送りません。受付の再試行は同じ `requestId` を使います。受付済み・処理中・確認停止・成功・変更なしの同じメモは再送しません。失敗のときだけ新しい `requestId` で送り直します。雛形の重複排除は PropertiesService に requestId を200件まで保持し、LockService と1時間30件の総量制限を使います。
-
-受付後、ページは同じ受付URLへ `GET ?op=result&requestId=<uuid>` を送ります。パラメータはこの2つだけです。秘密鍵やトークンは付けません。15秒間隔で20回、その後は60秒間隔、受付から30分で自動確認を止めます。「結果を再確認」はそのとき1回だけ照会します。タブを隠している間は問い合わせません。終了した依頼は localStorage から復帰し、結果があるものは自動では再POSTしません。
-
-表示に使うのは、`requestId` が一致するサーバー応答だけです。受付直後の表示は「受付済み」、照会を始めたあとは「処理中」です。`state:"done"` の `result.status` が `success` / `noop` / `failed` のときだけ、成功・変更なし・失敗と日本時間、`message` を出します。`message` は textContent で出します。`pending` と不正な応答では成否を出しません。`unknown` のときは記録がまだない注記だけです。成功などの文言をページ側で固定しません。色は成功と変更なしが薄緑、失敗が赤、処理中と確認停止が青系です。
-
-デプロイ済みの同じ受付URLは、この照会を返します。未登録の UUID は `state:"unknown"`、結果がまだ無い受付は `state:"pending"`、終わった依頼は `state:"done"` です。`gas/Code.gs` はリポジトリ上の受付雛形のままで、実デプロイの `up_rid_` 管理とは別に置いてあります。ページが期待する応答と、テストの範囲は `docs/result-retrieval.md` にあります。
+`gas/live-getter-reception-stopped.gs` は、既存の `op=result`・メモ・指示の受付を拒否する本番向けの停止版です。シートも秘密値も読み書きしません。まだ本番には適用していません。
 
 GitHub Actions などの自動デプロイは使いません。`main` への反映は手作業です。GAS のデプロイもこのリポジトリからは行いません。
 
@@ -64,4 +50,4 @@ npm install
 npm test
 ```
 
-`npm test` は `tests/memo-presence.test.mjs`、`tests/acquired-at.test.mjs`、`tests/result.test.mjs`、`tests/monitor.test.mjs` です。最初はメモの有無（UPSIDER アプリ自身の完了通知だけを数え、5項目本文・人間の引用・ボタン・準備完了・証憑では決めないこと）を見ます。次は最終取得日時を日本時間と表示し、タイムゾーンが無い値を未取得にすること、トークン欄が無いことを見ます。その次は照会URL、応答の検証、依頼IDの一致、15秒から60秒、30分停止を見ます。最後は台帳と、ローカルの模擬受付での結果表示・再投稿防止・失敗時の新しい依頼ID・localStorage からの復帰・確認停止を見ます。模擬の `testPollMs` は `127.0.0.1` と `localhost` のときだけ使います。公開の `config.js` には書きません。テストは本番の受付URLへ接続しません。
+`npm test` は表示、最終取得日時、停止した受付、台帳を見ます。公開ページが受付URLへ POST したり結果を GET したりしないことも見ます。テストは本番の受付URLへ接続しません。

@@ -1,62 +1,29 @@
 import {
   COPY_SUCCESS_MS,
   FILTERS,
-  POLL,
-  STORAGE_KEY,
-  STORAGE_VERSION,
-  TERMINAL_REQUEST_STATUSES,
-  WAITING_REQUEST_STATUSES,
-  INSTRUCTION_TEXT_MAX,
   actionSummary,
   attachmentResultView,
-  buildGasPayload,
-  buildInstructionPayload,
   countOf,
   shareRestrictionRemark,
-  createRequestId,
-  fetchResult,
   filterTransactions,
   formatMemoText,
   formatYen,
   initialMemo,
-  isAllowedSlackThread,
-  isRequestId,
-  loadStoredRequests,
-  nextPollDelay,
-  normalizeGasUrl,
-  postGasPayload,
-  requestStateText,
-  requestStatusForResult,
-  resolveRequestId,
-  resultCheckedText,
-  shouldResumePolling,
   statusTone,
   sumOf,
 } from "./logic.js";
 import { ledgerAcquiredAt, normalizeAcquiredAt } from "./acquired-at.js";
 import { memoTone } from "./memo-presence.js";
 
-const UNCONFIGURED_NOTE =
-  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼としてまとめ、このブラウザの中だけに保持します。実行にはバックエンド接続が必要です。受付URLが未設定のため、ボタンを押しても実行は行われず、Slackへの投稿もエージェントの起動もありません。依頼に秘密情報やトークンは含まれません。";
-
-const CONFIGURED_NOTE =
-  "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼として受付APIへ送ります。受付後の処理は証憑ゲッターロボ側で、このページは依頼IDだけを使って実行結果（成功・変更なし・失敗）を確認し、この欄に表示します。依頼IDを付けて二重送信を避けます。秘密情報やトークンは送りません。";
+const LOCAL_ONLY_NOTE = "Slackの参照・メモ追加・証憑添付はブラウザのみ。API・MCP・Webhook等の連携機能は使用しません。";
 
 const state = {
   ledger: null,
-  config: { gasUrl: "", pollFastMs: POLL.fastIntervalMs },
   filter: "すべて",
   memos: {},
-  requests: {},
-  inflight: new Set(),
-  polls: new Map(),
-  pollInflight: new Set(),
-  deferredPolls: new Set(),
-  unknownIds: new Set(),
   copiedId: null,
   copySeq: 0,
   copyTimer: 0,
-  storageError: false,
 };
 
 const app = document.querySelector("#app");
@@ -68,7 +35,6 @@ init().catch((error) => {
 });
 
 async function init() {
-  state.config = await loadGasConfig();
   const response = await fetch(new URL("../data/ledger.json", import.meta.url));
   if (!response.ok) throw new Error(`ledger ${response.status}`);
   state.ledger = await response.json();
@@ -76,12 +42,9 @@ async function init() {
     const tx = state.ledger.transactions.find((row) => row.id === detail.transactionId);
     state.memos[detail.transactionId] = initialMemo(tx.content);
   }
-  state.requests = loadRequests();
   render();
   app.addEventListener("click", onClick);
   app.addEventListener("input", onInput);
-  document.addEventListener("visibilitychange", onVisibilityChange);
-  resumePolling();
   document.body.dataset.ready = "true";
 }
 
@@ -95,6 +58,7 @@ function render() {
     el("p", { class: "summary" }, ledger.summary),
     el("p", { class: "lead" }, ledger.lead),
     renderAcquiredAt(ledger),
+    renderPolicy(),
     renderInstruction(),
   );
   app.append(header, renderAttachmentResult(ledger), renderActionCount(ledger), renderMetrics(), renderAggregation());
@@ -163,7 +127,15 @@ function renderAcquiredAt(ledger) {
   return box;
 }
 
-const instructionState = { inflight: false, requestId: null, text: "", accepted: false };
+function renderPolicy() {
+  const box = el("aside", { class: "callout info", "data-local-only": "" });
+  box.append(
+    el("strong", {}, "連携機能は使いません"),
+    el("p", {}, LOCAL_ONLY_NOTE),
+    el("p", {}, "秘密情報やトークンは送りません。"),
+  );
+  return box;
+}
 
 function renderInstruction() {
   const box = el("form", { class: "instruction-box", "data-instruction-form": "" });
@@ -178,73 +150,12 @@ function renderInstruction() {
     enterkeyhint: "enter",
     inputmode: "text",
   });
-  const send = el("button", { type: "button", class: "btn primary", "data-instruction-send": "" }, "指示を送る");
   box.append(
-    el("label", { for: "instruction-text" }, "指示"),
+    el("label", { for: "instruction-text" }, "手元のメモ"),
     area,
-    send,
-    el("p", { class: "instruction-note", "data-instruction-status": "" }, `送信は「指示を送る」を押したときだけです。入力や Enter では送りません。暫定で${INSTRUCTION_TEXT_MAX}字までです。超えた文は切らず、送れません。受付は作業の完了ではありません。`),
+    el("p", { class: "instruction-note", "data-instruction-status": "" }, "この欄はブラウザの中だけです。送信しません。"),
   );
   return box;
-}
-
-function setInstructionStatus(text) {
-  const node = document.querySelector("[data-instruction-status]");
-  if (node) node.textContent = text;
-}
-
-async function sendInstruction() {
-  if (instructionState.inflight) return;
-  const area = document.querySelector("[data-instruction]");
-  const button = document.querySelector("[data-instruction-send]");
-  const text = area ? area.value.trim() : "";
-  if (!text) {
-    setInstructionStatus("空の指示は送れません。");
-    return;
-  }
-  if (text.length > INSTRUCTION_TEXT_MAX) {
-    setInstructionStatus(`${INSTRUCTION_TEXT_MAX}字を超える指示は送れません。`);
-    return;
-  }
-  if (!state.config.gasUrl) {
-    setInstructionStatus("受付URLが未設定のため、送信していません。");
-    return;
-  }
-  if (instructionState.accepted && instructionState.text === text) {
-    setInstructionStatus("受付済み。同じ依頼は再送していません。作業は完了していません。");
-    return;
-  }
-  if (instructionState.text !== text || !instructionState.requestId) {
-    instructionState.requestId = createRequestId();
-    instructionState.text = text;
-    instructionState.accepted = false;
-  }
-  instructionState.inflight = true;
-  if (button) button.disabled = true;
-  setInstructionStatus("送信中。受付へ渡しています。作業は完了していません。");
-  try {
-    const payload = buildInstructionPayload({
-      requestId: instructionState.requestId,
-      text,
-      savedAt: new Date().toISOString(),
-    });
-    const result = await postGasPayload(state.config.gasUrl, payload);
-    instructionState.accepted = true;
-    setInstructionStatus(result && result.duplicate
-      ? "受付済み。同じ依頼は再送していません。作業は完了していません。"
-      : "受付済み。作業は完了していません。本文は確認後に実行します。");
-  } catch (error) {
-    instructionState.accepted = false;
-    if (error && error.message === "rejected") {
-      const reason = error.serverError ? `理由: ${error.serverError}` : "理由は返されませんでした。";
-      setInstructionStatus(`受付は拒否されました。Slackへは送られていません。${reason}`);
-      return;
-    }
-    setInstructionStatus("受付の成否を確認できませんでした。同じ依頼IDは保持しています。自動では再送しません。");
-  } finally {
-    instructionState.inflight = false;
-    if (button) button.disabled = false;
-  }
 }
 
 function renderAttachmentResult(ledger) {
@@ -441,12 +352,6 @@ function renderMemo(tx) {
   const noteId = `exec-note-${tx.id}`;
   actions.append(
     el("button", { type: "button", class: "btn primary", "data-copy": tx.id }, "クリップボードにコピー"),
-    el("button", {
-      type: "button",
-      class: "btn secondary",
-      "data-ai": tx.id,
-      "aria-describedby": noteId,
-    }, "AIがメモを追加する"),
   );
   const status = el("p", { class: "copy-status", "data-copy-status": "", role: "status" }, "");
   status.hidden = true;
@@ -456,10 +361,7 @@ function renderMemo(tx) {
     el("p", {}, "自動コピーに失敗しました。下の5行を選択してコピーしてください。"),
     el("textarea", { readonly: "", "data-copy-fallback-text": "" }),
   );
-  box.append(actions, status, fallback, el("p", { class: "exec-note", id: noteId }, execNote()));
-  const slot = el("div", { "data-request-slot": tx.id });
-  slot.append(renderRequest(tx.id));
-  box.append(slot);
+  box.append(actions, status, fallback, el("p", { class: "exec-note", id: noteId }, "このメモはブラウザの中だけです。送信しません。"));
   return box;
 }
 
@@ -475,55 +377,6 @@ function renderImage(image) {
   return figure;
 }
 
-function renderRequest(id) {
-  const request = state.requests[id];
-  const memo = state.memos[id];
-  if (!request) return document.createDocumentFragment();
-  const box = el("div", { class: "request", "data-request": id, "data-request-status": request.status });
-  const stateLine = el("p", { class: "request-state", role: "status" }, requestStateText(request, Boolean(state.config.gasUrl)));
-  if (request.result) box.dataset.resultStatus = request.result.status;
-  box.append(el("h3", {}, "保持中の実行依頼"), stateLine);
-  if (request.result && TERMINAL_REQUEST_STATUSES.includes(request.status)) {
-    // 本文はサーバーが返した詳細。textContent で出し、HTMLとしては解釈しない。
-    box.append(el("p", { class: "request-result", "data-request-result": "" }, request.result.message));
-  } else if (WAITING_REQUEST_STATUSES.includes(request.status) && state.unknownIds.has(request.requestId)) {
-    box.append(el("p", { class: "request-note" }, "受付APIはまだこの依頼IDの記録を返していません。結果が届くまで表示しません。"));
-  }
-  const checked = resultCheckedText(request);
-  if (checked && request.status !== "未実行") box.append(el("p", { class: "request-note" }, checked));
-  if (request.status === "確認停止" && state.config.gasUrl) {
-    const recheck = el("button", { type: "button", class: "btn secondary", "data-recheck": id }, "結果を再確認");
-    if (state.pollInflight.has(id)) recheck.disabled = true;
-    box.append(recheck);
-  }
-  const memoText = el("dd");
-  memoText.append(el("pre", {}, request.memoLines.join("\n")));
-  const dl = el("dl");
-  dl.append(
-    el("dt", {}, "取引ID"),
-    el("dd", {}, request.transactionId),
-    el("dt", {}, "Slackスレッド"),
-    el("dd", {}, request.slackThread),
-    el("dt", {}, "メモ"),
-    memoText,
-    el("dt", {}, "依頼ID"),
-    el("dd", {}, request.requestId || "未採番"),
-    el("dt", {}, "最終更新"),
-    el("dd", {}, formatSavedAt(request.updatedAt || request.savedAt)),
-  );
-  box.append(dl);
-  if (memo && formatMemoText(memo) !== request.memoLines.join("\n")) {
-    box.append(el("p", { class: "mismatch" }, "編集中の5行と保持中の依頼は違います。反映するには、もう一度「AIがメモを追加する」を押してください。"));
-  }
-  if (request.status === "エラー" && request.errorMessage) {
-    box.append(el("p", { class: "mismatch" }, request.errorMessage));
-  }
-  if (state.storageError) {
-    box.append(el("p", { class: "mismatch" }, "このブラウザでは保存領域を使えないため、依頼はこの画面を開いている間だけ残ります。"));
-  }
-  return box;
-}
-
 function onClick(event) {
   const filterButton = event.target.closest("[data-filter]");
   if (filterButton) {
@@ -531,33 +384,10 @@ function onClick(event) {
     paintFilter();
     return;
   }
-  const instructionButton = event.target.closest("[data-instruction-send]");
-  if (instructionButton) {
-    event.preventDefault();
-    void sendInstruction();
-    return;
-  }
   const copyButton = event.target.closest("[data-copy]");
   if (copyButton) {
     event.preventDefault();
     copyMemo(copyButton.dataset.copy);
-    return;
-  }
-  const aiButton = event.target.closest("[data-ai]");
-  if (aiButton) {
-    event.preventDefault();
-    void submitMemoRequest(aiButton.dataset.ai);
-    return;
-  }
-  const recheckButton = event.target.closest("[data-recheck]");
-  if (recheckButton) {
-    event.preventDefault();
-    const id = recheckButton.dataset.recheck;
-    const request = state.requests[id];
-    if (request && request.status === "確認停止" && !state.pollInflight.has(id)) {
-      cancelPoll(id);
-      void runPoll(id, request.requestId);
-    }
   }
 }
 
@@ -566,7 +396,6 @@ function onInput(event) {
   if (!input) return;
   const id = input.dataset.memoId;
   state.memos[id][input.dataset.memoField] = input.value;
-  replaceRequest(id);
 }
 
 function paintFilter() {
@@ -683,270 +512,8 @@ function showFallback(id, text) {
   area.select();
 }
 
-async function submitMemoRequest(id) {
-  if (state.inflight.has(id)) return;
-  const tx = state.ledger.transactions.find((row) => row.id === id);
-  if (!tx) return;
-  const memoLines = formatMemoText(state.memos[id]).split("\n");
-  const now = new Date().toISOString();
-  const previous = state.requests[id];
-  const sameMemo = Boolean(previous && previous.memoLines.join("\n") === memoLines.join("\n"));
-  const gasUrl = state.config.gasUrl;
-
-  if (!gasUrl) {
-    state.requests[id] = baseRequest(tx, memoLines, previous, now, {
-      status: "未実行",
-      requestId: null,
-      errorMessage: "",
-    });
-    cancelPoll(id);
-    saveRequests();
-    replaceRequest(id);
-    return;
-  }
-
-  // 受付済み・処理中・結果待ち・成功・変更なしの同じメモは再送しない。結果が出るまで自動再投稿しない。
-  if (sameMemo && ["受付済み", "処理中", "確認停止", "成功", "変更なし"].includes(previous.status)) {
-    replaceRequest(id);
-    return;
-  }
-  if (sameMemo && previous.status === "送信中") return;
-  if (!isAllowedSlackThread(tx.slack, state.ledger.transactions, tx.id)) {
-    state.requests[id] = baseRequest(tx, memoLines, previous, now, {
-      status: "エラー",
-      requestId: previous?.requestId || null,
-      errorMessage: "Slackスレッドが取引一覧と一致しないため、送信していません。",
-    });
-    saveRequests();
-    replaceRequest(id);
-    return;
-  }
-
-  const request = baseRequest(tx, memoLines, previous, now, {
-    status: "送信中",
-    requestId: resolveRequestId(previous, memoLines, createRequestId),
-    errorMessage: "",
-  });
-  cancelPoll(id);
-  state.inflight.add(id);
-  state.requests[id] = request;
-  saveRequests();
-  replaceRequest(id);
-  setAiBusy(id, true);
-  try {
-    await postGasPayload(gasUrl, buildGasPayload(request));
-    request.status = "受付済み";
-    request.errorMessage = "";
-    request.acceptedAt = new Date().toISOString();
-    request.pollAttempts = 0;
-    request.lastCheckedAt = null;
-    request.result = null;
-  } catch {
-    request.status = "エラー";
-    request.errorMessage = "受付APIの応答を確認できませんでした。同じ依頼IDで再試行できます。";
-  } finally {
-    request.updatedAt = new Date().toISOString();
-    state.inflight.delete(id);
-    setAiBusy(id, false);
-    saveRequests();
-    replaceRequest(id);
-    // 結果が返るまでは成否を出さない。受付直後は「受付済み」、照会を始めたら「処理中」。
-    if (request.status === "受付済み" && state.requests[id] === request) {
-      schedulePoll(id, state.config.pollFastMs);
-    }
-  }
-}
-
-function baseRequest(tx, memoLines, previous, now, fields) {
-  return {
-    transactionId: tx.id,
-    slackThread: tx.slack,
-    memoLines,
-    savedAt: previous?.savedAt || now,
-    updatedAt: now,
-    status: fields.status,
-    requestId: fields.requestId,
-    errorMessage: fields.errorMessage,
-    acceptedAt: null,
-    pollAttempts: 0,
-    lastCheckedAt: null,
-    result: null,
-  };
-}
-
-function schedulePoll(id, delay) {
-  cancelPoll(id);
-  const request = state.requests[id];
-  if (!state.config.gasUrl || !request || !isRequestId(request.requestId)) return;
-  if (!WAITING_REQUEST_STATUSES.includes(request.status)) return;
-  const requestId = request.requestId;
-  const timer = window.setTimeout(() => {
-    state.polls.delete(id);
-    void runPoll(id, requestId);
-  }, Math.max(0, delay));
-  state.polls.set(id, { timer, requestId });
-}
-
-function cancelPoll(id) {
-  const poll = state.polls.get(id);
-  if (poll) window.clearTimeout(poll.timer);
-  state.polls.delete(id);
-  state.deferredPolls.delete(id);
-}
-
-async function runPoll(id, requestId) {
-  const current = state.requests[id];
-  if (!current || current.requestId !== requestId || !WAITING_REQUEST_STATUSES.includes(current.status)) return;
-  if (document.hidden && current.status !== "確認停止") {
-    state.deferredPolls.add(id);
-    return;
-  }
-  if (state.pollInflight.has(id)) return;
-  if (current.status === "受付済み") {
-    current.status = "処理中";
-    saveRequests();
-    replaceRequest(id);
-  }
-  state.pollInflight.add(id);
-  replaceRequest(id);
-  let outcome;
-  try {
-    outcome = await fetchResult(state.config.gasUrl, requestId);
-  } catch {
-    outcome = { kind: "invalid" };
-  } finally {
-    state.pollInflight.delete(id);
-  }
-  const latest = state.requests[id];
-  // 確認中に依頼IDが変わった応答は捨てる。サーバーの requestId 一致は fetchResult 側でも見る。
-  if (!latest || latest.requestId !== requestId || !WAITING_REQUEST_STATUSES.includes(latest.status)) {
-    replaceRequest(id);
-    return;
-  }
-  const now = new Date().toISOString();
-  latest.pollAttempts += 1;
-  latest.lastCheckedAt = now;
-  if (outcome.kind === "done") {
-    state.unknownIds.delete(requestId);
-    latest.status = requestStatusForResult(outcome.result.status);
-    latest.result = outcome.result;
-    latest.updatedAt = now;
-    saveRequests();
-    replaceRequest(id);
-    return;
-  }
-  if (outcome.kind === "unknown") state.unknownIds.add(requestId);
-  else if (outcome.kind === "pending") state.unknownIds.delete(requestId);
-  const delay = nextPollDelay(latest.pollAttempts, latest.acceptedAt);
-  latest.status = delay === null ? "確認停止" : "処理中";
-  saveRequests();
-  replaceRequest(id);
-  if (delay !== null) {
-    const fast = latest.pollAttempts < POLL.fastAttempts;
-    schedulePoll(id, fast ? state.config.pollFastMs : delay);
-  }
-}
-
-function resumePolling() {
-  if (!state.config.gasUrl) return;
-  let changed = false;
-  let stagger = 0;
-  for (const [id, request] of Object.entries(state.requests)) {
-    if (!WAITING_REQUEST_STATUSES.includes(request.status)) continue;
-    if (shouldResumePolling(request) && nextPollDelay(request.pollAttempts, request.acceptedAt) !== null) {
-      schedulePoll(id, stagger);
-      stagger += 500;
-    } else if (request.status !== "確認停止") {
-      request.status = "確認停止";
-      changed = true;
-    }
-  }
-  if (changed) {
-    saveRequests();
-    for (const id of Object.keys(state.requests)) replaceRequest(id);
-  }
-}
-
-function onVisibilityChange() {
-  if (document.hidden) return;
-  const ids = [...state.deferredPolls];
-  state.deferredPolls.clear();
-  ids.forEach((id, index) => schedulePoll(id, index * 500));
-}
-
-function setAiBusy(id, busy) {
-  const button = detailOf(id)?.querySelector("[data-ai]");
-  if (!button) return;
-  button.disabled = busy;
-  if (busy) button.setAttribute("aria-busy", "true");
-  else button.removeAttribute("aria-busy");
-}
-
-function replaceRequest(id) {
-  const slot = detailOf(id)?.querySelector("[data-request-slot]");
-  if (!slot) return;
-  slot.replaceChildren(renderRequest(id));
-}
-
 function detailOf(id) {
   return app.querySelector(`[data-detail="${CSS.escape(id)}"]`);
-}
-
-function loadRequests() {
-  try {
-    return loadStoredRequests(localStorage.getItem(STORAGE_KEY));
-  } catch {
-    return {};
-  }
-}
-
-function saveRequests() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, requests: state.requests }));
-    state.storageError = false;
-  } catch {
-    state.storageError = true;
-  }
-}
-
-async function loadGasConfig() {
-  try {
-    const response = await fetch(new URL("../config.js", import.meta.url), { cache: "no-store" });
-    if (!response.ok) return { gasUrl: "", pollFastMs: POLL.fastIntervalMs };
-    const source = await response.text();
-    const readConfig = new Function(`${source}\n; return window.UPSIDER_CONFIG;`);
-    const config = readConfig();
-    const gasUrl = normalizeGasUrl(config && config.gasUrl);
-    return { gasUrl, pollFastMs: testPollMs(gasUrl, config && config.testPollMs) };
-  } catch {
-    return { gasUrl: "", pollFastMs: POLL.fastIntervalMs };
-  }
-}
-
-// テスト用の短い確認間隔は、ローカルの模擬受付URLのときだけ使う。公開URLでは常に15秒。
-function testPollMs(gasUrl, value) {
-  if (!gasUrl || !Number.isInteger(value) || value < 50 || value > POLL.fastIntervalMs) return POLL.fastIntervalMs;
-  const host = new URL(gasUrl).hostname;
-  return host === "127.0.0.1" || host === "localhost" ? value : POLL.fastIntervalMs;
-}
-
-function execNote() {
-  return state.config.gasUrl ? CONFIGURED_NOTE : UNCONFIGURED_NOTE;
-}
-
-function formatSavedAt(iso) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  }).format(date);
 }
 
 function renderDrive(tx) {
