@@ -8,8 +8,11 @@ import {
   FILTERS,
   buildExecutionRequest,
   buildGasPayload,
+  actionSummary,
+  attachmentResultView,
   countOf,
   filterTransactions,
+  shareRestrictionRemark,
   formatMemoText,
   formatYen,
   initialMemo,
@@ -174,9 +177,13 @@ function startServer() {
 
 async function assertLedger() {
   check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-07 22:20:00 JST", "asOf");
-  check(ledger.lead.includes("2026-11-07 22:20:00 JST"), "lead asOf");
+  check(ledger.asOf === "2026-11-07 23:30:30 JST", "asOf");
+  check(ledger.dataAcquiredAt === "2026-11-07 23:30:30 JST", "data acquired at");
+  check(ledger.lead.includes("2026-11-07 23:30:13 JST"), "lead check time");
+  check(ledger.lead.includes("共有チャンネル制限により3件とも未完了"), "lead share rejection");
   check(ledger.lead.includes("メモあり18件・返金不要1件"), "lead memo counts");
+  check(ledger.transactions.filter((tx) => tx.memoPresent === true).length === 18, "memo present 18");
+  check(!JSON.stringify(ledger).includes("13c1225a") && !JSON.stringify(ledger).includes("F0CF"), "internal attachment ids stay out");
   const counts = {
     "登録完了": 10,
     [REFUND_STATUS]: 1,
@@ -245,8 +252,21 @@ async function assertLedger() {
     const tx = ledger.transactions.find((row) => row.id === id);
     check(tx?.status === "証憑保存済・Slack未添付" && tx?.drive === url, `saved drive ${id}`);
     check(tx?.accountingPdfAcquiredAt === savedAt, `pdf time ${id}`);
-    check(tx?.slackAttachmentStatus === "未添付", `slack not attached ${id}`);
+    check(tx?.slackAttachmentStatus === "未添付（共有制限で停止）", `slack not attached ${id}`);
+    check(tx?.slackAttachmentError === "mcp_externally_shared_channel_restricted", `share rejection ${id}`);
+    check(tx?.slackAttachmentAttemptAt === "2026-11-07 23:30:13 JST", `attempt time ${id}`);
+    check(tx?.upSiderReceiptRegistrationStatus === "今回正式PDFの登録完了未確認", `not registered ${id}`);
+    check(tx?.status !== "登録完了", `saved stays incomplete ${id}`);
   }
+  check(ledger.slackReceiptAttachment?.attempted === 3 && ledger.slackReceiptAttachment?.attached === 0 && ledger.slackReceiptAttachment?.blocked === 3, "attachment result counts");
+  check(ledger.evidencePatrol?.lastSuccessfulAcquisitionAt === "2026-11-07 22:11:16 JST", "pdf time stays separate from asOf");
+  const actions = actionSummary(ledger.transactions);
+  check(actions.action === 8 && actions.refund === 1 && actions.done === 10, `action summary ${JSON.stringify(actions)}`);
+  check(actions.action === ledger.transactions.length - actions.refund - actions.done, "action count excludes refund and completed");
+  const attachment = attachmentResultView(ledger);
+  check(attachment?.succeeded === 0 && attachment?.incomplete === 3 && attachment?.checkedAt === "2026-11-07 23:30:13 JST", `attachment view ${JSON.stringify(attachment && { succeeded: attachment.succeeded, incomplete: attachment.incomplete, checkedAt: attachment.checkedAt })}`);
+  check(attachment?.rows.length === 3 && attachment.rows.every((tx) => tx.status === "証憑保存済・Slack未添付"), "three saved rows stay unattached");
+  check(attachment.rows.every((tx) => shareRestrictionRemark(tx).includes("添付試行済み・共有制限で未添付") && shareRestrictionRemark(tx).includes("連携経由の添付が共有制限で拒否された")), "remark wording");
   const misumi = ledger.transactions.find((tx) => tx.id === "tx-20261104-2114-misumi-16614");
   check(misumi?.deliveryStatus === "配送中" && misumi?.expectedDeliveryDate === "2026-11-09", "misumi delivery kept");
   check(misumi?.evidenceAcquisitionStatus === "正式領収書の取得・保存確認済", "misumi 403 note replaced");
@@ -256,6 +276,7 @@ async function assertLedger() {
   check(refund?.merchant === "DANBALLACE" && refund?.datetime === "11/04 09:23", "refund identity");
   check(refund?.amount === "-¥23,960" && refund?.amountYen === -23960, "refund amount");
   check(refund?.status === REFUND_STATUS, "refund status");
+  check(refund?.memoStatus === "不要" && refund?.memoPresent !== true, "refund memo exempt");
   check(refund?.drive === "証憑不要", "refund drive");
   check(refund?.detailSection === false, "refund is not an unhandled detail");
   check(refund?.slack.endsWith("1793751790.582399"), "refund slack");
@@ -507,11 +528,12 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最新データ取得・確認: 2026-11-07 22:20:00 JST。正式領収書は今回巡回分で計3件・39,000円をDrive保存確認。Slack未添付。メモあり18件・返金不要1件。ミスミ正式領収書を確認済、納入は11/9予定。",
+      "最新データ確認: 2026-11-07 23:30:13 JST。正式領収証3件はDrive保存済。Slack添付は共有チャンネル制限により3件とも未完了。メモあり18件・返金不要1件。",
+      "正式領収証3件の添付をユーザー確認後に試行しましたが、共有チャンネル制限で停止。登録完了に変更していません。追加送信なし。",
       "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。",
       "UPSIDER完了通知のみでメモあり。5項目本文不要。",
       "最終取得日時",
-      "2026-11-07 22:20:00（日本時間）",
+      "2026-11-07 23:30:30（日本時間）",
       "証憑PDF取得成功",
       "2026-11-07 22:11:16（日本時間）",
       "会計証憑PDFの取得成功時刻ではない",
@@ -569,20 +591,49 @@ async function browserChecks(base) {
       check(byLabel.Slack.text === tx.slack, `slack ${tx.id} ${byLabel.Slack.text}`);
       check(byLabel.Slack.target === "_blank", `slack target ${tx.id}`);
       check(byLabel.Slack.rel.includes("noopener"), `slack rel ${tx.id}`);
+      const rejected = tx.slackAttachmentError === "mcp_externally_shared_channel_restricted";
+      check(byLabel["備考"].text === (rejected ? "添付試行済み・共有制限で未添付。連携経由の添付が共有制限で拒否された。" : ""), `remark ${tx.id} ${byLabel["備考"].text}`);
     });
 
     const aggHead = await page.$$eval(".agg-table th", (nodes) => nodes.map((node) => node.textContent));
     check(aggHead.join(",") === "区分,件数,金額", `agg head ${aggHead.join(",")}`);
     const txHead = await page.$$eval(".tx-table th", (nodes) => nodes.map((node) => node.textContent));
-    check(txHead.join(",") === "日時,利用先,金額,内容,ステータス,メモ,Slack,Drive証憑", `tx head ${txHead.join(",")}`);
+    check(txHead.join(",") === "日時,利用先,金額,内容,ステータス,メモ,Slack,Drive証憑,備考", `tx head ${txHead.join(",")}`);
     const acquired = await page.$eval("[data-acquired-value]", (node) => ({
       text: node.textContent,
       datetime: node.getAttribute("datetime"),
     }));
-    check(acquired.text === "2026-11-07 22:20:00（日本時間）", `acquired text ${acquired.text}`);
-    check(acquired.datetime === "2026-11-07 22:20:00 JST", `acquired source ${acquired.datetime}`);
+    check(acquired.text === "2026-11-07 23:30:30（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-07 23:30:30 JST", `acquired source ${acquired.datetime}`);
     const pdfSaved = await page.$eval("[data-pdf-saved-at]", (node) => node.innerText);
-    check(pdfSaved.includes("2026-11-07 22:11:16（日本時間）") && !pdfSaved.includes("22:20:00"), `pdf time ${pdfSaved}`);
+    check(pdfSaved.includes("2026-11-07 22:11:16（日本時間）") && !pdfSaved.includes("23:30:30"), `pdf time ${pdfSaved}`);
+    const attachmentText = await page.$eval("[data-attachment-result]", (node) => node.innerText);
+    check(attachmentText.includes("連携経由の添付が共有制限で拒否された。"), attachmentText);
+    check(attachmentText.includes("成功0件／未完了3件"), attachmentText);
+    check(attachmentText.includes("確認時刻 2026-11-07 23:30:13 JST"), attachmentText);
+    check(attachmentText.includes("Drive保存とSlackへの添付は別です"), attachmentText);
+    check(!attachmentText.includes("投稿不能") && !attachmentText.includes("再試行") && !attachmentText.includes("復旧"), attachmentText);
+    check(await page.$("[data-attachment-result] button") === null, "attachment result has no button");
+    const cards = await page.$$eval("[data-unattached]", (nodes) => nodes.map((node) => ({
+      id: node.dataset.unattached,
+      text: node.innerText,
+      links: [...node.querySelectorAll("a")].map((link) => ({ text: link.textContent, href: link.href, target: link.target, rel: link.rel })),
+    })));
+    check(cards.length === 3, `unattached cards ${cards.length}`);
+    const savedIds = {
+      "tx-20261105-1253-monotaro-17553": ["134323400028", "¥17,553", "https://drive.google.com/file/d/1jDKF67ouM3XLEfFoST-3FCfkjUEuEZle/view?usp=drivesdk", "1793850815.359609"],
+      "tx-20261105-1404-monotaro-4833": ["134323400029", "¥4,833", "https://drive.google.com/file/d/15cZV1IiQHyZRbDHykorO0DEes7XByYFD/view?usp=drivesdk", "1793855065.925729"],
+      "tx-20261104-2114-misumi-16614": ["AB256FB3F5", "¥16,614", "https://drive.google.com/file/d/1HfunjbtjE_pIRvdzKBPvUjmkMzO55b3-/view?usp=drivesdk", "1793794487.621929"],
+    };
+    for (const card of cards) {
+      const [order, amount, drive, thread] = savedIds[card.id];
+      check(card.text.includes(order) && card.text.includes(amount) && card.text.includes("添付試行済み・共有制限で未添付"), `${card.id} ${card.text}`);
+      check(card.links.length === 2 && card.links.every((link) => link.target === "_blank" && link.rel.includes("noopener")), `${card.id} links`);
+      check(card.links[0].text === "保存済みの証憑" && card.links[0].href === drive, `${card.id} drive ${card.links[0].href}`);
+      check(card.links[1].text === "取引スレッド" && card.links[1].href.includes(thread), `${card.id} slack ${card.links[1].href}`);
+    }
+    const actionLine = await page.$eval("[data-action-count]", (node) => node.textContent);
+    check(actionLine === "要処理 8件。登録完了10件と返金1件は含めません。", actionLine);
     check(!bodyText.includes("トークン使用量"), "token heading removed");
     check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
     const instruction = await page.$eval("[data-instruction]", (node) => ({

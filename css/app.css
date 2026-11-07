@@ -114,6 +114,10 @@ h2 {
 .callout.warning { background: var(--warning-bg); color: var(--warning); }
 .callout p { margin: 4px 0 0; color: var(--ink); }
 
+.attachment-result { margin: 16px 0; }
+.attachment-result .detail { margin: 10px 0; }
+.action-count { margin: 12px 0 0; }
+
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -227,6 +231,8 @@ table {
   color: var(--accent);
   word-break: break-all;
 }
+
+.tx-table td.remark { overflow-wrap: anywhere; }
 
 .status {
   display: inline-block;
@@ -440,7 +446,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   }
   .tx-table td {
     display: grid;
-    grid-template-columns: 6.2em 1fr;
+    grid-template-columns: 6.2em minmax(0, 1fr);
     gap: 8px;
     border: 0;
     padding: 6px 0;
