@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-07 09:10 Asia/Tokyo",
+  "asOf": "2026-11-07 13:59 Asia/Tokyo",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最終更新: 2026-11-07 09:10 Asia/Tokyo。11月以降のAIハンド決済用取引19件（返金1件を含む）のステータスです。",
+  "lead": "最終更新: 2026-11-07 13:59 Asia/Tokyo。メモあり17件・未確認1件・返金不要1件。証憑状態変更なし。",
   "callouts": [
     {
       "tone": "info",
@@ -18,9 +18,14 @@
       "tone": "warning",
       "lead": "今回のチェック（11/07 AM9）",
       "body": "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。"
+    },
+    {
+      "tone": "info",
+      "lead": "メモ判定ルール更新・1回再走査",
+      "body": "最終更新: 2026-11-07 13:59 Asia/Tokyo。メモあり17件・未確認1件・返金不要1件。証憑状態変更なし。 UPSIDER完了通知のみでメモあり。5項目本文不要。"
     }
   ],
-  "detailHeading": "メモなし／メモ・証憑なし（詳細）",
+  "detailHeading": "メモ未確認（詳細）",
   "detailIntro": "要対応の取引です。Slackスレッドの下にメモ入力欄があり、スクショがある場合はその上に並びます。内容は画面テキスト／スクショから推定しています。",
   "cautionHeading": "注意",
   "caution": "メモ作成は停止中。スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
@@ -36,7 +41,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793475649.715259",
       "drive": "あり",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "6b72dd24-e724-419e-97fe-6707d6bfef2b",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793811342.480279",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261101-AMZ-001",
+      "orderNumber": "249-7203088-9467041"
     },
     {
       "id": "tx-20261101-0442-amazon-1328",
@@ -49,7 +66,24 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793475768.811729",
       "drive": "あり",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "f366f19a-d6e4-4cb4-b3a8-12a23c103e13",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793564845.102619",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        },
+        {
+          "ts": "1793811466.765759",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261101-AMZ-002",
+      "orderNumber": "249-5231641-1815860"
     },
     {
       "id": "tx-20261102-1932-sunstellar-10355",
@@ -62,7 +96,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793615525.178389",
       "drive": "あり",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "2b8791a5-fde4-4d58-a481-e5a297d3bccb",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793615608.869499",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261102-SST-001",
+      "orderNumber": "#16672"
     },
     {
       "id": "tx-20261102-2011-monotaro-4771",
@@ -75,7 +121,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793617919.187159",
       "drive": "あり",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "720f98dd-24e3-4650-b6ec-4c93dd52f4d4",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793620769.285939",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261102-MNT-001",
+      "orderNumber": "134323400026"
     },
     {
       "id": "tx-20261102-2018-monotaro-746",
@@ -88,7 +146,29 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793618336.171289",
       "drive": "あり",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "fb482c96-5597-48d2-90bd-980b5e7f5989",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793620945.503209",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        },
+        {
+          "ts": "1793868843.391819",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        },
+        {
+          "ts": "1793869032.044949",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261102-MNT-002",
+      "orderNumber": "134323400027"
     },
     {
       "id": "tx-20261102-2053-earth-23960",
@@ -101,7 +181,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793620385.051929",
       "drive": "なし",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "549bde33-c564-4db9-91af-7d776fc10282",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793621042.623809",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261102-EDB-001",
+      "orderNumber": "1881489"
     },
     {
       "id": "tx-20261102-2054-earth-5570",
@@ -114,7 +206,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793620499.286739",
       "drive": "なし",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "0b505227-ac47-4250-81e3-4f647c742176",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793621061.271959",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261102-EDB-002",
+      "orderNumber": "1881490"
     },
     {
       "id": "tx-20261104-0923-danballace-23960",
@@ -127,7 +231,8 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793751790.582399",
       "drive": "証憑不要",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "memoStatus": "不要"
     },
     {
       "id": "tx-20261104-2114-misumi-16614",
@@ -140,7 +245,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793794487.621929",
       "drive": "なし",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "4224295f-093e-4eb8-9393-bce132c2d2f8",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793799504.382109",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261104-MSM-001",
+      "orderNumber": "AB256FB3F5"
     },
     {
       "id": "tx-20261105-1241-akizuki-2600",
@@ -153,7 +270,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793850104.514049",
       "drive": "なし",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "5da122aa-3354-4597-b158-d6b4b2b9b977",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793869227.062139",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-AKZ-001",
+      "orderNumber": "EC261105-069042182-01"
     },
     {
       "id": "tx-20261105-1253-monotaro-17553",
@@ -166,7 +295,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793850815.359609",
       "drive": "なし",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "db46e925-b726-405b-baa5-8be57fd775fa",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950453.744309",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-MNT-001",
+      "orderNumber": "134323400028"
     },
     {
       "id": "tx-20261105-1357-nisshin-17600",
@@ -179,7 +320,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793854672.752819",
       "drive": "なし（誤添付を削除）",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "bb5bfe6a-5715-4830-b0f2-6306ba548944",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950502.876529",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-NSG-001",
+      "orderNumber": "#4735"
     },
     {
       "id": "tx-20261105-1404-monotaro-4833",
@@ -192,7 +345,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793855065.925729",
       "drive": "なし",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "c6b98583-746e-4dcd-9682-102591fc9c90",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950552.138329",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-MNT-002",
+      "orderNumber": "134323400029"
     },
     {
       "id": "tx-20261105-1703-amazon-2659",
@@ -205,7 +370,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793865808.053419",
       "drive": "https://drive.google.com/file/d/13SNvXcyjMoMFibt_iK6RzcgX9Dwyq47A/view?usp=drivesdk",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "292fcdfa-a146-456e-82c9-b73eae1a8955",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950603.457329",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-AMZ-002",
+      "orderNumber": "249-3397227-9182204"
     },
     {
       "id": "tx-20261105-2124-amazon-14680",
@@ -218,7 +395,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793881469.106739",
       "drive": "https://drive.google.com/file/d/1-lZG0HxIKsbPhlvU9ew3WJ5GoWKnjAhi/view?usp=drivesdk",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "b072f018-28d3-4477-afad-0714a28f78e2",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950685.816499",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-AMZ-001",
+      "orderNumber": "249-1387297-6888653"
     },
     {
       "id": "tx-20261105-2312-amazon-9300",
@@ -231,7 +420,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793887975.184129",
       "drive": "https://drive.google.com/file/d/1VFMPsL4QpbZ7FRdDBjp7rcVM-ftFQCF6/view?usp=drivesdk",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "89321f62-7774-4428-a0e2-b8233d2578fd",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950743.717579",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-AMZ-004",
+      "orderNumber": "249-7172124-2351833"
     },
     {
       "id": "tx-20261105-2312-amazon-2117",
@@ -244,7 +445,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793887975.859849",
       "drive": "https://drive.google.com/file/d/16h4l3SGEsYCLrMz84jTQNJbTYVmOIXZi/view?usp=drivesdk",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "9e02ab60-9ec1-4473-ae65-4efa3dd21a08",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950809.127189",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-AMZ-005",
+      "orderNumber": "249-3990301-8337417"
     },
     {
       "id": "tx-20261106-0113-amazon-255",
@@ -257,7 +470,19 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793895200.333029",
       "drive": "https://drive.google.com/file/d/1k3LODOYl00RGWjzcYuZeFs5shMS3vrya/view?usp=drivesdk",
       "memoKey": null,
-      "detailSection": false
+      "detailSection": false,
+      "upSiderTransactionId": "0ee09432-f3ba-4768-bcbb-2f0e568eeae2",
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
+        {
+          "ts": "1793950861.376479",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！"
+        }
+      ],
+      "ledgerId": "TX-20261105-AMZ-003",
+      "orderNumber": "249-8230793-6297418"
     },
     {
       "id": "tx-20261106-1553-danballace-7160",
@@ -270,14 +495,20 @@
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793948039.836289",
       "drive": "なし",
       "memoKey": "7160",
-      "detailSection": true
+      "detailSection": true,
+      "upSiderTransactionId": "eef3830c-f733-45f2-8afe-fb2b9fa365a9",
+      "memoStatus": "未確認",
+      "memoPresent": false,
+      "memoEvidence": [],
+      "ledgerId": "TX-20261106-EDB-001",
+      "orderNumber": "1883395"
     }
   ],
   "details": [
     {
       "transactionId": "tx-20261106-1553-danballace-7160",
       "heading": "11/06 15:53 · DANBALLACE · ¥7,160",
-      "intro": "内容: ダンボール類の新規注文。返信・メモ・証憑なし。Driveにも会計上有効な領収書・請求書は未発見。",
+      "intro": "内容: ダンボール類の新規注文。UPSIDERアプリの完了通知は観測できず、メモは未確認。証憑の状態は変えていない。",
       "properties": [
         {
           "label": "利用先",
@@ -296,6 +527,10 @@
           "value": "メモ・証憑なし"
         },
         {
+          "label": "メモ",
+          "value": "未確認"
+        },
+        {
           "label": "Slackスレッド",
           "value": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793948039.836289",
           "kind": "slack"
@@ -307,5 +542,29 @@
       ],
       "image": null
     }
-  ]
+  ],
+  "memoCheck": {
+    "asOf": "2026-11-07 13:59 Asia/Tokyo",
+    "scanCount": 1,
+    "threadsScanned": 18,
+    "confirmed": 17,
+    "unconfirmed": 1,
+    "refundExempt": 1,
+    "rule": "UPSIDERボットのメモ追加完了通知を根拠とする。5項目本文は不要。人間の引用・準備通知・ボタンは除外。証憑状態変更なし。"
+  },
+  "tokenUsage": {
+    "history": "過去の更新は実測値が残っていないため載せていない。0埋めはしていない。",
+    "updates": [
+      {
+        "asOf": "2026-11-07 13:59 Asia/Tokyo",
+        "scope": "この台帳更新1回に記録された実測。チェックとコード変更を分けた数は持たない。週次使用率、他の更新、推定差分はトークンに換算していない。",
+        "source": "Cursorの正規利用量レポートは週次の割合のみで、1更新あたりの入力・出力・合計・cacheのトークン数は返さない。実行結果の照会も成否とメッセージだけで、トークン数はない。秘密のAPIや請求画面からは取っていない。",
+        "input": null,
+        "output": null,
+        "total": null,
+        "cacheRead": null,
+        "cacheWrite": null
+      }
+    ]
+  }
 }

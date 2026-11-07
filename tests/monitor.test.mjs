@@ -151,9 +151,9 @@ function startServer() {
 
 async function assertLedger() {
   check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-07 09:10 Asia/Tokyo", "asOf");
-  check(ledger.lead.includes("2026-11-07 09:10 Asia/Tokyo"), "lead asOf");
-  check(ledger.lead.includes("19件"), "lead count");
+  check(ledger.asOf === "2026-11-07 13:59 Asia/Tokyo", "asOf");
+  check(ledger.lead.includes("2026-11-07 13:59 Asia/Tokyo"), "lead asOf");
+  check(ledger.lead.includes("メモあり17件・未確認1件・返金不要1件"), "lead memo counts");
   const counts = {
     "登録完了": 10,
     [REFUND_STATUS]: 1,
@@ -466,12 +466,17 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最終更新: 2026-11-07 09:10 Asia/Tokyo。11月以降のAIハンド決済用取引19件（返金1件を含む）のステータスです。",
+      "最終更新: 2026-11-07 13:59 Asia/Tokyo。メモあり17件・未確認1件・返金不要1件。証憑状態変更なし。",
+      "UPSIDER完了通知のみでメモあり。5項目本文不要。",
+      "トークン使用量（この更新）",
+      "取得源: Cursorの正規利用量レポートは週次の割合のみで、1更新あたりの入力・出力・合計・cacheのトークン数は返さない。実行結果の照会も成否とメッセージだけで、トークン数はない。秘密のAPIや請求画面からは取っていない。",
+      "範囲: この台帳更新1回に記録された実測。チェックとコード変更を分けた数は持たない。週次使用率、他の更新、推定差分はトークンに換算していない。",
+      "過去の更新は実測値が残っていないため載せていない。0埋めはしていない。",
       "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。メモ作成は停止中です。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
       "要対応の取引です。Slackスレッドの下にメモ入力欄があり、スクショがある場合はその上に並びます。",
-      "内容: ダンボール類の新規注文。返信・メモ・証憑なし。Driveにも会計上有効な領収書・請求書は未発見。",
+      "内容: ダンボール類の新規注文。UPSIDERアプリの完了通知は観測できず、メモは未確認。証憑の状態は変えていない。",
       "メモ作成は停止中。スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
     ]) {
       check(bodyText.includes(phrase), `missing phrase: ${phrase}`);
@@ -505,6 +510,12 @@ async function browserChecks(base) {
       check(byLabel["金額"].text === tx.amount, `amount ${tx.id}`);
       check(byLabel["内容"].text === tx.content, `content ${tx.id}`);
       check(byLabel["ステータス"].text === tx.status, `status ${tx.id}`);
+      check(byLabel["メモ"].text.startsWith(tx.memoStatus), `memo status ${tx.id} ${byLabel["メモ"].text}`);
+      if (tx.memoStatus === "あり") {
+        check(byLabel["メモ"].text.includes(`完了通知${tx.memoEvidence.length}件`), `memo evidence ${tx.id}`);
+      } else {
+        check(!byLabel["メモ"].text.includes("完了通知"), `no invented notice ${tx.id}`);
+      }
       check(byLabel["Drive証憑"].text === tx.drive, `drive ${tx.id}`);
       if (tx.drive.startsWith("https://")) {
         check(byLabel["Drive証憑"].href === tx.drive, `drive href ${tx.id} ${byLabel["Drive証憑"].href}`);
@@ -521,7 +532,10 @@ async function browserChecks(base) {
     const aggHead = await page.$$eval(".agg-table th", (nodes) => nodes.map((node) => node.textContent));
     check(aggHead.join(",") === "区分,件数,金額", `agg head ${aggHead.join(",")}`);
     const txHead = await page.$$eval(".tx-table th", (nodes) => nodes.map((node) => node.textContent));
-    check(txHead.join(",") === "日時,利用先,金額,内容,ステータス,Slack,Drive証憑", `tx head ${txHead.join(",")}`);
+    check(txHead.join(",") === "日時,利用先,金額,内容,ステータス,メモ,Slack,Drive証憑", `tx head ${txHead.join(",")}`);
+    const tokenFields = await page.$$eval("[data-token-field]", (nodes) => nodes.map((node) => [node.dataset.tokenField, node.textContent]));
+    check(tokenFields.map((item) => item[0]).join(",") === "input,output,total,cacheRead,cacheWrite", `token fields ${tokenFields}`);
+    check(tokenFields.every((item) => item[1] === "取得不可"), `token values ${tokenFields}`);
     const leaked = await page.evaluate(() => document.body.innerText.includes("[object HTML"));
     check(!leaked, "object string leaked into the page");
     const agg = await page.$$eval(".agg-table tbody tr", (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent)));

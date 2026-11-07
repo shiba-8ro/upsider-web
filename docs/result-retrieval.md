@@ -62,6 +62,8 @@
 npm test
 ```
 
+- `tests/memo-presence.test.mjs` … メモの有無。UPSIDER アプリ自身の完了通知だけを数え、証憑や5項目本文では決めない。詳細は `docs/memo-presence.md`
+- `tests/token-usage.test.mjs` … 1更新のトークン欄。欠測は取得不可で、0埋めや入力と出力からの合計計算はしない
 - `tests/result.test.mjs` … 照会URL、応答の採否、依頼IDの一致、間隔と30分停止、再開判定、GET にヘッダーも body も付けないこと
 - `tests/monitor.test.mjs` … 台帳、受付 payload が5項目のままであること、模擬サーバー上の成否表示、HTML を文字として出すこと、終了後に再POSTしないこと、失敗だけ新しい依頼IDにすること、localStorage からの復帰、30分超過の確認停止と再確認1回、URL未設定で通信しないこと
 

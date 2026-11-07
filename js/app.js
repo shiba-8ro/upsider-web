@@ -28,6 +28,8 @@ import {
   statusTone,
   sumOf,
 } from "./logic.js";
+import { memoTone } from "./memo-presence.js";
+import { TOKEN_FIELDS, currentTokenUpdate, tokenCountText } from "./token-usage.js";
 
 const UNCONFIGURED_NOTE =
   "「AIがメモを追加する」は、このカードの取引ID・Slackスレッド・編集中の5行メモを1件の実行依頼としてまとめ、このブラウザの中だけに保持します。実行にはバックエンド接続が必要です。受付URLが未設定のため、ボタンを押しても実行は行われず、Slackへの投稿もエージェントの起動もありません。依頼に秘密情報やトークンは含まれません。";
@@ -88,7 +90,7 @@ function render() {
     el("p", { class: "summary" }, ledger.summary),
     el("p", { class: "lead" }, ledger.lead),
   );
-  app.append(header, renderMetrics(), renderAggregation());
+  app.append(header, renderTokenUsage(ledger), renderMetrics(), renderAggregation());
 
   for (const callout of ledger.callouts) {
     const box = el("aside", { class: `callout ${callout.tone}` });
@@ -120,6 +122,24 @@ function render() {
   const caution = el("section", { class: "caution" });
   caution.append(el("h2", {}, ledger.cautionHeading), el("p", {}, ledger.caution));
   app.append(caution);
+}
+
+function renderTokenUsage(ledger) {
+  const section = el("section", { class: "token-usage", "data-token-usage": "" });
+  const usage = ledger.tokenUsage || {};
+  const update = currentTokenUpdate(usage);
+  section.append(el("h2", {}, "トークン使用量（この更新）"));
+  const list = el("dl", { class: "token-counts" });
+  for (const [key, label] of TOKEN_FIELDS) {
+    list.append(el("dt", {}, label), el("dd", { "data-token-field": key }, tokenCountText(update && update[key])));
+  }
+  section.append(list);
+  if (update) {
+    section.append(el("p", { class: "token-source" }, `取得源: ${update.source}`));
+    section.append(el("p", { class: "token-scope" }, `範囲: ${update.scope}`));
+  }
+  if (usage.history) section.append(el("p", {}, usage.history));
+  return section;
 }
 
 function renderMetrics() {
@@ -179,6 +199,7 @@ function renderTable() {
     ["金額", "num"],
     ["内容", ""],
     ["ステータス", ""],
+    ["メモ", ""],
     ["Slack", ""],
     ["Drive証憑", ""],
   ];
@@ -202,10 +223,20 @@ function renderRow(tx) {
     cell("金額", tx.amount, "num"),
     cell("内容", tx.content),
     cell("ステータス", null, "", statusPill(tx.status)),
+    renderMemoStatus(tx),
     cell("Slack", null, "", slackLink(tx.slack)),
     renderDrive(tx),
   );
   return tr;
+}
+
+function renderMemoStatus(tx) {
+  const status = tx.memoStatus || "未確認";
+  const notices = Array.isArray(tx.memoEvidence) ? tx.memoEvidence : [];
+  const wrap = el("div", {});
+  wrap.append(el("span", { class: `status ${memoTone(status)}` }, status));
+  if (status === "あり") wrap.append(el("span", { class: "memo-note" }, `完了通知${notices.length}件`));
+  return cell("メモ", null, "", wrap);
 }
 
 function renderDetail(detail) {
