@@ -11,7 +11,9 @@ const check = (condition, message) => {
 };
 
 check(normalizeAcquiredAt("2026-11-07 13:59 Asia/Tokyo") === "2026-11-07 13:59（日本時間）", "Asia/Tokyo wall clock is kept");
-check(normalizeAcquiredAt("2026-11-07 13:59:00 Asia/Tokyo") === "2026-11-07 13:59（日本時間）", "seconds dropped");
+check(normalizeAcquiredAt("2026-11-07 13:59:00 Asia/Tokyo") === "2026-11-07 13:59:00（日本時間）", "seconds kept");
+check(normalizeAcquiredAt("2026-11-07 22:06:03 JST") === "2026-11-07 22:06:03（日本時間）", "JST wall clock kept");
+check(normalizeAcquiredAt("2026-11-07 22:05:13 JST") === "2026-11-07 22:05:13（日本時間）", "pdf save time stays distinct");
 check(normalizeAcquiredAt("2026-11-07 13:59（日本時間）") === "2026-11-07 13:59（日本時間）", "existing Japan label kept");
 check(normalizeAcquiredAt("2026-11-07T04:59:00.000Z") === "2026-11-07 13:59（日本時間）", "UTC converts to Japan time");
 check(normalizeAcquiredAt("2026-11-07T13:59:00+09:00") === "2026-11-07 13:59（日本時間）", "offset +09:00 stays Japan time");
@@ -29,7 +31,8 @@ check(ledgerAcquiredAt({}).text === "未取得" && ledgerAcquiredAt(null).text =
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ledger = JSON.parse(fs.readFileSync(path.join(root, "data/ledger.json"), "utf8"));
 const shown = ledgerAcquiredAt(ledger);
-check(shown.source === "asOf" && shown.text === "2026-11-07 13:59（日本時間）", `published asOf ${shown.text}`);
+check(shown.source === "asOf" && shown.text === "2026-11-07 22:06:03（日本時間）", `published asOf ${shown.text}`);
+check(normalizeAcquiredAt(ledger.evidencePatrol.lastSuccessfulAcquisitionAt) === "2026-11-07 22:05:13（日本時間）", "pdf time is not the data asOf");
 check(!("tokenUsage" in ledger), "token usage is not stored");
 const app = fs.readFileSync(path.join(root, "js/app.js"), "utf8");
 check(app.includes("最終取得日時") && app.includes("acquired-at.js"), "page shows the acquired time");

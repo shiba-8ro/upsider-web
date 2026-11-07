@@ -61,17 +61,18 @@ check(!ledgerText.includes('"raw"'), "published ledger has no raw slack log");
 const present = ledger.transactions.filter((tx) => tx.memoPresent === true);
 const unconfirmed = ledger.transactions.filter((tx) => tx.memoStatus === "未確認");
 const exempt = ledger.transactions.filter((tx) => tx.memoStatus === "不要");
-check(present.length === 17, `memo present ${present.length}`);
-check(unconfirmed.length === 1 && unconfirmed[0].id === "tx-20261106-1553-danballace-7160", "only DANBALLACE 7160 is unconfirmed");
-check(unconfirmed[0].memoPresent === false && unconfirmed[0].memoEvidence.length === 0, "unconfirmed has no evidence");
-check(exempt.length === 1 && exempt[0].status === "返金（メモ・証憑不要）" && exempt[0].memoPresent === undefined, "refund is exempt");
+check(present.length === 18, `memo present ${present.length}`);
+check(unconfirmed.length === 0, "no unconfirmed memo");
+const danballace = ledger.transactions.find((tx) => tx.id === "tx-20261106-1553-danballace-7160");
+check(danballace.memoStatus === "あり" && danballace.memoPresent === true, "DANBALLACE 7160 memo confirmed");
+check(exempt.length === 1 && exempt[0].status === "返金（メモ・証憑不要）" && exempt[0].memoPresent == null, "refund is exempt");
 for (const tx of present) {
   check(tx.memoStatus === "あり" && tx.memoEvidence.length > 0, `evidence for ${tx.id}`);
   const messages = tx.memoEvidence.map((item) => ({ botId: item.botId, body: item.notice }));
   check(memoPresence(messages) === "メモあり", `notice confirms ${tx.id}`);
   check(tx.memoEvidence.every((item) => item.botId === UPSIDER_BOT_ID && item.notice === "決済メモを追加しました！"), `notice text ${tx.id}`);
 }
-check(memoPresence(unconfirmed[0].memoEvidence) === "未確認", "empty evidence stays unconfirmed");
+check(memoPresence([]) === "未確認", "empty evidence stays unconfirmed");
 const pageSource = fs.readFileSync(path.join(root, "js/app.js"), "utf8");
 check(pageSource.includes("memoStatus"), "page shows the stored memo status");
 check(!pageSource.includes("memoPresence("), "page does not reclassify memos");

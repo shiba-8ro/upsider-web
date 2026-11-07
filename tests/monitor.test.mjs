@@ -43,7 +43,7 @@ function hasEvidence(tx) {
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ledger = JSON.parse(fs.readFileSync(path.join(root, "data/ledger.json"), "utf8"));
 const failures = [];
-const gas = { configUrl: "", behavior: "ok", hits: [], gets: [], results: {} };
+const gas = { configUrl: "", behavior: "ok", hits: [], gets: [], results: {}, interactionDetail: false };
 
 function check(condition, message) {
   if (!condition) failures.push(message);
@@ -127,6 +127,29 @@ function startServer() {
       });
       return;
     }
+    if (pathname === "/data/ledger.json" && gas.interactionDetail) {
+      const published = JSON.parse(fs.readFileSync(path.join(root, "data/ledger.json"), "utf8"));
+      const tx = published.transactions.find((row) => row.id === NEW_ORDER_ID);
+      tx.detailSection = true;
+      published.details = [{
+        transactionId: NEW_ORDER_ID,
+        heading: "11/06 15:53 · DANBALLACE · ¥7,160",
+        intro: "メモ操作の確認用。公開台帳の要対応詳細ではない。",
+        properties: [
+          { label: "利用先", value: "DANBALLACE" },
+          { label: "金額", value: "¥7,160" },
+          { label: "内容", value: tx.content },
+          { label: "ステータス", value: tx.status },
+          { label: "メモ", value: "あり" },
+          { label: "Slackスレッド", value: tx.slack, kind: "slack" },
+          { label: "Drive証憑", value: "なし" },
+        ],
+        image: null,
+      }];
+      res.writeHead(200, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
+      res.end(JSON.stringify(published));
+      return;
+    }
     const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
     const file = path.resolve(root, relative);
     if (!file.startsWith(root + path.sep) && file !== root) {
@@ -140,7 +163,7 @@ function startServer() {
         res.end("not found");
         return;
       }
-      res.writeHead(200, { "content-type": types[path.extname(file)] || "application/octet-stream" });
+      res.writeHead(200, { "content-type": types[path.extname(file)] || "application/octet-stream", "cache-control": "no-store" });
       res.end(data);
     });
   });
@@ -151,15 +174,16 @@ function startServer() {
 
 async function assertLedger() {
   check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-07 13:59 Asia/Tokyo", "asOf");
-  check(ledger.lead.includes("2026-11-07 13:59 Asia/Tokyo"), "lead asOf");
-  check(ledger.lead.includes("メモあり17件・未確認1件・返金不要1件"), "lead memo counts");
+  check(ledger.asOf === "2026-11-07 22:06:03 JST", "asOf");
+  check(ledger.lead.includes("2026-11-07 22:06:03 JST"), "lead asOf");
+  check(ledger.lead.includes("メモあり18件・返金不要1件"), "lead memo counts");
   const counts = {
     "登録完了": 10,
     [REFUND_STATUS]: 1,
     "メモなし": 0,
-    "証憑なし": 7,
-    "メモ・証憑なし": 1,
+    "証憑なし": 6,
+    "証憑保存済・Slack未添付": 2,
+    "メモ・証憑なし": 0,
     "証憑不一致": 0,
   };
   check(JSON.stringify(FILTERS.slice(1)) === JSON.stringify(Object.keys(counts)), "filters match counted statuses");
@@ -171,8 +195,9 @@ async function assertLedger() {
     "登録完了": 48684,
     [REFUND_STATUS]: -23960,
     "メモなし": 0,
-    "証憑なし": 88730,
-    "メモ・証憑なし": 7160,
+    "証憑なし": 73504,
+    "証憑保存済・Slack未添付": 22386,
+    "メモ・証憑なし": 0,
     "証憑不一致": 0,
   };
   check(sumOf(ledger.transactions) === 120614, `total ${sumOf(ledger.transactions)}`);
@@ -183,18 +208,19 @@ async function assertLedger() {
   check(formatYen(120614) === "¥120,614", "yen format");
   check(formatYen(-23960) === "-¥23,960", "negative yen format");
   check(filterTransactions(ledger.transactions, "メモなし").every((tx) => tx.status === "メモなし"), "filter exact");
-  check(filterTransactions(ledger.transactions, "証憑なし").length === 7, "証憑なし excludes メモ・証憑なし");
+  check(filterTransactions(ledger.transactions, "証憑なし").length === 6, "証憑なし excludes saved and combined");
+  check(filterTransactions(ledger.transactions, "証憑保存済・Slack未添付").length === 2, "saved receipts are their own status");
   check(filterTransactions(ledger.transactions, "メモなし").length === 0, "メモなし is empty");
   check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 19, "slack urls unique");
   const detailIds = ledger.transactions.filter((tx) => tx.detailSection).map((tx) => tx.id);
-  check(detailIds.length === 1 && detailIds[0] === NEW_ORDER_ID, `detail sections ${detailIds.join(",")}`);
+  check(detailIds.length === 0, `detail sections ${detailIds.join(",")}`);
   check(JSON.stringify(detailIds) === JSON.stringify(ledger.details.map((detail) => detail.transactionId)), "details follow unhandled transactions");
 
   const completed = ledger.transactions.filter((tx) => tx.status === "登録完了");
-  const evidenced = ledger.transactions.filter(hasEvidence);
-  check(completed.length === 10 && evidenced.length === 10, `evidence pair ${completed.length}/${evidenced.length}`);
-  check(completed.every(hasEvidence), "登録完了 without evidence");
-  check(evidenced.every((tx) => tx.status === "登録完了"), "evidence without 登録完了");
+  const savedReceipts = ledger.transactions.filter((tx) => tx.status === "証憑保存済・Slack未添付");
+  check(completed.length === 10 && completed.every(hasEvidence), `登録完了 evidence ${completed.length}`);
+  check(savedReceipts.length === 2 && savedReceipts.every((tx) => tx.drive.startsWith("https://drive.google.com/")), "saved receipts have drive urls");
+  check(savedReceipts.every((tx) => tx.status !== "登録完了"), "saved receipts are not 登録完了");
   check(Object.keys(EVIDENCE_URLS).length === 5, "five evidence urls");
   for (const [id, url] of Object.entries(EVIDENCE_URLS)) {
     const tx = ledger.transactions.find((row) => row.id === id);
@@ -209,7 +235,16 @@ async function assertLedger() {
   check(ledger.transactions.find((tx) => tx.id === "tx-20261105-2312-amazon-9300")?.slack.endsWith("1793887975.184129"), "slack 9300");
   check(ledger.transactions.find((tx) => tx.id === "tx-20261105-2312-amazon-2117")?.slack.endsWith("1793887975.859849"), "slack 2117");
   check(ledger.transactions.find((tx) => tx.id === "tx-20261106-0113-amazon-255")?.slack.endsWith("1793895200.333029"), "slack 255");
-  check(ledger.transactions.filter((tx) => String(tx.drive).startsWith("https://")).length === 5, "only five drive urls");
+  check(ledger.transactions.filter((tx) => String(tx.drive).startsWith("https://")).length === 7, "seven drive urls");
+  const savedUrls = {
+    "tx-20261105-1253-monotaro-17553": "https://drive.google.com/file/d/1jDKF67ouM3XLEfFoST-3FCfkjUEuEZle/view?usp=drivesdk",
+    "tx-20261105-1404-monotaro-4833": "https://drive.google.com/file/d/15cZV1IiQHyZRbDHykorO0DEes7XByYFD/view?usp=drivesdk",
+  };
+  for (const [id, url] of Object.entries(savedUrls)) {
+    const tx = ledger.transactions.find((row) => row.id === id);
+    check(tx?.status === "証憑保存済・Slack未添付" && tx?.drive === url, `saved drive ${id}`);
+    check(tx?.accountingPdfAcquiredAt === "2026-11-07 22:05:13 JST", `pdf time ${id}`);
+  }
 
   const refund = ledger.transactions.find((tx) => tx.id === REFUND_ID);
   check(Boolean(refund), "refund included");
@@ -223,16 +258,15 @@ async function assertLedger() {
 
   const order = ledger.transactions.find((tx) => tx.id === NEW_ORDER_ID);
   check(order?.merchant === "DANBALLACE" && order?.datetime === "11/06 15:53", "new order identity");
-  check(order?.amountYen === 7160 && order?.status === "メモ・証憑なし" && order?.drive === "なし", "new order status");
+  check(order?.amountYen === 7160 && order?.status === "証憑なし" && order?.drive === "なし", "new order status");
+  check(order?.memoStatus === "あり" && order?.memoPresent === true, "new order memo");
   check(order?.slack.endsWith("1793948039.836289"), "new order slack");
-  check(order?.detailSection === true, "new order detail flag");
-  const orderDetail = ledger.details.find((detail) => detail.transactionId === NEW_ORDER_ID);
-  check(Boolean(orderDetail), "new order detail");
-  check(orderDetail?.properties.some((item) => item.label === "Drive証憑" && item.value === "なし"), "new order drive detail");
+  check(order?.detailSection === false, "new order is not an open detail");
+  check(!ledger.details.some((detail) => detail.transactionId === NEW_ORDER_ID), "new order detail removed");
   check(!ledger.details.some((detail) => detail.transactionId === REFUND_ID), "refund excluded from unhandled details");
 
   const memoByKey = {
-    "7160": "ダンボール類（新規注文）",
+    "7160": "YUBI梱包用ダンボール80サイズ 50枚",
   };
   for (const tx of ledger.transactions.filter((row) => row.memoKey)) {
     check(tx.content === memoByKey[tx.memoKey], `content for ${tx.memoKey}`);
@@ -466,15 +500,18 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最終更新: 2026-11-07 13:59 Asia/Tokyo。メモあり17件・未確認1件・返金不要1件。証憑状態変更なし。",
+      "最新データ取得・確認: 2026-11-07 22:06:03 JST。今回、正式領収証2件・22,386円をDriveへ保存。Slack未添付。メモあり18件・返金不要1件。ミスミはサイト403で未取得。",
+      "モノタロウ17,553円・4,833円の正式領収証はカード額と一致。UPSIDER登録完了にはしていません。",
       "UPSIDER完了通知のみでメモあり。5項目本文不要。",
       "最終取得日時",
-      "2026-11-07 13:59（日本時間）",
+      "2026-11-07 22:06:03（日本時間）",
+      "証憑PDF取得成功",
+      "2026-11-07 22:05:13（日本時間）",
+      "会計証憑PDFの取得成功時刻ではない",
       "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。メモ作成は停止中です。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
       "要対応の取引です。Slackスレッドの下にメモ入力欄があり、スクショがある場合はその上に並びます。",
-      "内容: ダンボール類の新規注文。UPSIDERアプリの完了通知は観測できず、メモは未確認。証憑の状態は変えていない。",
       "メモ作成は停止中。スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
     ]) {
       check(bodyText.includes(phrase), `missing phrase: ${phrase}`);
@@ -535,8 +572,10 @@ async function browserChecks(base) {
       text: node.textContent,
       datetime: node.getAttribute("datetime"),
     }));
-    check(acquired.text === "2026-11-07 13:59（日本時間）", `acquired text ${acquired.text}`);
-    check(acquired.datetime === "2026-11-07 13:59 Asia/Tokyo", `acquired source ${acquired.datetime}`);
+    check(acquired.text === "2026-11-07 22:06:03（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-07 22:06:03 JST", `acquired source ${acquired.datetime}`);
+    const pdfSaved = await page.$eval("[data-pdf-saved-at]", (node) => node.innerText);
+    check(pdfSaved.includes("2026-11-07 22:05:13（日本時間）") && !pdfSaved.includes("22:06:03"), `pdf time ${pdfSaved}`);
     check(!bodyText.includes("トークン使用量"), "token heading removed");
     check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
     const leaked = await page.evaluate(() => document.body.innerText.includes("[object HTML"));
@@ -546,8 +585,11 @@ async function browserChecks(base) {
     check(agg.find((row) => row[0] === "登録完了")?.[1] === "10" && agg.find((row) => row[0] === "登録完了")?.[2] === "¥48,684", "agg 登録完了");
     check(agg.find((row) => row[0] === REFUND_STATUS)?.[1] === "1" && agg.find((row) => row[0] === REFUND_STATUS)?.[2] === "-¥23,960", "agg refund");
     check(agg.find((row) => row[0] === "メモなし")?.[1] === "0" && agg.find((row) => row[0] === "メモなし")?.[2] === "¥0", "agg メモなし");
-    check(agg.find((row) => row[0] === "証憑なし")?.[1] === "7" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥88,730", "agg 証憑なし");
-    check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "1" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥7,160", "agg メモ・証憑なし");
+    check(agg.find((row) => row[0] === "証憑なし")?.[1] === "6" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥73,504", "agg 証憑なし");
+    check(agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[1] === "2" && agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[2] === "¥22,386", "agg saved receipts");
+    check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "0" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥0", "agg メモ・証憑なし");
+    const savedTone = await page.$eval("[data-tx-id='tx-20261105-1253-monotaro-17553'] [data-label='ステータス'] .status", (node) => node.className);
+    check(savedTone.includes("warning") && !savedTone.includes("success"), `saved tone ${savedTone}`);
     check(agg.find((row) => row[0] === "証憑不一致")?.[1] === "0" && agg.find((row) => row[0] === "証憑不一致")?.[2] === "¥0", "agg zero mismatch");
 
     for (const filter of FILTERS) {
@@ -582,7 +624,7 @@ async function browserChecks(base) {
         note: card.querySelector(".exec-note")?.textContent || "",
       };
     }));
-    check(details.length === 1, `details ${details.length}`);
+    check(details.length === 0, `details ${details.length}`);
     for (const detail of ledger.details) {
       const found = details.find((card) => card.id === detail.transactionId);
       const tx = ledger.transactions.find((row) => row.id === detail.transactionId);
@@ -624,6 +666,9 @@ async function browserChecks(base) {
     check(loaded.length === 0, "open detail has no screenshot");
     check(loaded.every((img) => img.width > 0 && !img.error), `images decoded ${JSON.stringify(loaded)}`);
 
+    gas.interactionDetail = true;
+    await page.reload({ waitUntil: "networkidle0" });
+    await page.waitForSelector(`[data-detail="${NEW_ORDER_ID}"] [data-copy]`);
     const copyId = NEW_ORDER_ID;
     const expectedCopy = formatMemoText(initialMemo(ledger.transactions.find((tx) => tx.id === copyId).content));
     await page.click(`[data-detail="${copyId}"] [data-copy]`);
@@ -681,7 +726,7 @@ async function browserChecks(base) {
     check(requestText.includes("用途：段ボールの追加注文"), "request shows edited memo");
     check(requestText.includes("セグメント1：AIハンド"), "request seg1");
     check(requestText.includes("分類：消耗品"), "request category");
-    check(requestText.includes("内容：ダンボール類（新規注文）"), "request content");
+    check(requestText.includes("内容：YUBI梱包用ダンボール80サイズ 50枚"), "request content");
     check(requestText.includes("実行は行われていません"), "request not executed");
     check(!/投稿しました|実行しました|追加しました|連携しました/.test(requestText), `false success: ${requestText}`);
     const stored = await page.evaluate(() => localStorage.getItem("upsider-monitor.execution-requests.v1"));
@@ -701,7 +746,7 @@ async function browserChecks(base) {
     check(restored.includes("用途：段ボールの追加注文"), "request restored");
     check(restored.includes("編集中の5行と保持中の依頼は違います"), "mismatch after reload");
     const purposeAfterReload = await page.$eval(`[data-detail="${aiId}"] [data-memo-field="purpose"]`, (input) => input.value);
-    check(purposeAfterReload === "ダンボール類（新規注文）", "form resets to initial value");
+    check(purposeAfterReload === "YUBI梱包用ダンボール80サイズ 50枚", "form resets to initial value");
 
     await page.evaluate(() => {
       document.execCommand = () => false;
@@ -714,7 +759,7 @@ async function browserChecks(base) {
     const fallbackValue = await page.$eval(`[data-detail="${fallbackId}"] [data-copy-fallback-text]`, (node) => node.value);
     const fallbackHiddenStatus = await page.$eval(`[data-detail="${fallbackId}"] [data-copy-status]`, (node) => node.hidden);
     check(fallbackHiddenStatus, "failed copy does not claim success");
-    check(fallbackValue.startsWith("用途：ダンボール類（新規注文）\n"), `fallback text ${fallbackValue}`);
+    check(fallbackValue.startsWith("用途：YUBI梱包用ダンボール80サイズ 50枚\n"), `fallback text ${fallbackValue}`);
 
     await page.setViewport({ width: 390, height: 844 });
     const mobile = await page.evaluate((id) => {
