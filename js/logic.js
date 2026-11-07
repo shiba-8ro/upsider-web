@@ -14,6 +14,7 @@ export const FILTERS = [
   "返金（メモ・証憑不要）",
   "メモなし",
   "証憑なし",
+  "証憑保存済・Slack未添付",
   "メモ・証憑なし",
   "証憑不一致",
 ];
@@ -49,7 +50,7 @@ export const SLACK_THREAD_PATTERN = /^https:\/\/app\.slack\.com\/client\/T0AS9K3
 
 export function statusTone(status) {
   if (status === "登録完了") return "success";
-  if (status === "メモなし" || status === "証憑なし") return "warning";
+  if (status === "メモなし" || status === "証憑なし" || status === "証憑保存済・Slack未添付") return "warning";
   if (status === "メモ・証憑なし" || status === "証憑不一致") return "danger";
   return "neutral";
 }

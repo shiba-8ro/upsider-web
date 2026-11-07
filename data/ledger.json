@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-07 13:59 Asia/Tokyo",
+  "asOf": "2026-11-07 22:06:03 JST",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最終更新: 2026-11-07 13:59 Asia/Tokyo。メモあり17件・未確認1件・返金不要1件。証憑状態変更なし。",
+  "lead": "最新データ取得・確認: 2026-11-07 22:06:03 JST。今回、正式領収証2件・22,386円をDriveへ保存。Slack未添付。メモあり18件・返金不要1件。ミスミはサイト403で未取得。",
   "callouts": [
     {
       "tone": "info",
@@ -23,6 +23,11 @@
       "tone": "info",
       "lead": "メモ判定ルール更新・1回再走査",
       "body": "最終更新: 2026-11-07 13:59 Asia/Tokyo。メモあり17件・未確認1件・返金不要1件。証憑状態変更なし。 UPSIDER完了通知のみでメモあり。5項目本文不要。"
+    },
+    {
+      "tone": "info",
+      "lead": "証憑ゲット巡回結果",
+      "body": "最新データ取得・確認: 2026-11-07 22:06:03 JST。今回、正式領収証2件・22,386円をDriveへ保存。Slack未添付。メモあり18件・返金不要1件。ミスミはサイト403で未取得。 モノタロウ17,553円・4,833円の正式領収証はカード額と一致。UPSIDER登録完了にはしていません。"
     }
   ],
   "detailHeading": "メモ未確認（詳細）",
@@ -257,7 +262,9 @@
         }
       ],
       "ledgerId": "TX-20261104-MSM-001",
-      "orderNumber": "AB256FB3F5"
+      "orderNumber": "AB256FB3F5",
+      "evidenceAcquisitionStatus": "未取得（サイトリソース403・親browser確認）",
+      "evidenceAcquisitionReason": "ミスミ注文履歴のサイトリソース403で今回未取得。"
     },
     {
       "id": "tx-20261105-1241-akizuki-2600",
@@ -291,9 +298,9 @@
       "amount": "¥17,553",
       "amountYen": 17553,
       "content": "パーツケース4段×2・ゴム切はさみ・L型カッターなど工具7点",
-      "status": "証憑なし",
+      "status": "証憑保存済・Slack未添付",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793850815.359609",
-      "drive": "なし",
+      "drive": "https://drive.google.com/file/d/1jDKF67ouM3XLEfFoST-3FCfkjUEuEZle/view?usp=drivesdk",
       "memoKey": null,
       "detailSection": false,
       "upSiderTransactionId": "db46e925-b726-405b-baa5-8be57fd775fa",
@@ -307,7 +314,18 @@
         }
       ],
       "ledgerId": "TX-20261105-MNT-001",
-      "orderNumber": "134323400028"
+      "orderNumber": "134323400028",
+      "evidenceStorageStatus": "取得・Drive保存済",
+      "slackAttachmentStatus": "未添付",
+      "accountingPdfAcquiredAt": "2026-11-07 22:05:13 JST",
+      "evidenceType": "領収証",
+      "receiptNumber": "B8494026",
+      "receiptDate": "2026-11-05",
+      "receiptIssueDate": "2026-11-07",
+      "accountingAmountYen": 17553,
+      "accountingTaxYen": 1596,
+      "deliveryStatus": "納入済",
+      "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。"
     },
     {
       "id": "tx-20261105-1357-nisshin-17600",
@@ -341,9 +359,9 @@
       "amount": "¥4,833",
       "amountYen": 4833,
       "content": "チャック付き袋 M8G×2・M8I×1",
-      "status": "証憑なし",
+      "status": "証憑保存済・Slack未添付",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793855065.925729",
-      "drive": "なし",
+      "drive": "https://drive.google.com/file/d/15cZV1IiQHyZRbDHykorO0DEes7XByYFD/view?usp=drivesdk",
       "memoKey": null,
       "detailSection": false,
       "upSiderTransactionId": "c6b98583-746e-4dcd-9682-102591fc9c90",
@@ -357,7 +375,18 @@
         }
       ],
       "ledgerId": "TX-20261105-MNT-002",
-      "orderNumber": "134323400029"
+      "orderNumber": "134323400029",
+      "evidenceStorageStatus": "取得・Drive保存済",
+      "slackAttachmentStatus": "未添付",
+      "accountingPdfAcquiredAt": "2026-11-07 22:05:13 JST",
+      "evidenceType": "領収証",
+      "receiptNumber": "B8494028",
+      "receiptDate": "2026-11-05",
+      "receiptIssueDate": "2026-11-07",
+      "accountingAmountYen": 4833,
+      "accountingTaxYen": 439,
+      "deliveryStatus": "納入済",
+      "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。"
     },
     {
       "id": "tx-20261105-1703-amazon-2659",
@@ -490,66 +519,54 @@
       "merchant": "DANBALLACE",
       "amount": "¥7,160",
       "amountYen": 7160,
-      "content": "ダンボール類（新規注文）",
-      "status": "メモ・証憑なし",
+      "content": "YUBI梱包用ダンボール80サイズ 50枚",
+      "status": "証憑なし",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793948039.836289",
       "drive": "なし",
       "memoKey": "7160",
-      "detailSection": true,
+      "detailSection": false,
       "upSiderTransactionId": "eef3830c-f733-45f2-8afe-fb2b9fa365a9",
-      "memoStatus": "未確認",
-      "memoPresent": false,
-      "memoEvidence": [],
-      "ledgerId": "TX-20261106-EDB-001",
-      "orderNumber": "1883395"
-    }
-  ],
-  "details": [
-    {
-      "transactionId": "tx-20261106-1553-danballace-7160",
-      "heading": "11/06 15:53 · DANBALLACE · ¥7,160",
-      "intro": "内容: ダンボール類の新規注文。UPSIDERアプリの完了通知は観測できず、メモは未確認。証憑の状態は変えていない。",
-      "properties": [
+      "memoStatus": "あり",
+      "memoPresent": true,
+      "memoEvidence": [
         {
-          "label": "利用先",
-          "value": "DANBALLACE"
-        },
-        {
-          "label": "金額",
-          "value": "¥7,160"
-        },
-        {
-          "label": "内容",
-          "value": "ダンボール類（新規注文）"
-        },
-        {
-          "label": "ステータス",
-          "value": "メモ・証憑なし"
-        },
-        {
-          "label": "メモ",
-          "value": "未確認"
-        },
-        {
-          "label": "Slackスレッド",
-          "value": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793948039.836289",
-          "kind": "slack"
-        },
-        {
-          "label": "Drive証憑",
-          "value": "なし"
+          "ts": "1794031186.136499",
+          "botId": "B0BGJARRAH3",
+          "notice": "決済メモを追加しました！",
+          "observedAt": "2026-11-07 21:57 JST"
         }
       ],
-      "image": null
+      "ledgerId": "TX-20261106-EDB-001",
+      "orderNumber": "1883395",
+      "deliveryStatus": "発送予定連絡",
+      "expectedShippingDate": "2026-11-13",
+      "expectedDeliveryDate": "2026-11-16"
     }
   ],
+  "details": [],
   "memoCheck": {
     "asOf": "2026-11-07 13:59 Asia/Tokyo",
     "scanCount": 1,
     "threadsScanned": 18,
-    "confirmed": 17,
-    "unconfirmed": 1,
+    "confirmed": 18,
+    "unconfirmed": 0,
     "refundExempt": 1,
-    "rule": "UPSIDERボットのメモ追加完了通知を根拠とする。5項目本文は不要。人間の引用・準備通知・ボタンは除外。証憑状態変更なし。"
-  }
+    "rule": "UPSIDERボットのメモ追加完了通知を根拠とする。5項目本文は不要。人間の引用・準備通知・ボタンは除外。証憑状態変更なし。",
+    "lastIncrementalCheckedAt": "2026-11-07 21:57 JST",
+    "lastIncrementalThreadsScanned": 1
+  },
+  "evidencePatrol": {
+    "checkedAt": "2026-11-07 22:06:03 JST",
+    "newAcquired": 2,
+    "guiPending": 0,
+    "scope": "Drive _inbox・本日更新PDF・仕事用Gmail・台帳・7160円取引Slack1回",
+    "slackAttachmentsSent": 0,
+    "dataCheckedAt": "2026-11-07 22:06:03 JST",
+    "guiBlocked": 1,
+    "lastSuccessfulAcquisitionAt": "2026-11-07 22:05:13 JST",
+    "lastSuccessfulAcquisitionMeaning": "会計証憑PDFをDrive月次フォルダへ保存した実測時刻（Drive modifiedTime確認）"
+  },
+  "dataAcquiredAt": "2026-11-07 22:06:03 JST",
+  "dataAcquiredAtLabel": "最新データ取得・確認日時（Slack・Gmail・Drive・台帳／会計証憑PDFの取得成功時刻ではない）",
+  "previousDataAcquiredAt": "2026-11-07 13:59 Asia/Tokyo"
 }

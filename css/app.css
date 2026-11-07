@@ -179,7 +179,9 @@ table {
 }
 
 .acquired-at { margin: 8px 0 0; color: var(--muted); }
+.acquired-at p { margin: 0 0 4px; }
 .acquired-at time { color: var(--ink); font-variant-numeric: tabular-nums; }
+.acquired-note { font-size: 12px; }
 .memo-note { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
 
 .tx-table th, .tx-table td, .agg-table th, .agg-table td {

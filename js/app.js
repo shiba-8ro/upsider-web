@@ -28,7 +28,7 @@ import {
   statusTone,
   sumOf,
 } from "./logic.js";
-import { ledgerAcquiredAt } from "./acquired-at.js";
+import { ledgerAcquiredAt, normalizeAcquiredAt } from "./acquired-at.js";
 import { memoTone } from "./memo-presence.js";
 
 const UNCONFIGURED_NOTE =
@@ -132,13 +132,29 @@ function renderAcquiredAt(ledger) {
     : acquired.source === "memoCheck.asOf"
       ? ledger.memoCheck.asOf
       : undefined;
-  const line = el("p", { class: "acquired-at", "data-acquired-at": "" });
+  const box = el("div", { class: "acquired-at" });
+  const line = el("p", { "data-acquired-at": "" });
   line.append(
     el("span", {}, "最終取得日時"),
     document.createTextNode(" "),
     el("time", { "data-acquired-value": "", datetime: recorded }, acquired.text),
   );
-  return line;
+  box.append(line);
+  if (typeof ledger.dataAcquiredAtLabel === "string" && ledger.dataAcquiredAtLabel.trim()) {
+    box.append(el("p", { class: "acquired-note" }, ledger.dataAcquiredAtLabel));
+  }
+  const pdfRaw = ledger.evidencePatrol && ledger.evidencePatrol.lastSuccessfulAcquisitionAt;
+  const pdf = normalizeAcquiredAt(pdfRaw);
+  if (pdf) {
+    const pdfLine = el("p", { "data-pdf-saved-at": "" });
+    pdfLine.append(
+      el("span", {}, "証憑PDF取得成功"),
+      document.createTextNode(" "),
+      el("time", { datetime: pdfRaw }, pdf),
+    );
+    box.append(pdfLine);
+  }
+  return box;
 }
 
 function renderMetrics() {

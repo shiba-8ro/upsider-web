@@ -1,7 +1,7 @@
 // 台帳に記録された取得日時だけを日本時間のラベルで出す。
 // ページを開いた時刻や、ビルドした時刻は使わない。
 
-const JST_WALL = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})(?::\d{2})?(?: Asia\/Tokyo|（日本時間）)$/;
+const JST_WALL = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})(?::(\d{2}))?(?: Asia\/Tokyo| JST|（日本時間）)$/;
 
 export function ledgerAcquiredAt(ledger) {
   const asOf = normalizeAcquiredAt(ledger && ledger.asOf);
@@ -15,7 +15,7 @@ export function normalizeAcquiredAt(value) {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   const wall = JST_WALL.exec(trimmed);
-  if (wall) return `${wall[1]} ${wall[2]}（日本時間）`;
+  if (wall) return `${wall[1]} ${wall[2]}${wall[3] ? `:${wall[3]}` : ""}（日本時間）`;
   if (!/(?:Z|[+-]\d{2}:?\d{2}|Asia\/Tokyo)/i.test(trimmed)) return null;
   const parsed = Date.parse(trimmed);
   if (Number.isNaN(parsed)) return null;
