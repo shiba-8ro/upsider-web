@@ -304,6 +304,7 @@ function renderTable() {
     ["メモ", ""],
     ["Slack", ""],
     ["Drive証憑", ""],
+    ["備考", ""],
   ];
   for (const [label, className] of columns) {
     head.append(el("th", { scope: "col", class: className }, label));
@@ -328,8 +329,14 @@ function renderRow(tx) {
     renderMemoStatus(tx),
     cell("Slack", null, "", slackLink(tx.slack)),
     renderDrive(tx),
+    cell("備考", shareRejectionRemark(tx), "remark"),
   );
   return tr;
+}
+
+function shareRejectionRemark(tx) {
+  if (tx.slackAttachmentError !== "mcp_externally_shared_channel_restricted") return "";
+  return "共有拒否（mcp_externally_shared_channel_restricted）";
 }
 
 function renderMemoStatus(tx) {

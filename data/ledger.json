@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-07 22:20:00 JST",
+  "asOf": "2026-11-07 23:30:30 JST",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最新データ取得・確認: 2026-11-07 22:20:00 JST。正式領収書は今回巡回分で計3件・39,000円をDrive保存確認。Slack未添付。メモあり18件・返金不要1件。ミスミ正式領収書を確認済、納入は11/9予定。",
+  "lead": "最新データ確認: 2026-11-07 23:30:13 JST。正式領収証3件はDrive保存済。Slack添付は共有チャンネル制限により3件とも未完了。メモあり18件・返金不要1件。",
   "callouts": [
     {
       "tone": "info",
@@ -33,6 +33,11 @@
       "tone": "info",
       "lead": "ミスミ領収書取得成功",
       "body": "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。"
+    },
+    {
+      "tone": "warning",
+      "lead": "Slack添付未完了",
+      "body": "正式領収証3件の添付をユーザー確認後に試行しましたが、共有チャンネル制限で停止。登録完了に変更していません。追加送信なし。"
     }
   ],
   "detailHeading": "メモ未確認（詳細）",
@@ -271,7 +276,7 @@
       "evidenceAcquisitionStatus": "正式領収書の取得・保存確認済",
       "evidenceAcquisitionReason": "トップ→担当名メニュー→注文履歴→注文書・領収書からDL成功。PDF実読と既存Driveの同内容を確認。",
       "evidenceStorageStatus": "取得・Drive保存済",
-      "slackAttachmentStatus": "未添付",
+      "slackAttachmentStatus": "未添付（共有制限で停止）",
       "accountingPdfAcquiredAt": "2026-11-07 22:11:16 JST",
       "accountingPdfVerifiedAt": "2026-11-07 22:19:29 JST",
       "evidenceType": "領収書・ご注文明細書",
@@ -280,7 +285,10 @@
       "accountingTaxYen": 1510,
       "deliveryStatus": "配送中",
       "expectedDeliveryDate": "2026-11-09",
-      "evidenceCheck": "クレジットカード支払、最終出荷日後の税込合計受領文言あり。注文番号・税込額・税額・登録番号を実読確認。納入済とはしない。"
+      "evidenceCheck": "クレジットカード支払、最終出荷日後の税込合計受領文言あり。注文番号・税込額・税額・登録番号を実読確認。納入済とはしない。",
+      "slackAttachmentAttemptAt": "2026-11-07 23:30:13 JST",
+      "slackAttachmentError": "mcp_externally_shared_channel_restricted",
+      "upSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認"
     },
     {
       "id": "tx-20261105-1241-akizuki-2600",
@@ -332,7 +340,7 @@
       "ledgerId": "TX-20261105-MNT-001",
       "orderNumber": "134323400028",
       "evidenceStorageStatus": "取得・Drive保存済",
-      "slackAttachmentStatus": "未添付",
+      "slackAttachmentStatus": "未添付（共有制限で停止）",
       "accountingPdfAcquiredAt": "2026-11-07 22:05:13 JST",
       "evidenceType": "領収証",
       "receiptNumber": "B8494026",
@@ -341,7 +349,10 @@
       "accountingAmountYen": 17553,
       "accountingTaxYen": 1596,
       "deliveryStatus": "納入済",
-      "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。"
+      "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。",
+      "slackAttachmentAttemptAt": "2026-11-07 23:30:13 JST",
+      "slackAttachmentError": "mcp_externally_shared_channel_restricted",
+      "upSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認"
     },
     {
       "id": "tx-20261105-1357-nisshin-17600",
@@ -393,7 +404,7 @@
       "ledgerId": "TX-20261105-MNT-002",
       "orderNumber": "134323400029",
       "evidenceStorageStatus": "取得・Drive保存済",
-      "slackAttachmentStatus": "未添付",
+      "slackAttachmentStatus": "未添付（共有制限で停止）",
       "accountingPdfAcquiredAt": "2026-11-07 22:05:13 JST",
       "evidenceType": "領収証",
       "receiptNumber": "B8494028",
@@ -402,7 +413,10 @@
       "accountingAmountYen": 4833,
       "accountingTaxYen": 439,
       "deliveryStatus": "納入済",
-      "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。"
+      "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。",
+      "slackAttachmentAttemptAt": "2026-11-07 23:30:13 JST",
+      "slackAttachmentError": "mcp_externally_shared_channel_restricted",
+      "upSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認"
     },
     {
       "id": "tx-20261105-1703-amazon-2659",
@@ -582,7 +596,15 @@
     "lastSuccessfulAcquisitionAt": "2026-11-07 22:11:16 JST",
     "lastSuccessfulAcquisitionMeaning": "最新会計証憑PDFの元Drive保存日時（createdTime実測）。月次への命名整理・実読確認はaccountingPdfVerifiedAtで別管理。"
   },
-  "dataAcquiredAt": "2026-11-07 22:20:00 JST",
+  "dataAcquiredAt": "2026-11-07 23:30:30 JST",
   "dataAcquiredAtLabel": "最新データ取得・確認日時（Slack・Gmail・Drive・台帳／会計証憑PDFの取得成功時刻ではない）",
-  "previousDataAcquiredAt": "2026-11-07 13:59 Asia/Tokyo"
+  "previousDataAcquiredAt": "2026-11-07 13:59 Asia/Tokyo",
+  "slackReceiptAttachment": {
+    "attempted": 3,
+    "attached": 0,
+    "upSiderRegistered": 0,
+    "blocked": 3,
+    "error": "mcp_externally_shared_channel_restricted",
+    "checkedAt": "2026-11-07 23:30:13 JST"
+  }
 }
