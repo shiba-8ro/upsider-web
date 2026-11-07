@@ -27,6 +27,8 @@ GitHub Pages は `main` ブランチのルートを公開します。`main` へ�
 
 「証憑保存済・Slack未添付」は、正式領収証をDriveへ保存したがSlackにはまだ添付していない状態です。登録完了にはしません。
 
+上部の「指示」は4行の入力欄です。現行の受付は取引ごとのメモ5行だけを受けるため、この欄はまだ送信しません。Enter や入力の途中でも送りません。詳しくは `docs/instruction-forwarding.md` です。
+
 ## 受付API
 
 公開サイトが読むのは `config.js` です。ここには秘密ではない受付URLだけを書いてリポジトリに含めます。GitHub Pages は gitignore でファイルを落とさないので、公開するURLは `config.js` にコミットします。

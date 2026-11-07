@@ -583,6 +583,33 @@ async function browserChecks(base) {
     check(pdfSaved.includes("2026-11-07 22:11:16（日本時間）") && !pdfSaved.includes("22:20:00"), `pdf time ${pdfSaved}`);
     check(!bodyText.includes("トークン使用量"), "token heading removed");
     check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
+    const instruction = await page.$eval("[data-instruction]", (node) => ({
+      rows: node.getAttribute("rows"),
+      labelled: document.querySelector("label[for='instruction-text']")?.textContent || "",
+      overflow: getComputedStyle(node).overflowY,
+      height: node.clientHeight,
+    }));
+    check(instruction.rows === "4" && instruction.labelled === "指示", `instruction box ${JSON.stringify(instruction)}`);
+    check(instruction.overflow === "auto" || instruction.overflow === "scroll", `instruction overflow ${instruction.overflow}`);
+    const tall = await page.$eval("[data-instruction]", (node) => {
+      const before = node.clientHeight;
+      node.value = Array.from({ length: 20 }, (_, index) => `指示${index}`).join("\n");
+      return { before, client: node.clientHeight, scroll: node.scrollHeight };
+    });
+    check(tall.client === tall.before && tall.scroll > tall.client, `instruction stays four lines ${JSON.stringify(tall)}`);
+    const beforeRequests = network.length;
+    await page.focus("[data-instruction]");
+    await page.keyboard.type("あいうえお");
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("かきくけこ");
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const instructionValue = await page.$eval("[data-instruction]", (node) => node.value);
+    check(instructionValue.includes("あいうえお\nかきくけこ"), `instruction input ${JSON.stringify(instructionValue)}`);
+    const sent = network.slice(beforeRequests).filter((url) => /mock-gas|script\.google|slack\.com\/api|hooks\.slack/.test(url));
+    check(sent.length === 0, `instruction typed without send ${sent.join(",")}`);
+    check(await page.$("[data-instruction-send]") === null, "no send button while reception cannot take free text");
+    const instructionNote = await page.$eval("[data-instruction-status]", (node) => node.textContent);
+    check(instructionNote.includes("まだ受付へ送れません") && instructionNote.includes("自由な指示は送りません"), instructionNote);
     const leaked = await page.evaluate(() => document.body.innerText.includes("[object HTML"));
     check(!leaked, "object string leaked into the page");
     const agg = await page.$$eval(".agg-table tbody tr", (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent)));

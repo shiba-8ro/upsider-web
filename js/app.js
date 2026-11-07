@@ -90,6 +90,7 @@ function render() {
     el("p", { class: "summary" }, ledger.summary),
     el("p", { class: "lead" }, ledger.lead),
     renderAcquiredAt(ledger),
+    renderInstruction(),
   );
   app.append(header, renderMetrics(), renderAggregation());
 
@@ -154,6 +155,27 @@ function renderAcquiredAt(ledger) {
     );
     box.append(pdfLine);
   }
+  return box;
+}
+
+function renderInstruction() {
+  const box = el("form", { class: "instruction-box", "data-instruction-form": "" });
+  box.addEventListener("submit", (event) => event.preventDefault());
+  const area = el("textarea", {
+    id: "instruction-text",
+    name: "instruction",
+    rows: "4",
+    "data-instruction": "",
+    autocomplete: "off",
+    autocapitalize: "sentences",
+    enterkeyhint: "enter",
+    inputmode: "text",
+  });
+  box.append(
+    el("label", { for: "instruction-text" }, "指示"),
+    area,
+    el("p", { class: "instruction-note", "data-instruction-status": "" }, "この欄はまだ受付へ送れません。現行の受付は、取引ごとのメモ5行（用途・セグメント1・セグメント2・分類・内容）だけを受けます。自由な指示は送りません。"),
+  );
   return box;
 }
 
