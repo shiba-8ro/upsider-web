@@ -63,6 +63,42 @@ export function countOf(transactions, status) {
   return transactions.filter((tx) => tx.status === status).length;
 }
 
+const SHARE_RESTRICTION_ERROR = "mcp_externally_shared_channel_restricted";
+
+export function needsAction(tx) {
+  return tx.status !== "登録完了" && tx.status !== "返金（メモ・証憑不要）";
+}
+
+export function actionSummary(transactions) {
+  const rows = Array.isArray(transactions) ? transactions : [];
+  return {
+    action: rows.filter(needsAction).length,
+    refund: rows.filter((tx) => tx.status === "返金（メモ・証憑不要）").length,
+    done: rows.filter((tx) => tx.status === "登録完了").length,
+  };
+}
+
+export function attachmentResultView(ledger) {
+  const summary = ledger && ledger.slackReceiptAttachment;
+  if (!summary || typeof summary.attached !== "number" || typeof summary.blocked !== "number") return null;
+  if (summary.error !== SHARE_RESTRICTION_ERROR) return null;
+  const rows = (ledger.transactions || []).filter((tx) => (
+    tx.status === "証憑保存済・Slack未添付"
+    && tx.slackAttachmentError === SHARE_RESTRICTION_ERROR
+  ));
+  return {
+    succeeded: summary.attached,
+    incomplete: summary.blocked,
+    checkedAt: typeof summary.checkedAt === "string" ? summary.checkedAt : "",
+    rows,
+  };
+}
+
+export function shareRestrictionRemark(tx) {
+  if (!tx || tx.slackAttachmentError !== SHARE_RESTRICTION_ERROR || tx.status !== "証憑保存済・Slack未添付") return "";
+  return "添付試行済み・共有制限で未添付。連携経由の添付が共有制限で拒否された。";
+}
+
 export function sumOf(transactions, status) {
   const rows = status ? transactions.filter((tx) => tx.status === status) : transactions;
   return rows.reduce((total, tx) => total + tx.amountYen, 0);

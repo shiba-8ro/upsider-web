@@ -114,6 +114,10 @@ h2 {
 .callout.warning { background: var(--warning-bg); color: var(--warning); }
 .callout p { margin: 4px 0 0; color: var(--ink); }
 
+.attachment-result { margin: 16px 0; }
+.attachment-result .detail { margin: 10px 0; }
+.action-count { margin: 12px 0 0; }
+
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);

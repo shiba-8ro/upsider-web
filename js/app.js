@@ -7,9 +7,12 @@ import {
   TERMINAL_REQUEST_STATUSES,
   WAITING_REQUEST_STATUSES,
   INSTRUCTION_TEXT_MAX,
+  actionSummary,
+  attachmentResultView,
   buildGasPayload,
   buildInstructionPayload,
   countOf,
+  shareRestrictionRemark,
   createRequestId,
   fetchResult,
   filterTransactions,
@@ -94,7 +97,7 @@ function render() {
     renderAcquiredAt(ledger),
     renderInstruction(),
   );
-  app.append(header, renderMetrics(), renderAggregation());
+  app.append(header, renderAttachmentResult(ledger), renderActionCount(ledger), renderMetrics(), renderAggregation());
 
   for (const callout of ledger.callouts) {
     const box = el("aside", { class: `callout ${callout.tone}` });
@@ -244,6 +247,52 @@ async function sendInstruction() {
   }
 }
 
+function renderAttachmentResult(ledger) {
+  const view = attachmentResultView(ledger);
+  if (!view) return el("div");
+  const section = el("section", { class: "attachment-result", "data-attachment-result": "" });
+  const summary = el("aside", { class: "callout warning" });
+  summary.append(
+    el("strong", {}, "今回の添付結果"),
+    el("p", {}, "連携経由の添付が共有制限で拒否された。"),
+    el("p", { "data-attachment-counts": "" }, `成功${view.succeeded}件／未完了${view.incomplete}件`),
+    el("p", { "data-attachment-checked": "" }, `確認時刻 ${view.checkedAt}`),
+    el("p", {}, "証憑のDrive保存とSlackへの添付は別です。ここに出した取引は保存済みで、添付は未完了です。登録完了にはしていません。"),
+  );
+  section.append(summary);
+  for (const tx of view.rows) {
+    const article = el("article", { class: "detail", "data-unattached": tx.id });
+    article.append(el("h2", {}, `${tx.datetime} ${tx.merchant}`));
+    const props = el("dl", { class: "props" });
+    props.append(el("dt", {}, "注文"), el("dd", {}, tx.orderNumber || ""));
+    props.append(el("dt", {}, "金額"), el("dd", {}, tx.amount));
+    props.append(el("dt", {}, "添付"), el("dd", {}, "添付試行済み・共有制限で未添付"));
+    const drive = el("dd", {});
+    drive.append(evidenceLink(tx.drive, "保存済みの証憑"));
+    props.append(el("dt", {}, "Drive証憑"), drive);
+    const slack = el("dd", {});
+    slack.append(evidenceLink(tx.slack, "取引スレッド"));
+    props.append(el("dt", {}, "Slack"), slack);
+    article.append(props);
+    section.append(article);
+  }
+  return section;
+}
+
+function renderActionCount(ledger) {
+  const summary = actionSummary(ledger.transactions);
+  return el(
+    "p",
+    { class: "action-count", "data-action-count": "" },
+    `要処理 ${summary.action}件。登録完了${summary.done}件と返金${summary.refund}件は含めません。`,
+  );
+}
+
+function evidenceLink(url, label) {
+  if (typeof url !== "string" || !url.startsWith("https://")) return el("span", {}, url || "");
+  return el("a", { href: url, target: "_blank", rel: "noopener noreferrer" }, label);
+}
+
 function renderMetrics() {
   const wrap = el("div", { class: "metrics" });
   for (const status of FILTERS.slice(1)) {
@@ -329,14 +378,9 @@ function renderRow(tx) {
     renderMemoStatus(tx),
     cell("Slack", null, "", slackLink(tx.slack)),
     renderDrive(tx),
-    cell("備考", shareRejectionRemark(tx), "remark"),
+    cell("備考", shareRestrictionRemark(tx), "remark"),
   );
   return tr;
-}
-
-function shareRejectionRemark(tx) {
-  if (tx.slackAttachmentError !== "mcp_externally_shared_channel_restricted") return "";
-  return "共有拒否（mcp_externally_shared_channel_restricted）";
 }
 
 function renderMemoStatus(tx) {
