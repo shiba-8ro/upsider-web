@@ -177,11 +177,26 @@ function startServer() {
 
 async function assertLedger() {
   check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-07 23:30:30 JST", "asOf");
-  check(ledger.dataAcquiredAt === "2026-11-07 23:30:30 JST", "data acquired at");
-  check(ledger.lead.includes("2026-11-07 23:30:13 JST"), "lead check time");
-  check(ledger.lead.includes("共有チャンネル制限により3件とも未完了"), "lead share rejection");
+  check(ledger.asOf === "2026-11-08 09:07 JST", "asOf");
+  check(ledger.dataAcquiredAt === "2026-11-08 09:07 JST", "data acquired at");
+  check(ledger.lead.includes("2026-11-08 09:07 JST"), "lead check time");
+  check(ledger.lead.includes("新規のAIハンド決済用取引なし"), "lead has no new card transactions");
+  check(ledger.lead.includes("ステータス変更なし"), "lead has no status changes");
+  check(ledger.lead.includes("共有チャンネル制限のため再送せず"), "lead share rejection");
   check(ledger.lead.includes("メモあり18件・返金不要1件"), "lead memo counts");
+  check(JSON.stringify(ledger.callouts.map((item) => item.lead)) === JSON.stringify([
+    "運用メモ",
+    "今回のチェック（11/08 AM9）",
+    "前回のチェック（11/06 19:25）",
+    "前回のチェック（11/07 AM9）",
+    "メモ判定ルール更新・1回再走査",
+    "過去の取得経路の記録（解消済）",
+    "ミスミ領収書取得成功",
+    "Slack添付未完了",
+  ]), `callout titles ${ledger.callouts.map((item) => item.lead).join(" / ")}`);
+  check(ledger.callouts[1].body.includes("DOCUSIGN INCは対象外") && ledger.callouts[1].body.includes("ステータス変更なし") && ledger.callouts[1].body.includes("再送していない"), "current check body");
+  check(ledger.callouts[0].body.includes("確認済み5項目メモと金額の一致した有効証憑PDFを登録します"), "memo registration copy");
+  check(!ledger.callouts[0].body.includes("メモ作成は停止中です"), "current ops copy does not say memo creation is fully stopped");
   check(ledger.transactions.filter((tx) => tx.memoPresent === true).length === 18, "memo present 18");
   check(!JSON.stringify(ledger).includes("13c1225a") && !JSON.stringify(ledger).includes("F0CF"), "internal attachment ids stay out");
   const counts = {
@@ -260,6 +275,7 @@ async function assertLedger() {
   }
   check(ledger.slackReceiptAttachment?.attempted === 3 && ledger.slackReceiptAttachment?.attached === 0 && ledger.slackReceiptAttachment?.blocked === 3, "attachment result counts");
   check(ledger.evidencePatrol?.lastSuccessfulAcquisitionAt === "2026-11-07 22:11:16 JST", "pdf time stays separate from asOf");
+  check(ledger.memoCheck?.lastIncrementalCheckedAt === "2026-11-08 09:07 JST" && ledger.memoCheck?.lastIncrementalThreadsScanned === 8, "eight incomplete threads rechecked");
   const actions = actionSummary(ledger.transactions);
   check(actions.action === 8 && actions.refund === 1 && actions.done === 10, `action summary ${JSON.stringify(actions)}`);
   check(actions.action === ledger.transactions.length - actions.refund - actions.done, "action count excludes refund and completed");
@@ -286,6 +302,9 @@ async function assertLedger() {
   check(order?.merchant === "DANBALLACE" && order?.datetime === "11/06 15:53", "new order identity");
   check(order?.amountYen === 7160 && order?.status === "証憑なし" && order?.drive === "なし", "new order status");
   check(order?.memoStatus === "あり" && order?.memoPresent === true, "new order memo");
+  check(order?.memoEvidence?.length === 2, "additional memo observation");
+  const slackUiMemo = order?.memoEvidence?.find((item) => item.slackUiTime === "2026-11-08 00:59 JST");
+  check(slackUiMemo?.notice === "決済メモを追加しました！" && slackUiMemo?.noticeBy === "UPSIDER アプリ" && slackUiMemo?.observedAt === "2026-11-08 09:07 JST" && order?.status === "証憑なし", "slack ui memo observation keeps 証憑なし");
   check(order?.slack.endsWith("1793948039.836289"), "new order slack");
   check(order?.detailSection === false, "new order is not an open detail");
   check(!ledger.details.some((detail) => detail.transactionId === NEW_ORDER_ID), "new order detail removed");
@@ -534,20 +553,23 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最新データ確認: 2026-11-07 23:30:13 JST。正式領収証3件はDrive保存済。Slack添付は共有チャンネル制限により3件とも未完了。メモあり18件・返金不要1件。",
+      "最新データ確認: 2026-11-08 09:07 JST。新規のAIハンド決済用取引なし。ステータス変更なし。メモあり18件・返金不要1件。正式領収証3件はDrive保存済・Slack未添付（共有チャンネル制限のため再送せず）。",
+      "今回のチェック（11/08 AM9）",
+      "前回のチェック（11/07 AM9）",
+      "新規のAIハンド決済用取引なし（会社名義・SaaSカードのDOCUSIGN INCは対象外）。未完了8件をSlackブラウザで再確認し、いずれもUPSIDERアプリの「決済メモを追加しました！」を確認。ステータス変更なし。MonotaRO ¥17,553・¥4,833とミスミ ¥16,614の正式領収証はDrive保存済だが、共有チャンネル制限でSlack未添付のため再送していない。スレッド上のPNGスクショは会計証憑に数えない。秋月電子 ¥2,600、日進ゴム ¥17,600、アースダンボール／DANBALLACE の¥23,960・¥5,570・¥7,160は有効な領収書・請求書なし。DANBALLACE ¥7,160は11/08 00:59（Slack表示）にも完了通知を再確認。出荷予定11/13・納入予定11/16。",
       "正式領収証3件の添付をユーザー確認後に試行しましたが、共有チャンネル制限で停止。登録完了に変更していません。追加送信なし。",
       "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。",
       "UPSIDER完了通知のみでメモあり。5項目本文不要。",
       "最終取得日時",
-      "2026-11-07 23:30:30（日本時間）",
+      "2026-11-08 09:07（日本時間）",
       "証憑PDF取得成功",
       "2026-11-07 22:11:16（日本時間）",
       "会計証憑PDFの取得成功時刻ではない",
-      "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。メモ作成は停止中です。",
+      "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。新規で取引と根拠が確定したものは、#bo_upsider の該当取引スレッドに確認済み5項目メモと金額の一致した有効証憑PDFを登録します。用途やセグメントが未確定のものは確認するまで登録しません。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
       "要対応の取引です。Slackスレッドの下にメモ入力欄があり、スクショがある場合はその上に並びます。",
-      "メモ作成は停止中。スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
+      "スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
     ]) {
       check(bodyText.includes(phrase), `missing phrase: ${phrase}`);
     }
@@ -609,8 +631,8 @@ async function browserChecks(base) {
       text: node.textContent,
       datetime: node.getAttribute("datetime"),
     }));
-    check(acquired.text === "2026-11-07 23:30:30（日本時間）", `acquired text ${acquired.text}`);
-    check(acquired.datetime === "2026-11-07 23:30:30 JST", `acquired source ${acquired.datetime}`);
+    check(acquired.text === "2026-11-08 09:07（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-08 09:07 JST", `acquired source ${acquired.datetime}`);
     const pdfSaved = await page.$eval("[data-pdf-saved-at]", (node) => node.innerText);
     check(pdfSaved.includes("2026-11-07 22:11:16（日本時間）") && !pdfSaved.includes("23:30:30"), `pdf time ${pdfSaved}`);
     const attachmentText = await page.$eval("[data-attachment-result]", (node) => node.innerText);

@@ -1,13 +1,18 @@
 {
-  "asOf": "2026-11-07 23:30:30 JST",
+  "asOf": "2026-11-08 09:07 JST",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最新データ確認: 2026-11-07 23:30:13 JST。正式領収証3件はDrive保存済。Slack添付は共有チャンネル制限により3件とも未完了。メモあり18件・返金不要1件。",
+  "lead": "最新データ確認: 2026-11-08 09:07 JST。新規のAIハンド決済用取引なし。ステータス変更なし。メモあり18件・返金不要1件。正式領収証3件はDrive保存済・Slack未添付（共有チャンネル制限のため再送せず）。",
   "callouts": [
     {
       "tone": "info",
       "lead": "運用メモ",
-      "body": "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。メモ作成は停止中です。"
+      "body": "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。新規で取引と根拠が確定したものは、#bo_upsider の該当取引スレッドに確認済み5項目メモと金額の一致した有効証憑PDFを登録します。用途やセグメントが未確定のものは確認するまで登録しません。"
+    },
+    {
+      "tone": "info",
+      "lead": "今回のチェック（11/08 AM9）",
+      "body": "新規のAIハンド決済用取引なし（会社名義・SaaSカードのDOCUSIGN INCは対象外）。未完了8件をSlackブラウザで再確認し、いずれもUPSIDERアプリの「決済メモを追加しました！」を確認。ステータス変更なし。MonotaRO ¥17,553・¥4,833とミスミ ¥16,614の正式領収証はDrive保存済だが、共有チャンネル制限でSlack未添付のため再送していない。スレッド上のPNGスクショは会計証憑に数えない。秋月電子 ¥2,600、日進ゴム ¥17,600、アースダンボール／DANBALLACE の¥23,960・¥5,570・¥7,160は有効な領収書・請求書なし。DANBALLACE ¥7,160は11/08 00:59（Slack表示）にも完了通知を再確認。出荷予定11/13・納入予定11/16。"
     },
     {
       "tone": "info",
@@ -15,8 +20,8 @@
       "body": "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。"
     },
     {
-      "tone": "warning",
-      "lead": "今回のチェック（11/07 AM9）",
+      "tone": "info",
+      "lead": "前回のチェック（11/07 AM9）",
       "body": "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。"
     },
     {
@@ -43,7 +48,7 @@
   "detailHeading": "メモ未確認（詳細）",
   "detailIntro": "要対応の取引です。Slackスレッドの下にメモ入力欄があり、スクショがある場合はその上に並びます。内容は画面テキスト／スクショから推定しています。",
   "cautionHeading": "注意",
-  "caution": "メモ作成は停止中。スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
+  "caution": "スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
   "transactions": [
     {
       "id": "tx-20261101-0440-amazon-2473",
@@ -564,6 +569,13 @@
           "botId": "B0BGJARRAH3",
           "notice": "決済メモを追加しました！",
           "observedAt": "2026-11-07 21:57 JST"
+        },
+        {
+          "notice": "決済メモを追加しました！",
+          "noticeBy": "UPSIDER アプリ",
+          "observedAt": "2026-11-08 09:07 JST",
+          "slackUiTime": "2026-11-08 00:59 JST",
+          "note": "Slack UI表示。00:57にメモ追加案内、ユーザーが00:59にメモ内容を返信したあと完了通知を確認。正確なtsは画面から取得できず。"
         }
       ],
       "ledgerId": "TX-20261106-EDB-001",
@@ -582,8 +594,9 @@
     "unconfirmed": 0,
     "refundExempt": 1,
     "rule": "UPSIDERボットのメモ追加完了通知を根拠とする。5項目本文は不要。人間の引用・準備通知・ボタンは除外。証憑状態変更なし。",
-    "lastIncrementalCheckedAt": "2026-11-07 21:57 JST",
-    "lastIncrementalThreadsScanned": 1
+    "lastIncrementalCheckedAt": "2026-11-08 09:07 JST",
+    "lastIncrementalThreadsScanned": 8,
+    "channelNewTransactions": 0
   },
   "evidencePatrol": {
     "checkedAt": "2026-11-07 22:20:00 JST",
@@ -596,15 +609,31 @@
     "lastSuccessfulAcquisitionAt": "2026-11-07 22:11:16 JST",
     "lastSuccessfulAcquisitionMeaning": "最新会計証憑PDFの元Drive保存日時（createdTime実測）。月次への命名整理・実読確認はaccountingPdfVerifiedAtで別管理。"
   },
-  "dataAcquiredAt": "2026-11-07 23:30:30 JST",
+  "dataAcquiredAt": "2026-11-08 09:07 JST",
   "dataAcquiredAtLabel": "最新データ取得・確認日時（Slack・Gmail・Drive・台帳／会計証憑PDFの取得成功時刻ではない）",
-  "previousDataAcquiredAt": "2026-11-07 13:59 Asia/Tokyo",
+  "previousDataAcquiredAt": "2026-11-07 23:30:30 JST",
   "slackReceiptAttachment": {
     "attempted": 3,
     "attached": 0,
     "upSiderRegistered": 0,
     "blocked": 3,
     "error": "mcp_externally_shared_channel_restricted",
-    "checkedAt": "2026-11-07 23:30:13 JST"
+    "checkedAt": "2026-11-07 23:30:13 JST",
+    "retryOn20261108Am9": false,
+    "retrySkippedReason": "共有拒否済みのMonotaRO 134323400028/134323400029・MISUMI AB256FB3F5は再送しない"
+  },
+  "upsiderCheck": {
+    "checkedAt": "2026-11-08 09:07 JST",
+    "routine": "UPSIDERチェック（毎日AM9時）",
+    "newTransactions": 0,
+    "statusChanges": 0,
+    "attachmentsAttempted": 0,
+    "memosCreated": 0,
+    "excludedOutOfScope": [
+      "DOCUSIGN INC（会社名義・SaaSカード）"
+    ],
+    "gmailAfter20261108": 0,
+    "driveInboxNewPdfs": 0,
+    "botInboxNewMail": 0
   }
 }
