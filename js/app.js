@@ -162,14 +162,18 @@ function renderAttachmentResult(ledger) {
   const view = attachmentResultView(ledger);
   if (!view) return el("div");
   const section = el("section", { class: "attachment-result", "data-attachment-result": "" });
-  const summary = el("aside", { class: "callout warning" });
+  const summary = el("aside", { class: view.manual ? "callout info" : "callout warning" });
   summary.append(
     el("strong", {}, "今回の添付結果"),
-    el("p", {}, "連携経由の添付が共有制限で拒否された。"),
+    el("p", {}, view.manual
+      ? view.note
+      : "連携経由の添付が共有制限で拒否された。"),
     el("p", { "data-attachment-counts": "" }, `成功${view.succeeded}件／未完了${view.incomplete}件`),
     el("p", { "data-attachment-checked": "" }, `確認時刻 ${view.checkedAt}`),
-    el("p", {}, "証憑のDrive保存とSlackへの添付は別です。ここに出した取引は保存済みで、添付は未完了です。登録完了にはしていません。"),
   );
+  if (!view.manual) {
+    summary.append(el("p", {}, "証憑のDrive保存とSlackへの添付は別です。ここに出した取引は保存済みで、添付は未完了です。登録完了にはしていません。"));
+  }
   section.append(summary);
   for (const tx of view.rows) {
     const article = el("article", { class: "detail", "data-unattached": tx.id });

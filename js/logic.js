@@ -81,16 +81,29 @@ export function actionSummary(transactions) {
 export function attachmentResultView(ledger) {
   const summary = ledger && ledger.slackReceiptAttachment;
   if (!summary || typeof summary.attached !== "number" || typeof summary.blocked !== "number") return null;
-  if (summary.error !== SHARE_RESTRICTION_ERROR) return null;
-  const rows = (ledger.transactions || []).filter((tx) => (
+  const checkedAt = typeof summary.checkedAt === "string" ? summary.checkedAt : "";
+  const blockedRows = (ledger.transactions || []).filter((tx) => (
     tx.status === "証憑保存済・Slack未添付"
     && tx.slackAttachmentError === SHARE_RESTRICTION_ERROR
   ));
+  if (summary.blocked === 0 && summary.attached > 0 && blockedRows.length === 0) {
+    return {
+      succeeded: summary.attached,
+      incomplete: 0,
+      checkedAt,
+      rows: [],
+      manual: true,
+      note: typeof summary.note === "string" ? summary.note : "",
+    };
+  }
+  if (summary.error !== SHARE_RESTRICTION_ERROR) return null;
   return {
     succeeded: summary.attached,
     incomplete: summary.blocked,
-    checkedAt: typeof summary.checkedAt === "string" ? summary.checkedAt : "",
-    rows,
+    checkedAt,
+    rows: blockedRows,
+    manual: false,
+    note: "",
   };
 }
 

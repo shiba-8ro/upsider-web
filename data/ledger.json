@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-09 09:26:56 JST",
+  "asOf": "2026-11-09 15:31 JST",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最新データ確認: 2026-11-09 09:26:56 JST（Slackブラウザの観測時刻。画面の更新時刻ではない）。新規のAIハンド決済用取引なし。メモあり18件。登録完了10件。返金元¥23,960と返金-¥23,960は要処理から除外し、要処理は7件。正式領収証3件はDrive保存済・Slack未添付（共有拒否済のため再送せず）。",
+  "lead": "最新データ確認: 2026-11-09 15:31 JST（Slackブラウザの観測時刻。画面の更新時刻ではない）。MonotaRO ¥17,553・¥4,833とミスミ ¥16,614はユーザーが手動で添付し、UPSIDERの「領収証を添付しました」を確認して登録完了。登録完了13件。返金除外2件。要処理4件。メモあり18件。",
   "callouts": [
     {
       "tone": "info",
@@ -10,8 +10,13 @@
       "body": "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。新規で取引と根拠が確定したものは、#bo_upsider の該当取引スレッドに確認済み5項目メモと金額の一致した有効証憑PDFを登録します。用途やセグメントが未確定のものは確認するまで登録しません。"
     },
     {
-      "tone": "warning",
-      "lead": "今回のチェック（11/09）",
+      "tone": "info",
+      "lead": "今回のチェック（11/09 15:31）",
+      "body": "観測時刻は2026-11-09 15:31 JSTで、画面を更新した時刻ではない。共有制限で止まっていた3件を、ユーザーが#bo_upsiderの各スレッドへ手動で添付した。UPSIDERが各スレッドで「領収証を添付しました」と通知した。連携による再送はしていない。MonotaRO 注文134323400028 ¥17,553は15:27:59 JSTに20261105_17553JPY_モノタロウ_領収証.pdfを投稿（Yoshihiro Shibata）、通知は15:28:09 JST。MonotaRO 注文134323400029 ¥4,833は15:28:33 JSTに20261105_4833JPY_モノタロウ_領収証.pdfを投稿、通知は15:28:41 JST。ミスミ注文AB256FB3F5 ¥16,614は15:28:59 JSTに20261104_16614JPY_ミスミ_領収書・ご注文明細書.pdfを投稿、通知は15:29:08 JST。3件ともメモ完了通知は既にあり、ステータスは登録完了にした。証憑保存済・Slack未添付は0件。共有拒否の未添付表示と未完了件数は消し、添付結果は成功3件／未完了0件。要処理は台帳のステータスから数え、残り4件（アースダンボール ¥5,570、秋月電子 ¥2,600、日進ゴム ¥17,600、DANBALLACE ¥7,160）。登録完了は13件、返金除外は2件。金額、取引ID、注文番号、Drive、Slackリンク、納入状態は変えていない。"
+    },
+    {
+      "tone": "info",
+      "lead": "前回のチェック（11/09 09:26）",
       "body": "観測時刻は2026-11-09 09:26:56 JSTで、画面を更新した時刻ではない。新規のAIハンド決済用取引はない。VERCEL INC. ¥10,697（SaaS決済用、2026-11-09 07:48:31 JST）とDOCUSIGN INC. ¥13,310（11/7 22:25 JST）は対象外で、台帳の19件には加えていない。公開されていたJSONは2026-11-07 23:30:30 JSTのままで、11/8 09:07の更新はmain未反映だった。その11/8の記録は残し、古い公開版へは戻していない。既存19件（AIハンドのスレッド18件と、返金の別投稿1件）を取引IDとスレッドtsで照合した。18スレッドすべてでUPSIDER自身の「決済メモを追加しました！」を確認した。スレッドの返信数は前回値を保持していないため、前回との増減は比較できない。完了通知の新しいtsは取っていないので、メモ根拠の配列は11/8までの記録のままである。登録完了10件は維持する。Amazon ¥2,473は支払い明細PDFとUPSIDERの領収証添付通知を観測したが、事業者名と登録番号は今回読めていない。登録完了は従来のままで、今回証憑の有効性を再検証したとは扱わない。要処理から除外するのは返金元と返金の2件で、行は削除していない。返金元はアースダンボール ¥23,960（tx-20261102-2053-earth-23960、注文1881489、スレッド1793620385.051929、UPSIDER取引549bde33-c564-4db9-91af-7d776fc10282）。観測のDANBALLACE ¥23,960と同一である。返金はDANBALLACE -¥23,960（tx-20261104-0923-danballace-23960、11/04 09:23の別投稿）。返金元の表示ステータスは証憑なしから返金（メモ・証憑不要）に改め、メモ根拠は残す。照合した要処理7件は、証憑なしのアースダンボール ¥5,570、秋月電子 ¥2,600、日進ゴム ¥17,600、DANBALLACE ¥7,160と、証憑保存済・Slack未添付のままのミスミ AB256FB3F5 ¥16,614、MonotaRO 注文134323400028 ¥17,553、MonotaRO 注文134323400029 ¥4,833である。観測ではこの3件をSlack上の証憑なしとしていたが、Driveの正式証憑と共有拒否は変わらないのでステータスは維持し、再送していない。既存の要処理8件との差は、返金元¥23,960を要処理に入れていたことである。仮集計ではなく、このID照合の結果である。日進ゴムとMonotaROのPNGは既知の購入スクショであり、PNG形式であることだけを理由に画像証憑を一般に無効とはしない。金額、取引ID、注文番号、Drive、Slackリンク、納入状態は変えていない。"
     },
     {
@@ -45,8 +50,8 @@
       "body": "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。"
     },
     {
-      "tone": "warning",
-      "lead": "Slack添付未完了",
+      "tone": "info",
+      "lead": "過去のSlack添付（11/07・共有制限で停止）",
       "body": "正式領収証3件の添付をユーザー確認後に試行しましたが、共有チャンネル制限で停止。登録完了に変更していません。追加送信なし。"
     }
   ],
@@ -272,8 +277,8 @@
       "merchant": "ミスミ",
       "amount": "¥16,614",
       "amountYen": 16614,
-      "content": "YUBI Glove用ねじ・ブシュ類（正式領収書保存済、Slack未添付）",
-      "status": "証憑保存済・Slack未添付",
+      "content": "YUBI Glove用ねじ・ブシュ類",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793794487.621929",
       "drive": "https://drive.google.com/file/d/1HfunjbtjE_pIRvdzKBPvUjmkMzO55b3-/view?usp=drivesdk",
       "memoKey": null,
@@ -293,7 +298,7 @@
       "evidenceAcquisitionStatus": "正式領収書の取得・保存確認済",
       "evidenceAcquisitionReason": "トップ→担当名メニュー→注文履歴→注文書・領収書からDL成功。PDF実読と既存Driveの同内容を確認。",
       "evidenceStorageStatus": "取得・Drive保存済",
-      "slackAttachmentStatus": "未添付（共有制限で停止）",
+      "slackAttachmentStatus": "添付済（ユーザーが手動）",
       "accountingPdfAcquiredAt": "2026-11-07 22:11:16 JST",
       "accountingPdfVerifiedAt": "2026-11-07 22:19:29 JST",
       "evidenceType": "領収書・ご注文明細書",
@@ -304,8 +309,18 @@
       "expectedDeliveryDate": "2026-11-09",
       "evidenceCheck": "クレジットカード支払、最終出荷日後の税込合計受領文言あり。注文番号・税込額・税額・登録番号を実読確認。納入済とはしない。",
       "slackAttachmentAttemptAt": "2026-11-07 23:30:13 JST",
-      "slackAttachmentError": "mcp_externally_shared_channel_restricted",
-      "upSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認"
+      "upSiderReceiptRegistrationStatus": "登録完了（ユーザーが手動添付。UPSIDER『領収証を添付しました』を確認）",
+      "priorStatus": "証憑保存済・Slack未添付",
+      "statusUpdatedAt": "2026-11-09 15:31 JST",
+      "priorSlackAttachmentStatus": "未添付（共有制限で停止）",
+      "priorSlackAttachmentError": "mcp_externally_shared_channel_restricted",
+      "priorUpSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認",
+      "slackReceiptFile": "20261104_16614JPY_ミスミ_領収書・ご注文明細書.pdf",
+      "slackReceiptPostedAt": "2026-11-09 15:28:59 JST",
+      "slackReceiptPostedBy": "ユーザー",
+      "slackReceiptNotice": "領収証を添付しました",
+      "slackReceiptNoticeAt": "2026-11-09 15:29:08 JST",
+      "slackReceiptObservedAt": "2026-11-09 15:31 JST"
     },
     {
       "id": "tx-20261105-1241-akizuki-2600",
@@ -339,7 +354,7 @@
       "amount": "¥17,553",
       "amountYen": 17553,
       "content": "パーツケース4段×2・ゴム切はさみ・L型カッターなど工具7点",
-      "status": "証憑保存済・Slack未添付",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793850815.359609",
       "drive": "https://drive.google.com/file/d/1jDKF67ouM3XLEfFoST-3FCfkjUEuEZle/view?usp=drivesdk",
       "memoKey": null,
@@ -357,7 +372,7 @@
       "ledgerId": "TX-20261105-MNT-001",
       "orderNumber": "134323400028",
       "evidenceStorageStatus": "取得・Drive保存済",
-      "slackAttachmentStatus": "未添付（共有制限で停止）",
+      "slackAttachmentStatus": "添付済（ユーザーが手動）",
       "accountingPdfAcquiredAt": "2026-11-07 22:05:13 JST",
       "evidenceType": "領収証",
       "receiptNumber": "B8494026",
@@ -368,8 +383,18 @@
       "deliveryStatus": "納入済",
       "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。",
       "slackAttachmentAttemptAt": "2026-11-07 23:30:13 JST",
-      "slackAttachmentError": "mcp_externally_shared_channel_restricted",
-      "upSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認"
+      "upSiderReceiptRegistrationStatus": "登録完了（ユーザーが手動添付。UPSIDER『領収証を添付しました』を確認）",
+      "priorStatus": "証憑保存済・Slack未添付",
+      "statusUpdatedAt": "2026-11-09 15:31 JST",
+      "priorSlackAttachmentStatus": "未添付（共有制限で停止）",
+      "priorSlackAttachmentError": "mcp_externally_shared_channel_restricted",
+      "priorUpSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認",
+      "slackReceiptFile": "20261105_17553JPY_モノタロウ_領収証.pdf",
+      "slackReceiptPostedAt": "2026-11-09 15:27:59 JST",
+      "slackReceiptPostedBy": "Yoshihiro Shibata",
+      "slackReceiptNotice": "領収証を添付しました",
+      "slackReceiptNoticeAt": "2026-11-09 15:28:09 JST",
+      "slackReceiptObservedAt": "2026-11-09 15:31 JST"
     },
     {
       "id": "tx-20261105-1357-nisshin-17600",
@@ -403,7 +428,7 @@
       "amount": "¥4,833",
       "amountYen": 4833,
       "content": "チャック付き袋 M8G×2・M8I×1",
-      "status": "証憑保存済・Slack未添付",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793855065.925729",
       "drive": "https://drive.google.com/file/d/15cZV1IiQHyZRbDHykorO0DEes7XByYFD/view?usp=drivesdk",
       "memoKey": null,
@@ -421,7 +446,7 @@
       "ledgerId": "TX-20261105-MNT-002",
       "orderNumber": "134323400029",
       "evidenceStorageStatus": "取得・Drive保存済",
-      "slackAttachmentStatus": "未添付（共有制限で停止）",
+      "slackAttachmentStatus": "添付済（ユーザーが手動）",
       "accountingPdfAcquiredAt": "2026-11-07 22:05:13 JST",
       "evidenceType": "領収証",
       "receiptNumber": "B8494028",
@@ -432,8 +457,18 @@
       "deliveryStatus": "納入済",
       "evidenceCheck": "正式領収証の注文番号・宛名・税込総額・税率別内訳をPDF実読検証。税込額はカード決済額と一致。納品書明細別税の参考額とは独立。",
       "slackAttachmentAttemptAt": "2026-11-07 23:30:13 JST",
-      "slackAttachmentError": "mcp_externally_shared_channel_restricted",
-      "upSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認"
+      "upSiderReceiptRegistrationStatus": "登録完了（ユーザーが手動添付。UPSIDER『領収証を添付しました』を確認）",
+      "priorStatus": "証憑保存済・Slack未添付",
+      "statusUpdatedAt": "2026-11-09 15:31 JST",
+      "priorSlackAttachmentStatus": "未添付（共有制限で停止）",
+      "priorSlackAttachmentError": "mcp_externally_shared_channel_restricted",
+      "priorUpSiderReceiptRegistrationStatus": "今回正式PDFの登録完了未確認",
+      "slackReceiptFile": "20261105_4833JPY_モノタロウ_領収証.pdf",
+      "slackReceiptPostedAt": "2026-11-09 15:28:33 JST",
+      "slackReceiptPostedBy": "ユーザー",
+      "slackReceiptNotice": "領収証を添付しました",
+      "slackReceiptNoticeAt": "2026-11-09 15:28:41 JST",
+      "slackReceiptObservedAt": "2026-11-09 15:31 JST"
     },
     {
       "id": "tx-20261105-1703-amazon-2659",
@@ -624,31 +659,40 @@
     "lastSuccessfulAcquisitionAt": "2026-11-07 22:11:16 JST",
     "lastSuccessfulAcquisitionMeaning": "最新会計証憑PDFの元Drive保存日時（createdTime実測）。月次への命名整理・実読確認はaccountingPdfVerifiedAtで別管理。"
   },
-  "dataAcquiredAt": "2026-11-09 09:26:56 JST",
+  "dataAcquiredAt": "2026-11-09 15:31 JST",
   "dataAcquiredAtLabel": "Slackブラウザで観測した時刻。画面を更新した時刻やページを開いた時刻ではない。会計証憑PDFの取得成功時刻ではない。",
-  "previousDataAcquiredAt": "2026-11-08 09:07 JST",
+  "previousDataAcquiredAt": "2026-11-09 09:26:56 JST",
   "earlierDataAcquiredAt": "2026-11-07 23:30:30 JST",
   "slackReceiptAttachment": {
     "attempted": 3,
-    "attached": 0,
-    "upSiderRegistered": 0,
-    "blocked": 3,
-    "error": "mcp_externally_shared_channel_restricted",
-    "checkedAt": "2026-11-07 23:30:13 JST",
+    "attached": 3,
+    "upSiderRegistered": 3,
+    "blocked": 0,
+    "checkedAt": "2026-11-09 15:31 JST",
     "retryOn20261108Am9": false,
     "retrySkippedReason": "共有拒否済みのMonotaRO 134323400028/134323400029・MISUMI AB256FB3F5は再送しない",
     "retryOn20261109": false,
-    "retryOn20261109Reason": "共有拒否済みのMonotaRO 134323400028/134323400029・MISUMI AB256FB3F5は再送しない"
+    "retryOn20261109Reason": "共有拒否済みのMonotaRO 134323400028/134323400029・MISUMI AB256FB3F5は再送しない",
+    "method": "ユーザーが手動でスレッドへ添付",
+    "note": "ユーザーが3件とも手動で添付した。UPSIDERの「領収証を添付しました」を確認し、登録完了にした。",
+    "priorAttempt": {
+      "attempted": 3,
+      "attached": 0,
+      "upSiderRegistered": 0,
+      "blocked": 3,
+      "error": "mcp_externally_shared_channel_restricted",
+      "checkedAt": "2026-11-07 23:30:13 JST"
+    }
   },
   "upsiderCheck": {
-    "checkedAt": "2026-11-09 09:26:56 JST",
+    "checkedAt": "2026-11-09 15:31 JST",
     "routine": "UPSIDERチェック",
     "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
     "newTransactions": 0,
-    "threadsChecked": 18,
+    "threadsChecked": 3,
     "ledgerRows": 19,
-    "registeredComplete": 10,
-    "needsAction": 7,
+    "registeredComplete": 13,
+    "needsAction": 4,
     "refundExcluded": 2,
     "refundExcludedIds": [
       "tx-20261102-2053-earth-23960",
@@ -656,45 +700,76 @@
     ],
     "needsActionIds": [
       "tx-20261102-2054-earth-5570",
-      "tx-20261106-1553-danballace-7160",
-      "tx-20261104-2114-misumi-16614",
       "tx-20261105-1241-akizuki-2600",
-      "tx-20261105-1253-monotaro-17553",
       "tx-20261105-1357-nisshin-17600",
-      "tx-20261105-1404-monotaro-4833"
-    ],
-    "excludedOutOfScope": [
-      "DOCUSIGN INC. ¥13,310（11/7 22:25 JST、会社名義・SaaSカード）",
-      "VERCEL INC. ¥10,697（SaaS決済用、2026-11-09 07:48:31 JST、txn 683692ea-88be-4f53-a2ed-789063082ca0）"
-    ],
-    "limits": [
-      "スレッド返信数は前回値がないため増減比較不可",
-      "完了通知の新規tsは未取得。memoEvidenceは増やしていない",
-      "Amazon ¥2,473は事業者名・登録番号が読めず、今回の証憑有効性再検証とはしない"
-    ],
-    "doNotResend": [
-      "134323400028",
-      "134323400029",
-      "AB256FB3F5"
+      "tx-20261106-1553-danballace-7160"
     ],
     "statusChanges": [
-      "tx-20261102-2053-earth-23960"
+      "tx-20261105-1253-monotaro-17553",
+      "tx-20261105-1404-monotaro-4833",
+      "tx-20261104-2114-misumi-16614"
     ],
-    "attachmentsAttempted": 0,
+    "attachmentsObserved": 3,
+    "attachmentMethod": "ユーザーが手動でスレッドへ添付",
     "memosCreated": 0,
+    "doNotResend": [],
+    "note": "134323400028、134323400029、AB256FB3F5は手動添付済み。",
     "previous": {
-      "checkedAt": "2026-11-08 09:07 JST",
-      "routine": "UPSIDERチェック（毎日AM9時）",
+      "checkedAt": "2026-11-09 09:26:56 JST",
+      "routine": "UPSIDERチェック",
+      "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
       "newTransactions": 0,
-      "statusChanges": 0,
+      "threadsChecked": 18,
+      "ledgerRows": 19,
+      "registeredComplete": 10,
+      "needsAction": 7,
+      "refundExcluded": 2,
+      "refundExcludedIds": [
+        "tx-20261102-2053-earth-23960",
+        "tx-20261104-0923-danballace-23960"
+      ],
+      "needsActionIds": [
+        "tx-20261102-2054-earth-5570",
+        "tx-20261106-1553-danballace-7160",
+        "tx-20261104-2114-misumi-16614",
+        "tx-20261105-1241-akizuki-2600",
+        "tx-20261105-1253-monotaro-17553",
+        "tx-20261105-1357-nisshin-17600",
+        "tx-20261105-1404-monotaro-4833"
+      ],
+      "excludedOutOfScope": [
+        "DOCUSIGN INC. ¥13,310（11/7 22:25 JST、会社名義・SaaSカード）",
+        "VERCEL INC. ¥10,697（SaaS決済用、2026-11-09 07:48:31 JST、txn 683692ea-88be-4f53-a2ed-789063082ca0）"
+      ],
+      "limits": [
+        "スレッド返信数は前回値がないため増減比較不可",
+        "完了通知の新規tsは未取得。memoEvidenceは増やしていない",
+        "Amazon ¥2,473は事業者名・登録番号が読めず、今回の証憑有効性再検証とはしない"
+      ],
+      "doNotResend": [
+        "134323400028",
+        "134323400029",
+        "AB256FB3F5"
+      ],
+      "statusChanges": [
+        "tx-20261102-2053-earth-23960"
+      ],
       "attachmentsAttempted": 0,
       "memosCreated": 0,
-      "excludedOutOfScope": [
-        "DOCUSIGN INC（会社名義・SaaSカード）"
-      ],
-      "gmailAfter20261108": 0,
-      "driveInboxNewPdfs": 0,
-      "botInboxNewMail": 0
+      "previous": {
+        "checkedAt": "2026-11-08 09:07 JST",
+        "routine": "UPSIDERチェック（毎日AM9時）",
+        "newTransactions": 0,
+        "statusChanges": 0,
+        "attachmentsAttempted": 0,
+        "memosCreated": 0,
+        "excludedOutOfScope": [
+          "DOCUSIGN INC（会社名義・SaaSカード）"
+        ],
+        "gmailAfter20261108": 0,
+        "driveInboxNewPdfs": 0,
+        "botInboxNewMail": 0
+      }
     }
   }
 }
