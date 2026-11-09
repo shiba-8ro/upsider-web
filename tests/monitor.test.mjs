@@ -9,6 +9,7 @@ import {
   buildExecutionRequest,
   buildGasPayload,
   actionSummary,
+  needsAction,
   attachmentResultView,
   countOf,
   filterTransactions,
@@ -177,18 +178,48 @@ function startServer() {
 
 async function assertLedger() {
   check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-07 23:30:30 JST", "asOf");
-  check(ledger.dataAcquiredAt === "2026-11-07 23:30:30 JST", "data acquired at");
-  check(ledger.lead.includes("2026-11-07 23:30:13 JST"), "lead check time");
-  check(ledger.lead.includes("共有チャンネル制限により3件とも未完了"), "lead share rejection");
-  check(ledger.lead.includes("メモあり18件・返金不要1件"), "lead memo counts");
+  check(ledger.asOf === "2026-11-09 09:26:56 JST", "asOf");
+  check(ledger.dataAcquiredAt === "2026-11-09 09:26:56 JST", "data acquired at");
+  check(ledger.previousDataAcquiredAt === "2026-11-08 09:07 JST", "previous acquisition kept");
+  check(ledger.earlierDataAcquiredAt === "2026-11-07 23:30:30 JST", "published 11/07 acquisition kept");
+  check(ledger.lead.includes("2026-11-09 09:26:56 JST"), "lead check time");
+  check(ledger.lead.includes("画面の更新時刻ではない"), "lead separates screen update time");
+  check(ledger.lead.includes("新規のAIハンド決済用取引なし"), "lead has no new card transactions");
+  check(ledger.lead.includes("登録完了10件"), "lead registered count");
+  check(ledger.lead.includes("要処理は7件"), "lead action count");
+  check(ledger.lead.includes("共有拒否済のため再送せず"), "lead share rejection");
+  check(ledger.lead.includes("メモあり18件"), "lead memo counts");
+  check(!ledger.lead.includes("ステータス変更なし"), "lead does not hide the refund-source status change");
+  check(JSON.stringify(ledger.callouts.map((item) => item.lead)) === JSON.stringify([
+    "運用メモ",
+    "今回のチェック（11/09）",
+    "前回のチェック（11/08 AM9）",
+    "前回のチェック（11/06 19:25）",
+    "前回のチェック（11/07 AM9）",
+    "メモ判定ルール更新・1回再走査",
+    "過去の取得経路の記録（解消済）",
+    "ミスミ領収書取得成功",
+    "Slack添付未完了",
+  ]), `callout titles ${ledger.callouts.map((item) => item.lead).join(" / ")}`);
+  const currentCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/09）");
+  check(currentCheck?.body.includes("VERCEL INC. ¥10,697") && currentCheck.body.includes("DOCUSIGN INC. ¥13,310"), "out of scope cards stay out of the ledger");
+  check(currentCheck?.body.includes("返信数は前回値を保持していない"), "reply-count limit");
+  check(currentCheck?.body.includes("今回証憑の有効性を再検証したとは扱わない"), "amazon 2473 is not marked revalidated");
+  check(!currentCheck?.body.includes("再検証済"), "current check does not claim revalidation");
+  check(currentCheck?.body.includes("PNG形式であることだけを理由に画像証憑を一般に無効とはしない"), "png format is not a general invalidation");
+  check(currentCheck?.body.includes("tx-20261102-2053-earth-23960") && currentCheck.body.includes("tx-20261104-0923-danballace-23960"), "both refund ids are named");
+  check(currentCheck?.body.includes("既存の要処理8件との差は、返金元¥23,960を要処理に入れていたこと"), "difference from the previous 8 is explained");
+  const previousAm9 = ledger.callouts.find((item) => item.lead === "前回のチェック（11/08 AM9）");
+  check(previousAm9?.body.includes("DOCUSIGN INCは対象外") && previousAm9.body.includes("ステータス変更なし") && previousAm9.body.includes("再送していない"), "11/08 check body kept");
+  check(ledger.callouts[0].body.includes("確認済み5項目メモと金額の一致した有効証憑PDFを登録します"), "memo registration copy");
+  check(!ledger.callouts[0].body.includes("メモ作成は停止中です"), "current ops copy does not say memo creation is fully stopped");
   check(ledger.transactions.filter((tx) => tx.memoPresent === true).length === 18, "memo present 18");
   check(!JSON.stringify(ledger).includes("13c1225a") && !JSON.stringify(ledger).includes("F0CF"), "internal attachment ids stay out");
   const counts = {
     "登録完了": 10,
-    [REFUND_STATUS]: 1,
+    [REFUND_STATUS]: 2,
     "メモなし": 0,
-    "証憑なし": 5,
+    "証憑なし": 4,
     "証憑保存済・Slack未添付": 3,
     "メモ・証憑なし": 0,
     "証憑不一致": 0,
@@ -200,9 +231,9 @@ async function assertLedger() {
   check(FILTERS.slice(1).reduce((total, status) => total + countOf(ledger.transactions, status), 0) === 19, "status counts sum to 19");
   const sums = {
     "登録完了": 48684,
-    [REFUND_STATUS]: -23960,
+    [REFUND_STATUS]: 0,
     "メモなし": 0,
-    "証憑なし": 56890,
+    "証憑なし": 32930,
     "証憑保存済・Slack未添付": 39000,
     "メモ・証憑なし": 0,
     "証憑不一致": 0,
@@ -215,7 +246,7 @@ async function assertLedger() {
   check(formatYen(120614) === "¥120,614", "yen format");
   check(formatYen(-23960) === "-¥23,960", "negative yen format");
   check(filterTransactions(ledger.transactions, "メモなし").every((tx) => tx.status === "メモなし"), "filter exact");
-  check(filterTransactions(ledger.transactions, "証憑なし").length === 5, "証憑なし excludes saved and combined");
+  check(filterTransactions(ledger.transactions, "証憑なし").length === 4, "証憑なし excludes the refund source, saved receipts, and combined");
   check(filterTransactions(ledger.transactions, "証憑保存済・Slack未添付").length === 3, "saved receipts are their own status");
   check(filterTransactions(ledger.transactions, "メモなし").length === 0, "メモなし is empty");
   check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 19, "slack urls unique");
@@ -260,9 +291,27 @@ async function assertLedger() {
   }
   check(ledger.slackReceiptAttachment?.attempted === 3 && ledger.slackReceiptAttachment?.attached === 0 && ledger.slackReceiptAttachment?.blocked === 3, "attachment result counts");
   check(ledger.evidencePatrol?.lastSuccessfulAcquisitionAt === "2026-11-07 22:11:16 JST", "pdf time stays separate from asOf");
+  check(ledger.memoCheck?.lastIncrementalCheckedAt === "2026-11-09 09:26:56 JST" && ledger.memoCheck?.lastIncrementalThreadsScanned === 18, "eighteen threads rechecked");
+  check(ledger.memoCheck?.previousIncrementalCheckedAt === "2026-11-08 09:07 JST" && ledger.memoCheck?.previousIncrementalThreadsScanned === 8, "11/08 incremental check kept");
+  check(ledger.memoCheck?.lastIncrementalLimit.includes("増減比較はしない"), "reply counts are not compared");
+  check(ledger.slackReceiptAttachment?.retryOn20261109 === false, "refused receipts were not resent");
   const actions = actionSummary(ledger.transactions);
-  check(actions.action === 8 && actions.refund === 1 && actions.done === 10, `action summary ${JSON.stringify(actions)}`);
+  check(actions.action === 7 && actions.refund === 2 && actions.done === 10, `action summary ${JSON.stringify(actions)}`);
   check(actions.action === ledger.transactions.length - actions.refund - actions.done, "action count excludes refund and completed");
+  const actionIds = ledger.transactions.filter(needsAction).map((tx) => tx.id).sort();
+  const expectedActionIds = [
+    "tx-20261102-2054-earth-5570",
+    "tx-20261104-2114-misumi-16614",
+    "tx-20261105-1241-akizuki-2600",
+    "tx-20261105-1253-monotaro-17553",
+    "tx-20261105-1357-nisshin-17600",
+    "tx-20261105-1404-monotaro-4833",
+    "tx-20261106-1553-danballace-7160",
+  ];
+  check(JSON.stringify(actionIds) === JSON.stringify(expectedActionIds), `action ids ${actionIds.join(",")}`);
+  check(JSON.stringify([...ledger.upsiderCheck.needsActionIds].sort()) === JSON.stringify(expectedActionIds), "stored action ids match the status count");
+  check(JSON.stringify([...ledger.upsiderCheck.refundExcludedIds].sort()) === JSON.stringify(["tx-20261102-2053-earth-23960", REFUND_ID].sort()), "stored refund exclusion");
+  check(!ledger.transactions.some((tx) => /VERCEL|DOCUSIGN/.test(tx.merchant)), "out of scope merchants are not rows");
   const attachment = attachmentResultView(ledger);
   check(attachment?.succeeded === 0 && attachment?.incomplete === 3 && attachment?.checkedAt === "2026-11-07 23:30:13 JST", `attachment view ${JSON.stringify(attachment && { succeeded: attachment.succeeded, incomplete: attachment.incomplete, checkedAt: attachment.checkedAt })}`);
   check(attachment?.rows.length === 3 && attachment.rows.every((tx) => tx.status === "証憑保存済・Slack未添付"), "three saved rows stay unattached");
@@ -280,12 +329,29 @@ async function assertLedger() {
   check(refund?.drive === "証憑不要", "refund drive");
   check(refund?.detailSection === false, "refund is not an unhandled detail");
   check(refund?.slack.endsWith("1793751790.582399"), "refund slack");
+  check(refund?.refundRole === "返金投稿" && refund?.refundPairId === "tx-20261102-2053-earth-23960", "refund pair kept");
   check(filterTransactions(ledger.transactions, "すべて").some((tx) => tx.id === REFUND_ID), "refund stays in the full list");
+  const refundSource = ledger.transactions.find((tx) => tx.id === "tx-20261102-2053-earth-23960");
+  check(refundSource?.merchant === "アースダンボール" && refundSource?.amountYen === 23960 && refundSource?.amount === "¥23,960", "refund source amount kept");
+  check(refundSource?.orderNumber === "1881489" && refundSource?.drive === "なし", "refund source order and drive kept");
+  check(refundSource?.slack.endsWith("1793620385.051929"), "refund source slack kept");
+  check(refundSource?.upSiderTransactionId === "549bde33-c564-4db9-91af-7d776fc10282", "refund source id kept");
+  check(refundSource?.content === "プロダクト販売用段ボール（梱包用50セット）", "refund source content kept");
+  check(refundSource?.status === REFUND_STATUS && refundSource?.priorStatus === "証憑なし", "refund source leaves the action queue");
+  check(refundSource?.memoPresent === true && refundSource?.memoEvidence.length === 1, "refund source memo history kept");
+  check(refundSource?.refundPairId === REFUND_ID, "refund source points at the refund post");
+  check(!needsAction(refundSource) && !needsAction(refund), "both refund rows are outside the action count");
+  const amazon2473 = ledger.transactions.find((tx) => tx.id === "tx-20261101-0440-amazon-2473");
+  check(amazon2473?.status === "登録完了" && amazon2473?.orderNumber === "249-7203088-9467041" && amazon2473?.drive === "あり", "amazon 2473 registration kept");
+  check(!("accountingPdfVerifiedAt" in amazon2473) && !("voucherValidityReverified" in amazon2473), "amazon 2473 was not marked revalidated");
 
   const order = ledger.transactions.find((tx) => tx.id === NEW_ORDER_ID);
   check(order?.merchant === "DANBALLACE" && order?.datetime === "11/06 15:53", "new order identity");
   check(order?.amountYen === 7160 && order?.status === "証憑なし" && order?.drive === "なし", "new order status");
   check(order?.memoStatus === "あり" && order?.memoPresent === true, "new order memo");
+  check(order?.memoEvidence?.length === 2, "additional memo observation");
+  const slackUiMemo = order?.memoEvidence?.find((item) => item.slackUiTime === "2026-11-08 00:59 JST");
+  check(slackUiMemo?.notice === "決済メモを追加しました！" && slackUiMemo?.noticeBy === "UPSIDER アプリ" && slackUiMemo?.observedAt === "2026-11-08 09:07 JST" && order?.status === "証憑なし", "slack ui memo observation keeps 証憑なし");
   check(order?.slack.endsWith("1793948039.836289"), "new order slack");
   check(order?.detailSection === false, "new order is not an open detail");
   check(!ledger.details.some((detail) => detail.transactionId === NEW_ORDER_ID), "new order detail removed");
@@ -534,20 +600,29 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最新データ確認: 2026-11-07 23:30:13 JST。正式領収証3件はDrive保存済。Slack添付は共有チャンネル制限により3件とも未完了。メモあり18件・返金不要1件。",
+      "最新データ確認: 2026-11-09 09:26:56 JST（Slackブラウザの観測時刻。画面の更新時刻ではない）。新規のAIハンド決済用取引なし。メモあり18件。登録完了10件。返金元¥23,960と返金-¥23,960は要処理から除外し、要処理は7件。正式領収証3件はDrive保存済・Slack未添付（共有拒否済のため再送せず）。",
+      "今回のチェック（11/09）",
+      "前回のチェック（11/08 AM9）",
+      "前回のチェック（11/07 AM9）",
+      "返信数は前回値を保持していないため、前回との増減は比較できない。",
+      "今回証憑の有効性を再検証したとは扱わない。",
+      "PNG形式であることだけを理由に画像証憑を一般に無効とはしない。",
+      "既存の要処理8件との差は、返金元¥23,960を要処理に入れていたことである。",
+      "2026-11-07 23:30:30 JST",
+      "新規のAIハンド決済用取引なし（会社名義・SaaSカードのDOCUSIGN INCは対象外）。未完了8件をSlackブラウザで再確認し、いずれもUPSIDERアプリの「決済メモを追加しました！」を確認。ステータス変更なし。MonotaRO ¥17,553・¥4,833とミスミ ¥16,614の正式領収証はDrive保存済だが、共有チャンネル制限でSlack未添付のため再送していない。スレッド上のPNGスクショは会計証憑に数えない。秋月電子 ¥2,600、日進ゴム ¥17,600、アースダンボール／DANBALLACE の¥23,960・¥5,570・¥7,160は有効な領収書・請求書なし。DANBALLACE ¥7,160は11/08 00:59（Slack表示）にも完了通知を再確認。出荷予定11/13・納入予定11/16。",
       "正式領収証3件の添付をユーザー確認後に試行しましたが、共有チャンネル制限で停止。登録完了に変更していません。追加送信なし。",
       "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。",
       "UPSIDER完了通知のみでメモあり。5項目本文不要。",
       "最終取得日時",
-      "2026-11-07 23:30:30（日本時間）",
+      "2026-11-09 09:26:56（日本時間）",
       "証憑PDF取得成功",
       "2026-11-07 22:11:16（日本時間）",
       "会計証憑PDFの取得成功時刻ではない",
-      "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。メモ作成は停止中です。",
+      "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。新規で取引と根拠が確定したものは、#bo_upsider の該当取引スレッドに確認済み5項目メモと金額の一致した有効証憑PDFを登録します。用途やセグメントが未確定のものは確認するまで登録しません。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
       "要対応の取引です。Slackスレッドの下にメモ入力欄があり、スクショがある場合はその上に並びます。",
-      "メモ作成は停止中。スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
+      "スクショはチャット／ページ参照用であり、UPSIDER証憑ではない。このページは使い捨てではなく、毎回のチェック結果で更新するダッシュボードです。",
     ]) {
       check(bodyText.includes(phrase), `missing phrase: ${phrase}`);
     }
@@ -609,8 +684,9 @@ async function browserChecks(base) {
       text: node.textContent,
       datetime: node.getAttribute("datetime"),
     }));
-    check(acquired.text === "2026-11-07 23:30:30（日本時間）", `acquired text ${acquired.text}`);
-    check(acquired.datetime === "2026-11-07 23:30:30 JST", `acquired source ${acquired.datetime}`);
+    check(acquired.text === "2026-11-09 09:26:56（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-09 09:26:56 JST", `acquired source ${acquired.datetime}`);
+    check(!bodyText.includes("再検証済"), "page does not claim vouchers were revalidated");
     const pdfSaved = await page.$eval("[data-pdf-saved-at]", (node) => node.innerText);
     check(pdfSaved.includes("2026-11-07 22:11:16（日本時間）") && !pdfSaved.includes("23:30:30"), `pdf time ${pdfSaved}`);
     const attachmentText = await page.$eval("[data-attachment-result]", (node) => node.innerText);
@@ -639,7 +715,7 @@ async function browserChecks(base) {
       check(card.links[1].text === "取引スレッド" && card.links[1].href.includes(thread), `${card.id} slack ${card.links[1].href}`);
     }
     const actionLine = await page.$eval("[data-action-count]", (node) => node.textContent);
-    check(actionLine === "要処理 8件。登録完了10件と返金1件は含めません。", actionLine);
+    check(actionLine === "要処理 7件。登録完了10件と返金2件は含めません。", actionLine);
     check(!bodyText.includes("トークン使用量"), "token heading removed");
     check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
     const instruction = await page.$eval("[data-instruction]", (node) => ({
@@ -677,9 +753,9 @@ async function browserChecks(base) {
     const agg = await page.$$eval(".agg-table tbody tr", (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent)));
     check(agg[0][0] === "すべて" && agg[0][1] === "19" && agg[0][2] === "¥120,614", `agg total ${agg[0]}`);
     check(agg.find((row) => row[0] === "登録完了")?.[1] === "10" && agg.find((row) => row[0] === "登録完了")?.[2] === "¥48,684", "agg 登録完了");
-    check(agg.find((row) => row[0] === REFUND_STATUS)?.[1] === "1" && agg.find((row) => row[0] === REFUND_STATUS)?.[2] === "-¥23,960", "agg refund");
+    check(agg.find((row) => row[0] === REFUND_STATUS)?.[1] === "2" && agg.find((row) => row[0] === REFUND_STATUS)?.[2] === "¥0", "agg refund");
     check(agg.find((row) => row[0] === "メモなし")?.[1] === "0" && agg.find((row) => row[0] === "メモなし")?.[2] === "¥0", "agg メモなし");
-    check(agg.find((row) => row[0] === "証憑なし")?.[1] === "5" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥56,890", "agg 証憑なし");
+    check(agg.find((row) => row[0] === "証憑なし")?.[1] === "4" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥32,930", "agg 証憑なし");
     check(agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[1] === "3" && agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[2] === "¥39,000", "agg saved receipts");
     check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "0" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥0", "agg メモ・証憑なし");
     const savedTone = await page.$eval("[data-tx-id='tx-20261105-1253-monotaro-17553'] [data-label='ステータス'] .status", (node) => node.className);
