@@ -178,21 +178,22 @@ function startServer() {
 
 async function assertLedger() {
   check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-09 15:31 JST", "asOf");
-  check(ledger.dataAcquiredAt === "2026-11-09 15:31 JST", "data acquired at");
-  check(ledger.previousDataAcquiredAt === "2026-11-09 09:26:56 JST", "previous acquisition kept");
+  check(ledger.asOf === "2026-11-09 15:59 JST", "asOf");
+  check(ledger.dataAcquiredAt === "2026-11-09 15:59 JST", "data acquired at");
+  check(ledger.previousDataAcquiredAt === "2026-11-09 15:31 JST", "previous acquisition kept");
   check(ledger.earlierDataAcquiredAt === "2026-11-07 23:30:30 JST", "published 11/07 acquisition kept");
-  check(ledger.lead.includes("2026-11-09 15:31 JST"), "lead check time");
+  check(ledger.lead.includes("2026-11-09 15:59 JST"), "lead check time");
   check(ledger.lead.includes("画面の更新時刻ではない"), "lead separates screen update time");
   check(ledger.lead.includes("登録完了13件"), "lead registered count");
   check(ledger.lead.includes("要処理4件"), "lead action count");
   check(ledger.lead.includes("返金除外2件"), "lead refund exclusion");
-  check(ledger.lead.includes("ユーザーが手動で添付"), "lead manual attachment");
+  check(ledger.lead.includes("証憑保存済・Slack未添付"), "lead shows the saved receipt");
+  check(ledger.lead.includes("共有拒否ではない"), "akizuki is not share-refused");
   check(ledger.lead.includes("メモあり18件"), "lead memo counts");
-  check(!ledger.lead.includes("Slack未添付"), "lead no longer says the three are unattached");
   check(JSON.stringify(ledger.callouts.map((item) => item.lead)) === JSON.stringify([
     "運用メモ",
-    "今回のチェック（11/09 15:31）",
+    "今回のチェック（11/09 15:59）",
+    "前回のチェック（11/09 15:31）",
     "前回のチェック（11/09 09:26）",
     "前回のチェック（11/08 AM9）",
     "前回のチェック（11/06 19:25）",
@@ -202,13 +203,18 @@ async function assertLedger() {
     "ミスミ領収書取得成功",
     "過去のSlack添付（11/07・共有制限で停止）",
   ]), `callout titles ${ledger.callouts.map((item) => item.lead).join(" / ")}`);
-  const currentCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/09 15:31）");
-  check(currentCheck?.body.includes("成功3件／未完了0件"), "current attachment result");
-  check(currentCheck?.body.includes("20261105_17553JPY_モノタロウ_領収証.pdf") && currentCheck.body.includes("15:28:09"), "monotaro 17553 receipt");
-  check(currentCheck?.body.includes("20261105_4833JPY_モノタロウ_領収証.pdf") && currentCheck.body.includes("15:28:41"), "monotaro 4833 receipt");
-  check(currentCheck?.body.includes("20261104_16614JPY_ミスミ_領収書・ご注文明細書.pdf") && currentCheck.body.includes("15:29:08"), "misumi receipt");
-  check(currentCheck?.body.includes("残り4件"), "remaining action count is computed");
-  check(currentCheck?.body.includes("連携による再送はしていない"), "no integration resend");
+  const currentCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/09 15:59）");
+  check(currentCheck?.body.includes("20261105_2600JPY_秋月電子_領収書.pdf") && currentCheck.body.includes("T8010901000370") && currentCheck.body.includes("但し部品代"), "akizuki receipt");
+  check(currentCheck?.body.includes("共有拒否ではない") && currentCheck.body.includes("ユーザーが手動で添付する予定"), "manual pending attachment");
+  check(currentCheck?.body.includes("伝票437180618571") && currentCheck.body.includes("出荷済み"), "akizuki shipment");
+  check(currentCheck?.body.includes("登録完了13件、返金除外2件、要処理4件"), "counts recomputed");
+  const attachedCheck = ledger.callouts.find((item) => item.lead === "前回のチェック（11/09 15:31）");
+  check(attachedCheck?.body.includes("成功3件／未完了0件"), "current attachment result");
+  check(attachedCheck?.body.includes("20261105_17553JPY_モノタロウ_領収証.pdf") && attachedCheck.body.includes("15:28:09"), "monotaro 17553 receipt");
+  check(attachedCheck?.body.includes("20261105_4833JPY_モノタロウ_領収証.pdf") && attachedCheck.body.includes("15:28:41"), "monotaro 4833 receipt");
+  check(attachedCheck?.body.includes("20261104_16614JPY_ミスミ_領収書・ご注文明細書.pdf") && attachedCheck.body.includes("15:29:08"), "misumi receipt");
+  check(attachedCheck?.body.includes("残り4件"), "remaining action count is computed");
+  check(attachedCheck?.body.includes("連携による再送はしていない"), "no integration resend");
   const morningCheck = ledger.callouts.find((item) => item.lead === "前回のチェック（11/09 09:26）");
   check(morningCheck?.body.includes("VERCEL INC. ¥10,697") && morningCheck.body.includes("DOCUSIGN INC. ¥13,310"), "out of scope cards stay out of the ledger");
   check(morningCheck?.body.includes("返信数は前回値を保持していない"), "reply-count limit");
@@ -227,8 +233,8 @@ async function assertLedger() {
     "登録完了": 13,
     [REFUND_STATUS]: 2,
     "メモなし": 0,
-    "証憑なし": 4,
-    "証憑保存済・Slack未添付": 0,
+    "証憑なし": 3,
+    "証憑保存済・Slack未添付": 1,
     "メモ・証憑なし": 0,
     "証憑不一致": 0,
   };
@@ -241,8 +247,8 @@ async function assertLedger() {
     "登録完了": 87684,
     [REFUND_STATUS]: 0,
     "メモなし": 0,
-    "証憑なし": 32930,
-    "証憑保存済・Slack未添付": 0,
+    "証憑なし": 30330,
+    "証憑保存済・Slack未添付": 2600,
     "メモ・証憑なし": 0,
     "証憑不一致": 0,
   };
@@ -254,8 +260,8 @@ async function assertLedger() {
   check(formatYen(120614) === "¥120,614", "yen format");
   check(formatYen(-23960) === "-¥23,960", "negative yen format");
   check(filterTransactions(ledger.transactions, "メモなし").every((tx) => tx.status === "メモなし"), "filter exact");
-  check(filterTransactions(ledger.transactions, "証憑なし").length === 4, "証憑なし excludes the refund source, saved receipts, and combined");
-  check(filterTransactions(ledger.transactions, "証憑保存済・Slack未添付").length === 0, "no receipt stays merely saved");
+  check(filterTransactions(ledger.transactions, "証憑なし").length === 3, "証憑なし excludes the saved akizuki receipt");
+  check(filterTransactions(ledger.transactions, "証憑保存済・Slack未添付").length === 1, "akizuki is saved and not yet attached");
   check(filterTransactions(ledger.transactions, "メモなし").length === 0, "メモなし is empty");
   check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 19, "slack urls unique");
   const detailIds = ledger.transactions.filter((tx) => tx.detailSection).map((tx) => tx.id);
@@ -265,7 +271,12 @@ async function assertLedger() {
   const completed = ledger.transactions.filter((tx) => tx.status === "登録完了");
   const savedReceipts = ledger.transactions.filter((tx) => tx.status === "証憑保存済・Slack未添付");
   check(completed.length === 13 && completed.every(hasEvidence), `登録完了 evidence ${completed.length}`);
-  check(savedReceipts.length === 0, "saved-unattached status is clear");
+  check(savedReceipts.length === 1 && savedReceipts[0].id === "tx-20261105-1241-akizuki-2600", "only akizuki is saved and unattached");
+  check(savedReceipts[0].drive === "https://drive.google.com/file/d/1gz3oExT325FAWtY0YprLunl6Eex9EUuw/view", "akizuki drive url");
+  check(savedReceipts[0].content === "Hub基板用ピンヘッダー" && !savedReceipts[0].content.includes("証憑なし"), "akizuki content drops the missing-evidence note");
+  check(savedReceipts[0].slackAttachmentError === undefined && savedReceipts[0].slackAttachmentStatus === "未添付（ユーザーが手動で添付予定）", "akizuki is not share-refused");
+  check(savedReceipts[0].deliveryStatus === "出荷済み" && savedReceipts[0].trackingNumber === "437180618571" && savedReceipts[0].deliveryConfirmed === false, "akizuki shipment is unconfirmed");
+  check(savedReceipts[0].memoPresent === true && savedReceipts[0].orderNumber === "EC261105-069042182-01", "akizuki memo and order kept");
   check(Object.keys(EVIDENCE_URLS).length === 5, "five evidence urls");
   for (const [id, url] of Object.entries(EVIDENCE_URLS)) {
     const tx = ledger.transactions.find((row) => row.id === id);
@@ -280,7 +291,7 @@ async function assertLedger() {
   check(ledger.transactions.find((tx) => tx.id === "tx-20261105-2312-amazon-9300")?.slack.endsWith("1793887975.184129"), "slack 9300");
   check(ledger.transactions.find((tx) => tx.id === "tx-20261105-2312-amazon-2117")?.slack.endsWith("1793887975.859849"), "slack 2117");
   check(ledger.transactions.find((tx) => tx.id === "tx-20261106-0113-amazon-255")?.slack.endsWith("1793895200.333029"), "slack 255");
-  check(ledger.transactions.filter((tx) => String(tx.drive).startsWith("https://")).length === 8, "eight drive urls");
+  check(ledger.transactions.filter((tx) => String(tx.drive).startsWith("https://")).length === 9, "nine drive urls");
   const savedUrls = {
     "tx-20261105-1253-monotaro-17553": ["https://drive.google.com/file/d/1jDKF67ouM3XLEfFoST-3FCfkjUEuEZle/view?usp=drivesdk", "2026-11-07 22:05:13 JST"],
     "tx-20261105-1404-monotaro-4833": ["https://drive.google.com/file/d/15cZV1IiQHyZRbDHykorO0DEes7XByYFD/view?usp=drivesdk", "2026-11-07 22:05:13 JST"],
@@ -308,7 +319,8 @@ async function assertLedger() {
   }
   check(ledger.slackReceiptAttachment?.attempted === 3 && ledger.slackReceiptAttachment?.attached === 3 && ledger.slackReceiptAttachment?.blocked === 0 && ledger.slackReceiptAttachment?.upSiderRegistered === 3, "attachment result counts");
   check(ledger.slackReceiptAttachment?.error === undefined && ledger.slackReceiptAttachment?.priorAttempt?.error === "mcp_externally_shared_channel_restricted" && ledger.slackReceiptAttachment?.priorAttempt?.blocked === 3, "blocked attempt kept as history");
-  check(ledger.evidencePatrol?.lastSuccessfulAcquisitionAt === "2026-11-07 22:11:16 JST", "pdf time stays separate from asOf");
+  check(ledger.evidencePatrol?.lastSuccessfulAcquisitionAt === "2026-11-09 15:59 JST", "akizuki pdf time");
+  check(ledger.evidencePatrol?.previousLastSuccessfulAcquisitionAt === "2026-11-07 22:11:16 JST", "earlier pdf time kept");
   check(ledger.memoCheck?.lastIncrementalCheckedAt === "2026-11-09 09:26:56 JST" && ledger.memoCheck?.lastIncrementalThreadsScanned === 18, "eighteen threads rechecked");
   check(ledger.memoCheck?.previousIncrementalCheckedAt === "2026-11-08 09:07 JST" && ledger.memoCheck?.previousIncrementalThreadsScanned === 8, "11/08 incremental check kept");
   check(ledger.memoCheck?.lastIncrementalLimit.includes("増減比較はしない"), "reply counts are not compared");
@@ -620,8 +632,9 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最新データ確認: 2026-11-09 15:31 JST（Slackブラウザの観測時刻。画面の更新時刻ではない）。MonotaRO ¥17,553・¥4,833とミスミ ¥16,614はユーザーが手動で添付し、UPSIDERの「領収証を添付しました」を確認して登録完了。登録完了13件。返金除外2件。要処理4件。メモあり18件。",
-      "今回のチェック（11/09 15:31）",
+      "最新データ確認: 2026-11-09 15:59 JST（領収書をDriveへ保存した時刻。画面の更新時刻ではない）。秋月電子 ¥2,600は正式領収書を保存し、ステータスは証憑保存済・Slack未添付。添付はユーザーが手動で行う予定で、共有拒否ではない。登録完了13件。返金除外2件。要処理4件。メモあり18件。",
+      "今回のチェック（11/09 15:59）",
+      "前回のチェック（11/09 15:31）",
       "前回のチェック（11/09 09:26）",
       "前回のチェック（11/08 AM9）",
       "前回のチェック（11/07 AM9）",
@@ -635,12 +648,12 @@ async function browserChecks(base) {
       "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。",
       "UPSIDER完了通知のみでメモあり。5項目本文不要。",
       "最終取得日時",
-      "2026-11-09 15:31（日本時間）",
+      "2026-11-09 15:59（日本時間）",
       "成功3件／未完了0件",
       "ユーザーが3件とも手動で添付した。UPSIDERの「領収証を添付しました」を確認し、登録完了にした。",
       "証憑PDF取得成功",
-      "2026-11-07 22:11:16（日本時間）",
-      "会計証憑PDFの取得成功時刻ではない",
+      "2026-11-09 15:59（日本時間）",
+      "秋月電子の正式領収書を取得してDriveへ保存した時刻。",
       "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。新規で取引と根拠が確定したものは、#bo_upsider の該当取引スレッドに確認済み5項目メモと金額の一致した有効証憑PDFを登録します。用途やセグメントが未確定のものは確認するまで登録しません。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
@@ -707,11 +720,11 @@ async function browserChecks(base) {
       text: node.textContent,
       datetime: node.getAttribute("datetime"),
     }));
-    check(acquired.text === "2026-11-09 15:31（日本時間）", `acquired text ${acquired.text}`);
-    check(acquired.datetime === "2026-11-09 15:31 JST", `acquired source ${acquired.datetime}`);
+    check(acquired.text === "2026-11-09 15:59（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-09 15:59 JST", `acquired source ${acquired.datetime}`);
     check(!bodyText.includes("再検証済"), "page does not claim vouchers were revalidated");
     const pdfSaved = await page.$eval("[data-pdf-saved-at]", (node) => node.innerText);
-    check(pdfSaved.includes("2026-11-07 22:11:16（日本時間）") && !pdfSaved.includes("23:30:30"), `pdf time ${pdfSaved}`);
+    check(pdfSaved.includes("2026-11-09 15:59（日本時間）") && !pdfSaved.includes("23:30:30"), `pdf time ${pdfSaved}`);
     const attachmentText = await page.$eval("[data-attachment-result]", (node) => node.innerText);
     check(attachmentText.includes("ユーザーが3件とも手動で添付した。UPSIDERの「領収証を添付しました」を確認し、登録完了にした。"), attachmentText);
     check(attachmentText.includes("成功3件／未完了0件"), attachmentText);
@@ -762,8 +775,8 @@ async function browserChecks(base) {
     check(agg.find((row) => row[0] === "登録完了")?.[1] === "13" && agg.find((row) => row[0] === "登録完了")?.[2] === "¥87,684", "agg 登録完了");
     check(agg.find((row) => row[0] === REFUND_STATUS)?.[1] === "2" && agg.find((row) => row[0] === REFUND_STATUS)?.[2] === "¥0", "agg refund");
     check(agg.find((row) => row[0] === "メモなし")?.[1] === "0" && agg.find((row) => row[0] === "メモなし")?.[2] === "¥0", "agg メモなし");
-    check(agg.find((row) => row[0] === "証憑なし")?.[1] === "4" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥32,930", "agg 証憑なし");
-    check(agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[1] === "0" && agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[2] === "¥0", "agg saved receipts");
+    check(agg.find((row) => row[0] === "証憑なし")?.[1] === "3" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥30,330", "agg 証憑なし");
+    check(agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[1] === "1" && agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[2] === "¥2,600", "agg saved receipts");
     check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "0" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥0", "agg メモ・証憑なし");
     const savedTone = await page.$eval("[data-tx-id='tx-20261105-1253-monotaro-17553'] [data-label='ステータス'] .status", (node) => node.className);
     check(savedTone.includes("success") && !savedTone.includes("warning"), `registered tone ${savedTone}`);
