@@ -178,11 +178,11 @@ function startServer() {
 
 async function assertLedger() {
   check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-09 16:25 JST", "asOf");
-  check(ledger.dataAcquiredAt === "2026-11-09 16:25 JST", "data acquired at");
-  check(ledger.previousDataAcquiredAt === "2026-11-09 15:59 JST", "previous acquisition kept");
-  check(ledger.earlierDataAcquiredAt === "2026-11-07 23:30:30 JST", "published 11/07 acquisition kept");
-  check(ledger.lead.includes("2026-11-09 16:25 JST"), "lead check time");
+  check(ledger.asOf === "2026-11-09 22:25 JST", "asOf");
+  check(ledger.dataAcquiredAt === "2026-11-09 22:25 JST", "data acquired at");
+  check(ledger.previousDataAcquiredAt === "2026-11-09 16:25 JST", "previous acquisition kept");
+  check(ledger.earlierDataAcquiredAt === "2026-11-09 15:59 JST", "earlier acquisition kept");
+  check(ledger.lead.includes("2026-11-09 22:25 JST"), "lead check time");
   check(ledger.lead.includes("画面の更新時刻ではない"), "lead separates screen update time");
   check(ledger.lead.includes("登録完了13件"), "lead registered count");
   check(ledger.lead.includes("要処理4件"), "lead action count");
@@ -192,7 +192,8 @@ async function assertLedger() {
   check(ledger.lead.includes("メモあり18件"), "lead memo counts");
   check(JSON.stringify(ledger.callouts.map((item) => item.lead)) === JSON.stringify([
     "運用メモ",
-    "今回のチェック（11/09 16:25）",
+    "今回のチェック（11/09 22:25）",
+    "前回のチェック（11/09 16:25）",
     "前回のチェック（11/09 15:59）",
     "前回のチェック（11/09 15:31）",
     "前回のチェック（11/09 09:26）",
@@ -204,12 +205,17 @@ async function assertLedger() {
     "ミスミ領収書取得成功",
     "過去のSlack添付（11/07・共有制限で停止）",
   ]), `callout titles ${ledger.callouts.map((item) => item.lead).join(" / ")}`);
-  const currentCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/09 16:25）");
-  check(currentCheck?.body.includes("C333470") && currentCheck.body.includes("福山通運") && currentCheck.body.includes("2026-11-10"), "earth 5570 receipt");
-  check(currentCheck?.body.includes("C333471") && currentCheck.body.includes("佐川急便") && currentCheck.body.includes("2026-11-13"), "danballace 7160 receipt");
-  check(currentCheck?.body.includes("T5030001042538") && currentCheck.body.includes("但し梱包資材代") && currentCheck.body.includes("株式会社AlgomaticDynamics"), "carton receipt identity");
-  check(currentCheck?.body.includes("共有拒否ではない") && currentCheck.body.includes("ユーザーが手動で添付する予定"), "manual pending attachment");
-  check(currentCheck?.body.includes("登録完了13件、返金除外2件、要処理4件"), "counts recomputed");
+  const currentCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/09 22:25）");
+  check(currentCheck?.tone === "info" && currentCheck.body.includes("66583392606") && currentCheck.body.includes("2956381-01") && currentCheck.body.includes("福山通運"), "earth 5570 shipment");
+  check(currentCheck?.body.includes("12時～14時") && currentCheck.body.includes("2026-11-10") && currentCheck.body.includes("https://drive.google.com/file/d/12UcuIa_b5oA8PHpqp4OVjMu947EW6UO8/view"), "earth delivery note");
+  check(currentCheck?.body.includes("発行日2026/11/07") && currentCheck.body.includes("ご請求額¥5,570") && currentCheck.body.includes("納品日2026/11/10"), "delivery note amounts");
+  check(currentCheck?.body.includes("証憑保存済・Slack未添付") && currentCheck.body.includes("登録完了13件、返金除外2件、要処理4件"), "shipment check keeps counts");
+  const receiptCheck = ledger.callouts.find((item) => item.lead === "前回のチェック（11/09 16:25）");
+  check(receiptCheck?.body.includes("C333470") && receiptCheck.body.includes("福山通運") && receiptCheck.body.includes("2026-11-10"), "earth 5570 receipt");
+  check(receiptCheck?.body.includes("C333471") && receiptCheck.body.includes("佐川急便") && receiptCheck.body.includes("2026-11-13"), "danballace 7160 receipt");
+  check(receiptCheck?.body.includes("T5030001042538") && receiptCheck.body.includes("但し梱包資材代") && receiptCheck.body.includes("株式会社AlgomaticDynamics"), "carton receipt identity");
+  check(receiptCheck?.body.includes("共有拒否ではない") && receiptCheck.body.includes("ユーザーが手動で添付する予定"), "manual pending attachment");
+  check(receiptCheck?.body.includes("登録完了13件、返金除外2件、要処理4件"), "counts recomputed");
   const akizukiCheck = ledger.callouts.find((item) => item.lead === "前回のチェック（11/09 15:59）");
   check(akizukiCheck?.body.includes("20261105_2600JPY_秋月電子_領収書.pdf") && akizukiCheck.body.includes("T8010901000370") && akizukiCheck.body.includes("但し部品代"), "akizuki receipt");
   check(akizukiCheck?.body.includes("伝票437180618571") && akizukiCheck.body.includes("出荷済み"), "akizuki shipment");
@@ -286,7 +292,9 @@ async function assertLedger() {
   check(akizuki?.memoPresent === true && akizuki?.orderNumber === "EC261105-069042182-01", "akizuki memo and order kept");
   const earth = savedById["tx-20261102-2054-earth-5570"];
   check(earth?.drive === "https://drive.google.com/file/d/1Mc2l_KfD-eHDzObdVr3xtEoLNJoJKQSG/view" && earth?.receiptNumber === "C333470", "earth receipt");
-  check(earth?.deliveryStatus === "注文準備中" && earth?.carrier === "福山通運" && earth?.expectedShippingDate === "2026-11-10", "earth shipping");
+  check(earth?.status === "証憑保存済・Slack未添付" && earth?.amount === "¥5,570" && earth?.amountYen === 5570, "earth status and amount unchanged");
+  check(earth?.deliveryStatus === "出荷済み（納入予定2026-11-10）" && earth?.carrier === "福山通運" && earth?.shippedDate === "2026-11-09" && earth?.trackingNumber === "66583392606" && earth?.expectedDeliveryDate === "2026-11-10" && earth?.deliveryConfirmed === false && earth?.expectedShippingDate === undefined, "earth shipping");
+  check(earth?.deliveryNoteFile === "https://drive.google.com/file/d/12UcuIa_b5oA8PHpqp4OVjMu947EW6UO8/view", "earth delivery note file");
   check(earth?.content === "プロダクト販売用段ボール" && earth?.slackAttachmentError === undefined, "earth content and no share refusal");
   const carton = savedById["tx-20261106-1553-danballace-7160"];
   check(carton?.drive === "https://drive.google.com/file/d/1kZw-pFbWVnaT3csoEGb0w5DfMkrW5RKO/view" && carton?.receiptNumber === "C333471", "danballace receipt");
@@ -647,8 +655,9 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最新データ確認: 2026-11-09 16:25 JST（領収書をDriveへ保存した時刻。画面の更新時刻ではない）。アースダンボール ¥5,570 と DANBALLACE ¥7,160 は正式領収書を保存し、ステータスは証憑保存済・Slack未添付。添付はユーザーが手動で行う予定で、共有拒否ではない。登録完了13件。返金除外2件。要処理4件。メモあり18件。",
-      "今回のチェック（11/09 16:25）",
+      "最新データ確認: 2026-11-09 22:25 JST（出荷と納品書のメールを読んだ時刻。画面の更新時刻ではない）。アースダンボール ¥5,570 は2026-11-09に福山通運で出荷済み、納入予定は2026-11-10の12時～14時。ステータスは証憑保存済・Slack未添付のまま。添付はユーザーが手動で行う予定で、共有拒否ではない。登録完了13件。返金除外2件。要処理4件。メモあり18件。",
+      "今回のチェック（11/09 22:25）",
+      "前回のチェック（11/09 16:25）",
       "前回のチェック（11/09 15:59）",
       "前回のチェック（11/09 15:31）",
       "前回のチェック（11/09 09:26）",
@@ -669,7 +678,7 @@ async function browserChecks(base) {
       "ユーザーが3件とも手動で添付した。UPSIDERの「領収証を添付しました」を確認し、登録完了にした。",
       "証憑PDF取得成功",
       "2026-11-09 16:25（日本時間）",
-      "アースダンボール ¥5,570 と DANBALLACE ¥7,160 の正式領収書を取得してDriveへ保存した時刻。",
+      "アースダンボール ¥5,570 の出荷とご請求情報、および納品書類のメールを読んだ時刻。画面を更新した時刻やページを開いた時刻ではない。",
       "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。新規で取引と根拠が確定したものは、#bo_upsider の該当取引スレッドに確認済み5項目メモと金額の一致した有効証憑PDFを登録します。用途やセグメントが未確定のものは確認するまで登録しません。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
@@ -736,8 +745,8 @@ async function browserChecks(base) {
       text: node.textContent,
       datetime: node.getAttribute("datetime"),
     }));
-    check(acquired.text === "2026-11-09 16:25（日本時間）", `acquired text ${acquired.text}`);
-    check(acquired.datetime === "2026-11-09 16:25 JST", `acquired source ${acquired.datetime}`);
+    check(acquired.text === "2026-11-09 22:25（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-09 22:25 JST", `acquired source ${acquired.datetime}`);
     check(!bodyText.includes("再検証済"), "page does not claim vouchers were revalidated");
     const pdfSaved = await page.$eval("[data-pdf-saved-at]", (node) => node.innerText);
     check(pdfSaved.includes("2026-11-09 16:25（日本時間）") && !pdfSaved.includes("23:30:30"), `pdf time ${pdfSaved}`);
