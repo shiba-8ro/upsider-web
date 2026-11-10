@@ -199,7 +199,7 @@ function renderActionCount(ledger) {
   return el(
     "p",
     { class: "action-count", "data-action-count": "" },
-    `要処理 ${summary.action}件。登録完了${summary.done}件と返金${summary.refund}件は含めません。`,
+    `要処理 ${summary.action}件。登録完了${summary.done}件。除外${summary.excluded}件（返金${summary.refund}件、本人以外の課金${summary.notOwner}件）は含めません。`,
   );
 }
 
