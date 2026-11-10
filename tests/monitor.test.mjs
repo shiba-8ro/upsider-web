@@ -177,23 +177,25 @@ function startServer() {
 }
 
 async function assertLedger() {
-  check(ledger.transactions.length === 19, "ledger has 19 transactions");
-  check(ledger.asOf === "2026-11-09 22:55 JST", "asOf");
-  check(ledger.dataAcquiredAt === "2026-11-09 22:55 JST", "data acquired at");
-  check(ledger.previousDataAcquiredAt === "2026-11-09 22:25 JST", "previous acquisition kept");
-  check(ledger.earlierDataAcquiredAt === "2026-11-09 16:25 JST", "earlier acquisition kept");
-  check(ledger.lead.includes("2026-11-09 22:55 JST"), "lead check time");
+  check(ledger.transactions.length === 21, "ledger has 21 transactions");
+  check(ledger.asOf === "2026-11-10 09:06 JST", "asOf");
+  check(ledger.dataAcquiredAt === "2026-11-10 09:06 JST", "data acquired at");
+  check(ledger.previousDataAcquiredAt === "2026-11-09 22:55 JST", "previous acquisition kept");
+  check(ledger.earlierDataAcquiredAt === "2026-11-09 22:25 JST", "earlier acquisition kept");
+  check(ledger.dataAcquiredAtLabel.includes("ブラウザで確認した時刻") && ledger.dataAcquiredAtLabel.includes("画面を更新した時刻やページを開いた時刻ではない"), "acquisition label");
+  check(ledger.lead.includes("2026-11-10 09:06 JST"), "lead check time");
   check(ledger.lead.includes("画面の更新時刻ではない"), "lead separates screen update time");
-  check(ledger.lead.includes("登録完了13件"), "lead registered count");
-  check(ledger.lead.includes("要処理4件"), "lead action count");
+  check(ledger.lead.includes("登録完了14件"), "lead registered count");
+  check(ledger.lead.includes("要処理5件"), "lead action count");
   check(ledger.lead.includes("返金除外2件"), "lead refund exclusion");
-  check(ledger.lead.includes("注文AB256FB3F5") && ledger.lead.includes("納入済み"), "lead records misumi delivery");
-  check(ledger.lead.includes("登録完了のまま"), "lead keeps misumi registration");
+  check(ledger.lead.includes("秋月電子 ¥2,600") && ledger.lead.includes("2026-11-09 16:02:41 JST"), "lead records akizuki receipt notice");
+  check(ledger.lead.includes("GITHUB, INC. ¥392（USD 2.42）") && ledger.lead.includes("¥783（USD 4.83）"), "lead records github additions");
   check(ledger.lead.includes("メモあり18件"), "lead memo counts");
   check(!("tokenUsage" in ledger), "token usage is not stored");
   check(JSON.stringify(ledger.callouts.map((item) => item.lead)) === JSON.stringify([
     "運用メモ",
-    "今回のチェック（11/09 22:55）",
+    "今回のチェック（11/10 09:06）",
+    "前回のチェック（11/09 22:55）",
     "前回のチェック（11/09 22:25）",
     "前回のチェック（11/09 16:25）",
     "前回のチェック（11/09 15:59）",
@@ -207,7 +209,16 @@ async function assertLedger() {
     "ミスミ領収書取得成功",
     "過去のSlack添付（11/07・共有制限で停止）",
   ]), `callout titles ${ledger.callouts.map((item) => item.lead).join(" / ")}`);
-  const currentCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/09 22:55）");
+  const latestCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/10 09:06）");
+  check(latestCheck?.tone === "info" && latestCheck.body.includes("2026-11-10 09:06:29 JST") && latestCheck.body.includes("画面を更新した時刻ではない"), "latest check time");
+  check(latestCheck?.body.includes("領収証を添付しました") && latestCheck.body.includes("2026-11-09 16:02:41 JST") && latestCheck.body.includes("20261105_2600JPY_秋月電子_領収書.pdf") && latestCheck.body.includes("T8010901000370"), "akizuki receipt notice");
+  check(latestCheck?.body.includes("登録完了14件、返金除外2件、要処理5件"), "latest counts");
+  check(latestCheck?.body.includes("USD 2.42") && latestCheck.body.includes("1794214457.091699") && latestCheck.body.includes("19d4ace8-8c22-4266-b43e-f55d6ec58050"), "github 392");
+  check(latestCheck?.body.includes("USD 4.83") && latestCheck.body.includes("1794214530.632489") && latestCheck.body.includes("d910f06d-69ce-4253-81cd-8311c5a46b31"), "github 783");
+  check(latestCheck?.body.includes("通常購買候補") && latestCheck.body.includes("用途は要確認") && latestCheck.body.includes("メモ・証憑なし"), "github classification");
+  check(latestCheck?.body.includes("アースダンボール ¥5,570、DANBALLACE ¥7,160、日進ゴム ¥17,600は金額もステータスも変えていない"), "protected rows named");
+  check(latestCheck?.body.includes("連携による投稿・添付・再送はしていない"), "no send from this check");
+  const currentCheck = ledger.callouts.find((item) => item.lead === "前回のチェック（11/09 22:55）");
   check(currentCheck?.tone === "info" && currentCheck.body.includes("123402") && currentCheck.body.includes("123403") && currentCheck.body.includes("2026-11-06"), "misumi delivery slips");
   check(currentCheck?.body.includes("15,470円") && currentCheck.body.includes("1,144円") && currentCheck.body.includes("16,614円"), "misumi delivery amounts");
   check(currentCheck?.body.includes("tx-20261104-2114-misumi-16614") && currentCheck.body.includes("TX-20261104-MSM-001") && currentCheck.body.includes("AB256FB3F5"), "misumi delivery identity");
@@ -248,55 +259,60 @@ async function assertLedger() {
   check(ledger.transactions.filter((tx) => tx.memoPresent === true).length === 18, "memo present 18");
   check(!JSON.stringify(ledger).includes("13c1225a") && !JSON.stringify(ledger).includes("F0CF"), "internal attachment ids stay out");
   const counts = {
-    "登録完了": 13,
+    "登録完了": 14,
     [REFUND_STATUS]: 2,
     "メモなし": 0,
     "証憑なし": 1,
-    "証憑保存済・Slack未添付": 3,
-    "メモ・証憑なし": 0,
+    "証憑保存済・Slack未添付": 2,
+    "メモ・証憑なし": 2,
     "証憑不一致": 0,
   };
   check(JSON.stringify(FILTERS.slice(1)) === JSON.stringify(Object.keys(counts)), "filters match counted statuses");
   for (const [status, count] of Object.entries(counts)) {
     check(countOf(ledger.transactions, status) === count, `${status} count ${countOf(ledger.transactions, status)} !== ${count}`);
   }
-  check(FILTERS.slice(1).reduce((total, status) => total + countOf(ledger.transactions, status), 0) === 19, "status counts sum to 19");
+  check(FILTERS.slice(1).reduce((total, status) => total + countOf(ledger.transactions, status), 0) === 21, "status counts sum to 21");
   const sums = {
-    "登録完了": 87684,
+    "登録完了": 90284,
     [REFUND_STATUS]: 0,
     "メモなし": 0,
     "証憑なし": 17600,
-    "証憑保存済・Slack未添付": 15330,
-    "メモ・証憑なし": 0,
+    "証憑保存済・Slack未添付": 12730,
+    "メモ・証憑なし": 1175,
     "証憑不一致": 0,
   };
-  check(sumOf(ledger.transactions) === 120614, `total ${sumOf(ledger.transactions)}`);
-  check(Object.values(sums).reduce((total, value) => total + value, 0) === 120614, "status sums");
+  check(sumOf(ledger.transactions) === 121789, `total ${sumOf(ledger.transactions)}`);
+  check(Object.values(sums).reduce((total, value) => total + value, 0) === 121789, "status sums");
   for (const [status, amount] of Object.entries(sums)) {
     check(sumOf(ledger.transactions, status) === amount, `sum ${status} ${sumOf(ledger.transactions, status)} !== ${amount}`);
   }
-  check(formatYen(120614) === "¥120,614", "yen format");
+  check(formatYen(121789) === "¥121,789", "yen format");
   check(formatYen(-23960) === "-¥23,960", "negative yen format");
   check(filterTransactions(ledger.transactions, "メモなし").every((tx) => tx.status === "メモなし"), "filter exact");
   check(filterTransactions(ledger.transactions, "証憑なし").length === 1, "only nisshin remains without a receipt");
-  check(filterTransactions(ledger.transactions, "証憑保存済・Slack未添付").length === 3, "three receipts are saved and not yet attached");
+  check(filterTransactions(ledger.transactions, "証憑保存済・Slack未添付").length === 2, "two receipts are saved and not yet attached");
   check(filterTransactions(ledger.transactions, "メモなし").length === 0, "メモなし is empty");
-  check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 19, "slack urls unique");
+  check(filterTransactions(ledger.transactions, "メモ・証憑なし").length === 2, "github rows lack memo and receipt");
+  check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 21, "slack urls unique");
   const detailIds = ledger.transactions.filter((tx) => tx.detailSection).map((tx) => tx.id);
   check(detailIds.length === 0, `detail sections ${detailIds.join(",")}`);
   check(JSON.stringify(detailIds) === JSON.stringify(ledger.details.map((detail) => detail.transactionId)), "details follow unhandled transactions");
 
   const completed = ledger.transactions.filter((tx) => tx.status === "登録完了");
   const savedReceipts = ledger.transactions.filter((tx) => tx.status === "証憑保存済・Slack未添付");
-  check(completed.length === 13 && completed.every(hasEvidence), `登録完了 evidence ${completed.length}`);
+  check(completed.length === 14 && completed.every(hasEvidence), `登録完了 evidence ${completed.length}`);
   const savedById = Object.fromEntries(savedReceipts.map((tx) => [tx.id, tx]));
-  check(savedReceipts.length === 3, "three saved receipts");
-  const akizuki = savedById["tx-20261105-1241-akizuki-2600"];
+  check(savedReceipts.length === 2, "two saved receipts");
+  const akizuki = ledger.transactions.find((tx) => tx.id === "tx-20261105-1241-akizuki-2600");
+  check(akizuki?.status === "登録完了" && akizuki?.amount === "¥2,600" && akizuki?.amountYen === 2600, "akizuki registered without an amount change");
   check(akizuki?.drive === "https://drive.google.com/file/d/1gz3oExT325FAWtY0YprLunl6Eex9EUuw/view", "akizuki drive url");
   check(akizuki?.content === "Hub基板用ピンヘッダー" && !akizuki.content.includes("証憑なし"), "akizuki content drops the missing-evidence note");
-  check(akizuki?.slackAttachmentError === undefined && akizuki?.slackAttachmentStatus === "未添付（ユーザーが手動で添付予定）", "akizuki is not share-refused");
+  check(akizuki?.slackAttachmentError === undefined && akizuki?.slackAttachmentStatus === "添付済（ユーザーが手動）" && akizuki?.priorSlackAttachmentStatus === "未添付（ユーザーが手動で添付予定）", "akizuki is not share-refused");
+  check(akizuki?.slackReceiptNotice === "領収証を添付しました" && akizuki?.slackReceiptNoticeAt === "2026-11-09 16:02:41 JST" && akizuki?.slackReceiptFile === "20261105_2600JPY_秋月電子_領収書.pdf", "akizuki notice");
+  check(akizuki?.evidenceCheck.endsWith("UPSIDERの「領収証を添付しました」を2026-11-09 16:02:41 JSTに確認した。"), "akizuki evidence check ends with the notice");
   check(akizuki?.deliveryStatus === "出荷済み" && akizuki?.trackingNumber === "437180618571" && akizuki?.deliveryConfirmed === false, "akizuki shipment is unconfirmed");
   check(akizuki?.memoPresent === true && akizuki?.orderNumber === "EC261105-069042182-01", "akizuki memo and order kept");
+  check(akizuki?.slack.endsWith("1793850104.514049") && !needsAction(akizuki), "akizuki leaves the action queue");
   const earth = savedById["tx-20261102-2054-earth-5570"];
   check(earth?.drive === "https://drive.google.com/file/d/1Mc2l_KfD-eHDzObdVr3xtEoLNJoJKQSG/view" && earth?.receiptNumber === "C333470", "earth receipt");
   check(earth?.status === "証憑保存済・Slack未添付" && earth?.amount === "¥5,570" && earth?.amountYen === 5570, "earth status and amount unchanged");
@@ -356,17 +372,20 @@ async function assertLedger() {
   check(ledger.memoCheck?.lastIncrementalLimit.includes("増減比較はしない"), "reply counts are not compared");
   check(ledger.slackReceiptAttachment?.retryOn20261109 === false, "refused receipts were not resent");
   const actions = actionSummary(ledger.transactions);
-  check(actions.action === 4 && actions.refund === 2 && actions.done === 13, `action summary ${JSON.stringify(actions)}`);
+  check(actions.action === 5 && actions.refund === 2 && actions.done === 14, `action summary ${JSON.stringify(actions)}`);
   check(actions.action === ledger.transactions.length - actions.refund - actions.done, "action count excludes refund and completed");
   const actionIds = ledger.transactions.filter(needsAction).map((tx) => tx.id).sort();
   const expectedActionIds = [
     "tx-20261102-2054-earth-5570",
-    "tx-20261105-1241-akizuki-2600",
     "tx-20261105-1357-nisshin-17600",
     "tx-20261106-1553-danballace-7160",
+    "tx-20261109-1754-github-392",
+    "tx-20261109-1755-github-783",
   ];
   check(JSON.stringify(actionIds) === JSON.stringify(expectedActionIds), `action ids ${actionIds.join(",")}`);
   check(JSON.stringify([...ledger.upsiderCheck.needsActionIds].sort()) === JSON.stringify(expectedActionIds), "stored action ids match the status count");
+  check(ledger.upsiderCheck.checkedAt === "2026-11-10 09:06 JST" && ledger.upsiderCheck.registeredComplete === 14 && ledger.upsiderCheck.needsAction === 5 && ledger.upsiderCheck.refundExcluded === 2, "stored counts");
+  check(ledger.upsiderCheck.previous?.checkedAt === "2026-11-09 16:25 JST" && ledger.upsiderCheck.previous?.registeredComplete === 13 && ledger.upsiderCheck.attachmentsAttempted === 0 && ledger.upsiderCheck.memosCreated === 0, "previous check nested and nothing was sent");
   check(JSON.stringify([...ledger.upsiderCheck.refundExcludedIds].sort()) === JSON.stringify(["tx-20261102-2053-earth-23960", REFUND_ID].sort()), "stored refund exclusion");
   check(!ledger.transactions.some((tx) => /VERCEL|DOCUSIGN/.test(tx.merchant)), "out of scope merchants are not rows");
   const attachment = attachmentResultView(ledger);
@@ -406,6 +425,20 @@ async function assertLedger() {
   check(refundSource?.memoPresent === true && refundSource?.memoEvidence.length === 1, "refund source memo history kept");
   check(refundSource?.refundPairId === REFUND_ID, "refund source points at the refund post");
   check(!needsAction(refundSource) && !needsAction(refund), "both refund rows are outside the action count");
+  const nisshin = ledger.transactions.find((tx) => tx.id === "tx-20261105-1357-nisshin-17600");
+  check(nisshin?.status === "証憑なし" && nisshin?.amount === "¥17,600" && nisshin?.amountYen === 17600 && nisshin?.content === "HyperVシート PX-10H 15 非耐油 W270×L270×H1.5mm ×5", "nisshin unchanged");
+  const githubRows = [
+    ["tx-20261109-1754-github-392", "¥392", 392, "USD 2.42", "2026-11-09 17:54:16 JST", "1794214457.091699", "19d4ace8-8c22-4266-b43e-f55d6ec58050", "TX-20261109-GHB-001"],
+    ["tx-20261109-1755-github-783", "¥783", 783, "USD 4.83", "2026-11-09 17:55:29 JST", "1794214530.632489", "d910f06d-69ce-4253-81cd-8311c5a46b31", "TX-20261109-GHB-002"],
+  ];
+  for (const [id, amount, yen, foreignAmount, paidAt, thread, transactionId, ledgerId] of githubRows) {
+    const tx = ledger.transactions.find((row) => row.id === id);
+    check(tx?.merchant === "GITHUB, INC." && tx?.amount === amount && tx?.amountYen === yen && tx?.foreignAmount === foreignAmount, `github amount ${id}`);
+    check(tx?.status === "メモ・証憑なし" && tx?.memoStatus === "未確認" && tx?.memoPresent !== true && tx?.memoEvidence == null && tx?.drive === "なし", `github unprocessed ${id}`);
+    check(tx?.classification === "通常購買候補" && tx?.purpose === "要確認" && tx?.content.includes("用途は要確認"), `github purpose ${id}`);
+    check(tx?.paidAt === paidAt && tx?.cardName === "SaaS決済用" && tx?.slack.endsWith(thread) && tx?.upSiderTransactionId === transactionId && tx?.ledgerId === ledgerId, `github identity ${id}`);
+    check(tx?.detailSection === false && needsAction(tx), `github stays in the action queue ${id}`);
+  }
   const amazon2473 = ledger.transactions.find((tx) => tx.id === "tx-20261101-0440-amazon-2473");
   check(amazon2473?.status === "登録完了" && amazon2473?.orderNumber === "249-7203088-9467041" && amazon2473?.drive === "あり", "amazon 2473 registration kept");
   check(!("accountingPdfVerifiedAt" in amazon2473) && !("voucherValidityReverified" in amazon2473), "amazon 2473 was not marked revalidated");
@@ -665,8 +698,9 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最新データ確認: 2026-11-09 22:55 JST（納品書を確認した時刻。画面の更新時刻ではない）。ミスミ ¥16,614（注文AB256FB3F5）は2026-11-09 22:52 JSTの納品書受領で納入済み。ステータスは登録完了のまま。登録完了13件。返金除外2件。要処理4件。メモあり18件。",
-      "今回のチェック（11/09 22:55）",
+      "最新データ確認: 2026-11-10 09:06 JST（#bo_upsiderをブラウザで確認した時刻。画面の更新時刻ではない）。秋月電子 ¥2,600は2026-11-09 16:02:41 JSTのUPSIDER「領収証を添付しました」で登録完了。GITHUB, INC. ¥392（USD 2.42）と¥783（USD 4.83）を要処理に追加。登録完了14件。返金除外2件。要処理5件。メモあり18件。",
+      "今回のチェック（11/10 09:06）",
+      "前回のチェック（11/09 22:55）",
       "前回のチェック（11/09 22:25）",
       "前回のチェック（11/09 16:25）",
       "伝票番号123402・123403、出荷日2026-11-06、税込15,470円＋1,144円＝16,614円",
@@ -685,13 +719,16 @@ async function browserChecks(base) {
       "注文AB256FB3F5・16,614円（税1,510円）の正式領収書を保存確認。モノタロウ2件も保持。Slack未添付のため登録完了ではない。納入は配送中・11/9予定。",
       "UPSIDER完了通知のみでメモあり。5項目本文不要。",
       "最終取得日時",
-      "2026-11-09 22:55（日本時間）",
+      "2026-11-10 09:06（日本時間）",
       "2026-11-09 16:25（日本時間）",
       "成功3件／未完了0件",
       "ユーザーが3件とも手動で添付した。UPSIDERの「領収証を添付しました」を確認し、登録完了にした。",
       "証憑PDF取得成功",
       "2026-11-09 16:25（日本時間）",
-      "ミスミ ¥16,614 の納品書を確認した時刻。画面を更新した時刻やページを開いた時刻ではない。",
+      "Slack #bo_upsiderをブラウザで確認した時刻。画面を更新した時刻やページを開いた時刻ではない。",
+      "UPSIDERが2026-11-09 16:02:41 JSTに「領収証を添付しました」と通知した。",
+      "通常購買候補（USD 2.42、用途は要確認）",
+      "通常購買候補（USD 4.83、用途は要確認）",
       "各取引詳細にメモ入力欄（用途・セグメント1・セグメント2・分類・内容）と「クリップボードにコピー」を設置しています。コピーすると改行付きで5行が入ります。ページ内の注文スクショは参照用で、UPSIDER側の証憑添付ではありません。新規で取引と根拠が確定したものは、#bo_upsider の該当取引スレッドに確認済み5項目メモと金額の一致した有効証憑PDFを登録します。用途やセグメントが未確定のものは確認するまで登録しません。",
       "DANBALLACE返金 -¥23,960 を追加。Amazon 4件（¥14,680・¥9,300・¥2,117・¥255）を本文なしPDF添付で登録完了。DANBALLACE ¥7,160 はメモ・証憑なし。",
       "新規取引なし。Slack再確認でメモ登録が進んでいたため、MonotaRO ¥17,553・¥4,833・日進ゴム ¥17,600 は「証憑なし」に更新（会計上有効な領収書・請求書は未取得。納品書・注文確認書・スクショは対象外）。Amazon ¥2,659 は適格請求書PDFを本文なしで新規添付し登録完了。Amazon ¥2,117 はスレッドに適格請求書PDFが既にあったため再添付なし。Driveに新たに添付可能な有効証憑は上記以外なし。メモ作成は停止中。",
@@ -719,7 +756,7 @@ async function browserChecks(base) {
         rel: td.querySelector("a")?.rel || "",
       })),
     })));
-    check(rows.length === 19, `visible rows ${rows.length}`);
+    check(rows.length === 21, `visible rows ${rows.length}`);
     rows.forEach((row, index) => {
       const tx = ledger.transactions[index];
       const byLabel = Object.fromEntries(row.cells.map((cell) => [cell.label, cell]));
@@ -758,8 +795,8 @@ async function browserChecks(base) {
       text: node.textContent,
       datetime: node.getAttribute("datetime"),
     }));
-    check(acquired.text === "2026-11-09 22:55（日本時間）", `acquired text ${acquired.text}`);
-    check(acquired.datetime === "2026-11-09 22:55 JST", `acquired source ${acquired.datetime}`);
+    check(acquired.text === "2026-11-10 09:06（日本時間）", `acquired text ${acquired.text}`);
+    check(acquired.datetime === "2026-11-10 09:06 JST", `acquired source ${acquired.datetime}`);
     check(!bodyText.includes("再検証済"), "page does not claim vouchers were revalidated");
     const pdfSaved = await page.$eval("[data-pdf-saved-at]", (node) => node.innerText);
     check(pdfSaved.includes("2026-11-09 16:25（日本時間）") && !pdfSaved.includes("23:30:30"), `pdf time ${pdfSaved}`);
@@ -773,7 +810,7 @@ async function browserChecks(base) {
     check(await page.$("[data-attachment-result] button") === null, "attachment result has no button");
     check((await page.$$("[data-unattached]")).length === 0, "unattached cards are gone");
     const actionLine = await page.$eval("[data-action-count]", (node) => node.textContent);
-    check(actionLine === "要処理 4件。登録完了13件と返金2件は含めません。", actionLine);
+    check(actionLine === "要処理 5件。登録完了14件と返金2件は含めません。", actionLine);
     check(!bodyText.includes("トークン使用量"), "token heading removed");
     check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
     const instruction = await page.$eval("[data-instruction]", (node) => ({
@@ -809,13 +846,13 @@ async function browserChecks(base) {
     const leaked = await page.evaluate(() => document.body.innerText.includes("[object HTML"));
     check(!leaked, "object string leaked into the page");
     const agg = await page.$$eval(".agg-table tbody tr", (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent)));
-    check(agg[0][0] === "すべて" && agg[0][1] === "19" && agg[0][2] === "¥120,614", `agg total ${agg[0]}`);
-    check(agg.find((row) => row[0] === "登録完了")?.[1] === "13" && agg.find((row) => row[0] === "登録完了")?.[2] === "¥87,684", "agg 登録完了");
+    check(agg[0][0] === "すべて" && agg[0][1] === "21" && agg[0][2] === "¥121,789", `agg total ${agg[0]}`);
+    check(agg.find((row) => row[0] === "登録完了")?.[1] === "14" && agg.find((row) => row[0] === "登録完了")?.[2] === "¥90,284", "agg 登録完了");
     check(agg.find((row) => row[0] === REFUND_STATUS)?.[1] === "2" && agg.find((row) => row[0] === REFUND_STATUS)?.[2] === "¥0", "agg refund");
     check(agg.find((row) => row[0] === "メモなし")?.[1] === "0" && agg.find((row) => row[0] === "メモなし")?.[2] === "¥0", "agg メモなし");
     check(agg.find((row) => row[0] === "証憑なし")?.[1] === "1" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥17,600", "agg 証憑なし");
-    check(agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[1] === "3" && agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[2] === "¥15,330", "agg saved receipts");
-    check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "0" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥0", "agg メモ・証憑なし");
+    check(agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[1] === "2" && agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[2] === "¥12,730", "agg saved receipts");
+    check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "2" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥1,175", "agg メモ・証憑なし");
     const savedTone = await page.$eval("[data-tx-id='tx-20261105-1253-monotaro-17553'] [data-label='ステータス'] .status", (node) => node.className);
     check(savedTone.includes("success") && !savedTone.includes("warning"), `registered tone ${savedTone}`);
     check(agg.find((row) => row[0] === "証憑不一致")?.[1] === "0" && agg.find((row) => row[0] === "証憑不一致")?.[2] === "¥0", "agg zero mismatch");
@@ -1078,4 +1115,4 @@ console.log(JSON.stringify({
   sums,
   evidenceUrls: EVIDENCE_URLS,
 }, null, 2));
-console.log("ok: 19 transactions, links, initial memos, copy, filters, execution requests");
+console.log("ok: 21 transactions, links, initial memos, copy, filters, execution requests");

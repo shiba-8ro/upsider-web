@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-09 22:55 JST",
+  "asOf": "2026-11-10 09:06 JST",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最新データ確認: 2026-11-09 22:55 JST（納品書を確認した時刻。画面の更新時刻ではない）。ミスミ ¥16,614（注文AB256FB3F5）は2026-11-09 22:52 JSTの納品書受領で納入済み。ステータスは登録完了のまま。登録完了13件。返金除外2件。要処理4件。メモあり18件。",
+  "lead": "最新データ確認: 2026-11-10 09:06 JST（#bo_upsiderをブラウザで確認した時刻。画面の更新時刻ではない）。秋月電子 ¥2,600は2026-11-09 16:02:41 JSTのUPSIDER「領収証を添付しました」で登録完了。GITHUB, INC. ¥392（USD 2.42）と¥783（USD 4.83）を要処理に追加。登録完了14件。返金除外2件。要処理5件。メモあり18件。",
   "callouts": [
     {
       "tone": "info",
@@ -11,7 +11,12 @@
     },
     {
       "tone": "info",
-      "lead": "今回のチェック（11/09 22:55）",
+      "lead": "今回のチェック（11/10 09:06）",
+      "body": "確認時刻は2026-11-10 09:06:29 JSTで、ブラウザで#bo_upsiderを読んだ時刻であり、画面を更新した時刻ではない。秋月電子 ¥2,600（tx-20261105-1241-akizuki-2600、注文EC261105-069042182-01、スレッド1793850104.514049）について、ユーザーが2026-11-09 16:02:30 JSTに20261105_2600JPY_秋月電子_領収書.pdfを投稿し、UPSIDERが2026-11-09 16:02:41 JSTに「領収証を添付しました」と通知した。発行事業者は株式会社秋月電子通商、登録番号はT8010901000370。メモ完了通知は既にある。ステータスは証憑保存済・Slack未添付から登録完了にした。連携による投稿・添付・再送はしていない。新規のGITHUB, INC. 2件はスレッドに返信がなく、メモの完了通知も証憑もない。完了通知が無いのでメモ欄は未確認、取引ステータスはメモ・証憑なし。用途は要確認で、通常購買候補として要処理に追加した。対象外にはしていない。GITHUB, INC. ¥392（USD 2.42、決済2026-11-09 17:54:16 JST、スレッド1794214457.091699、決済ID 19d4ace8-8c22-4266-b43e-f55d6ec58050）と、GITHUB, INC. ¥783（USD 4.83、決済2026-11-09 17:55:29 JST、スレッド1794214530.632489、決済ID d910f06d-69ce-4253-81cd-8311c5a46b31）。いずれもカード名はSaaS決済用、ユーザー名は株式会社Algomatic Dynamics。アースダンボール ¥5,570、DANBALLACE ¥7,160、日進ゴム ¥17,600は金額もステータスも変えていない。台帳のステータスから数えると登録完了14件、返金除外2件、要処理5件。要処理の内訳は、証憑保存済・Slack未添付のアースダンボール ¥5,570とDANBALLACE ¥7,160、証憑なしの日進ゴム ¥17,600、メモ・証憑なしのGITHUB, INC. ¥392と¥783。"
+    },
+    {
+      "tone": "info",
+      "lead": "前回のチェック（11/09 22:55）",
       "body": "確認時刻は2026-11-09 22:55 JSTで、納品書を確認した時刻であり、画面を更新した時刻ではない。2026-11-09 22:52 JSTにScanSnap経由でミスミの納品書2枚（伝票番号123402・123403、出荷日2026-11-06、税込15,470円＋1,144円＝16,614円）が届いた。出荷日と金額の一致で注文AB256FB3F5（tx-20261104-2114-misumi-16614、ledgerId TX-20261104-MSM-001）の納品書と同定した。運用ルールで納品書到着＝納入済みとし、配送状況の追加確認はしていない。納入状態は納入済み（2026-11-09 納品書受領）。ステータスは登録完了のまま。証憑・メモ・Slackは変えていない。他の取引は変えていない。台帳のステータスから数えると登録完了13件、返金除外2件、要処理4件のまま。"
     },
     {
@@ -373,7 +378,7 @@
       "amount": "¥2,600",
       "amountYen": 2600,
       "content": "Hub基板用ピンヘッダー",
-      "status": "証憑保存済・Slack未添付",
+      "status": "登録完了",
       "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1793850104.514049",
       "drive": "https://drive.google.com/file/d/1gz3oExT325FAWtY0YprLunl6Eex9EUuw/view",
       "memoKey": null,
@@ -390,8 +395,8 @@
       ],
       "ledgerId": "TX-20261105-AKZ-001",
       "orderNumber": "EC261105-069042182-01",
-      "priorStatus": "証憑なし",
-      "statusUpdatedAt": "2026-11-09 15:59 JST",
+      "priorStatus": "証憑保存済・Slack未添付",
+      "statusUpdatedAt": "2026-11-10 09:06 JST",
       "evidenceStorageStatus": "取得・Drive保存済",
       "evidenceType": "領収書",
       "evidenceDescription": "但し部品代",
@@ -399,13 +404,21 @@
       "qualifiedInvoiceNumber": "T8010901000370",
       "accountingPdfAcquiredAt": "2026-11-09 15:59 JST",
       "accountingAmountYen": 2600,
-      "slackAttachmentStatus": "未添付（ユーザーが手動で添付予定）",
-      "upSiderReceiptRegistrationStatus": "Slack未添付。登録完了ではない",
+      "slackAttachmentStatus": "添付済（ユーザーが手動）",
+      "upSiderReceiptRegistrationStatus": "登録完了（ユーザーが手動添付。UPSIDER『領収証を添付しました』を確認）",
       "deliveryStatus": "出荷済み",
       "carrier": "ヤマト運輸",
       "shippedDate": "2026-11-05",
       "trackingNumber": "437180618571",
-      "deliveryConfirmed": false
+      "deliveryConfirmed": false,
+      "priorSlackAttachmentStatus": "未添付（ユーザーが手動で添付予定）",
+      "slackReceiptFile": "20261105_2600JPY_秋月電子_領収書.pdf",
+      "slackReceiptPostedAt": "2026-11-09 16:02:30 JST",
+      "slackReceiptPostedBy": "Yoshihiro Shibata",
+      "slackReceiptNotice": "領収証を添付しました",
+      "slackReceiptNoticeAt": "2026-11-09 16:02:41 JST",
+      "slackReceiptObservedAt": "2026-11-10 09:06:29 JST",
+      "evidenceCheck": "ファイル名は20261105_2600JPY_秋月電子_領収書.pdf。発行事業者は株式会社秋月電子通商、登録番号はT8010901000370。2026-11-10 09:06:29 JSTのブラウザ確認で、UPSIDERの「領収証を添付しました」を2026-11-09 16:02:41 JSTに確認した。"
     },
     {
       "id": "tx-20261105-1253-monotaro-17553",
@@ -707,6 +720,48 @@
       "priorDeliveryStatus": "発送予定連絡",
       "carrier": "佐川急便",
       "deliveryConfirmed": false
+    },
+    {
+      "id": "tx-20261109-1754-github-392",
+      "datetime": "11/09 17:54",
+      "merchant": "GITHUB, INC.",
+      "amount": "¥392",
+      "amountYen": 392,
+      "foreignAmount": "USD 2.42",
+      "content": "通常購買候補（USD 2.42、用途は要確認）",
+      "status": "メモ・証憑なし",
+      "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1794214457.091699",
+      "drive": "なし",
+      "memoKey": null,
+      "detailSection": false,
+      "upSiderTransactionId": "19d4ace8-8c22-4266-b43e-f55d6ec58050",
+      "memoStatus": "未確認",
+      "paidAt": "2026-11-09 17:54:16 JST",
+      "cardName": "SaaS決済用",
+      "classification": "通常購買候補",
+      "purpose": "要確認",
+      "ledgerId": "TX-20261109-GHB-001"
+    },
+    {
+      "id": "tx-20261109-1755-github-783",
+      "datetime": "11/09 17:55",
+      "merchant": "GITHUB, INC.",
+      "amount": "¥783",
+      "amountYen": 783,
+      "foreignAmount": "USD 4.83",
+      "content": "通常購買候補（USD 4.83、用途は要確認）",
+      "status": "メモ・証憑なし",
+      "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1794214530.632489",
+      "drive": "なし",
+      "memoKey": null,
+      "detailSection": false,
+      "upSiderTransactionId": "d910f06d-69ce-4253-81cd-8311c5a46b31",
+      "memoStatus": "未確認",
+      "paidAt": "2026-11-09 17:55:29 JST",
+      "cardName": "SaaS決済用",
+      "classification": "通常購買候補",
+      "purpose": "要確認",
+      "ledgerId": "TX-20261109-GHB-002"
     }
   ],
   "details": [],
@@ -737,10 +792,10 @@
     "lastSuccessfulAcquisitionMeaning": "アースダンボール ¥5,570 と DANBALLACE ¥7,160 の正式領収書をDriveへ保存した時刻。",
     "previousLastSuccessfulAcquisitionAt": "2026-11-09 15:59 JST"
   },
-  "dataAcquiredAt": "2026-11-09 22:55 JST",
-  "dataAcquiredAtLabel": "ミスミ ¥16,614 の納品書を確認した時刻。画面を更新した時刻やページを開いた時刻ではない。",
-  "previousDataAcquiredAt": "2026-11-09 22:25 JST",
-  "earlierDataAcquiredAt": "2026-11-09 16:25 JST",
+  "dataAcquiredAt": "2026-11-10 09:06 JST",
+  "dataAcquiredAtLabel": "Slack #bo_upsiderをブラウザで確認した時刻。画面を更新した時刻やページを開いた時刻ではない。",
+  "previousDataAcquiredAt": "2026-11-09 22:55 JST",
+  "earlierDataAcquiredAt": "2026-11-09 22:25 JST",
   "slackReceiptAttachment": {
     "attempted": 3,
     "attached": 3,
@@ -763,11 +818,13 @@
     }
   },
   "upsiderCheck": {
-    "checkedAt": "2026-11-09 16:25 JST",
-    "routine": "領収書のDrive保存",
-    "source": "bestcarton.comマイページで取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
-    "registeredComplete": 13,
-    "needsAction": 4,
+    "checkedAt": "2026-11-10 09:06 JST",
+    "routine": "UPSIDERチェック",
+    "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+    "newTransactions": 2,
+    "ledgerRows": 21,
+    "registeredComplete": 14,
+    "needsAction": 5,
     "refundExcluded": 2,
     "refundExcludedIds": [
       "tx-20261102-2053-earth-23960",
@@ -775,29 +832,32 @@
     ],
     "needsActionIds": [
       "tx-20261102-2054-earth-5570",
-      "tx-20261105-1241-akizuki-2600",
       "tx-20261105-1357-nisshin-17600",
-      "tx-20261106-1553-danballace-7160"
+      "tx-20261106-1553-danballace-7160",
+      "tx-20261109-1754-github-392",
+      "tx-20261109-1755-github-783"
     ],
     "statusChanges": [
-      "tx-20261102-2054-earth-5570",
-      "tx-20261106-1553-danballace-7160"
+      "tx-20261105-1241-akizuki-2600"
     ],
     "savedNotAttached": [
       "tx-20261102-2054-earth-5570",
-      "tx-20261105-1241-akizuki-2600",
       "tx-20261106-1553-danballace-7160"
     ],
-    "shareRefused": false,
     "memosCreated": 0,
     "attachmentsAttempted": 0,
+    "note": "秋月電子 ¥2,600はUPSIDERの「領収証を添付しました」を確認して登録完了。GITHUB, INC. 2件はメモ・証憑なしの要処理。アースダンボール ¥5,570、DANBALLACE ¥7,160、日進ゴム ¥17,600は変えていない。",
     "previous": {
-      "checkedAt": "2026-11-09 15:59 JST",
+      "checkedAt": "2026-11-09 16:25 JST",
       "routine": "領収書のDrive保存",
-      "source": "取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
+      "source": "bestcarton.comマイページで取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
       "registeredComplete": 13,
       "needsAction": 4,
       "refundExcluded": 2,
+      "refundExcludedIds": [
+        "tx-20261102-2053-earth-23960",
+        "tx-20261104-0923-danballace-23960"
+      ],
       "needsActionIds": [
         "tx-20261102-2054-earth-5570",
         "tx-20261105-1241-akizuki-2600",
@@ -805,28 +865,24 @@
         "tx-20261106-1553-danballace-7160"
       ],
       "statusChanges": [
-        "tx-20261105-1241-akizuki-2600"
+        "tx-20261102-2054-earth-5570",
+        "tx-20261106-1553-danballace-7160"
       ],
       "savedNotAttached": [
-        "tx-20261105-1241-akizuki-2600"
+        "tx-20261102-2054-earth-5570",
+        "tx-20261105-1241-akizuki-2600",
+        "tx-20261106-1553-danballace-7160"
       ],
       "shareRefused": false,
       "memosCreated": 0,
       "attachmentsAttempted": 0,
       "previous": {
-        "checkedAt": "2026-11-09 15:31 JST",
-        "routine": "UPSIDERチェック",
-        "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
-        "newTransactions": 0,
-        "threadsChecked": 3,
-        "ledgerRows": 19,
+        "checkedAt": "2026-11-09 15:59 JST",
+        "routine": "領収書のDrive保存",
+        "source": "取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
         "registeredComplete": 13,
         "needsAction": 4,
         "refundExcluded": 2,
-        "refundExcludedIds": [
-          "tx-20261102-2053-earth-23960",
-          "tx-20261104-0923-danballace-23960"
-        ],
         "needsActionIds": [
           "tx-20261102-2054-earth-5570",
           "tx-20261105-1241-akizuki-2600",
@@ -834,24 +890,23 @@
           "tx-20261106-1553-danballace-7160"
         ],
         "statusChanges": [
-          "tx-20261105-1253-monotaro-17553",
-          "tx-20261105-1404-monotaro-4833",
-          "tx-20261104-2114-misumi-16614"
+          "tx-20261105-1241-akizuki-2600"
         ],
-        "attachmentsObserved": 3,
-        "attachmentMethod": "ユーザーが手動でスレッドへ添付",
+        "savedNotAttached": [
+          "tx-20261105-1241-akizuki-2600"
+        ],
+        "shareRefused": false,
         "memosCreated": 0,
-        "doNotResend": [],
-        "note": "134323400028、134323400029、AB256FB3F5は手動添付済み。",
+        "attachmentsAttempted": 0,
         "previous": {
-          "checkedAt": "2026-11-09 09:26:56 JST",
+          "checkedAt": "2026-11-09 15:31 JST",
           "routine": "UPSIDERチェック",
           "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
           "newTransactions": 0,
-          "threadsChecked": 18,
+          "threadsChecked": 3,
           "ledgerRows": 19,
-          "registeredComplete": 10,
-          "needsAction": 7,
+          "registeredComplete": 13,
+          "needsAction": 4,
           "refundExcluded": 2,
           "refundExcludedIds": [
             "tx-20261102-2053-earth-23960",
@@ -859,52 +914,83 @@
           ],
           "needsActionIds": [
             "tx-20261102-2054-earth-5570",
-            "tx-20261106-1553-danballace-7160",
-            "tx-20261104-2114-misumi-16614",
             "tx-20261105-1241-akizuki-2600",
-            "tx-20261105-1253-monotaro-17553",
             "tx-20261105-1357-nisshin-17600",
-            "tx-20261105-1404-monotaro-4833"
-          ],
-          "excludedOutOfScope": [
-            "DOCUSIGN INC. ¥13,310（11/7 22:25 JST、会社名義・SaaSカード）",
-            "VERCEL INC. ¥10,697（SaaS決済用、2026-11-09 07:48:31 JST、txn 683692ea-88be-4f53-a2ed-789063082ca0）"
-          ],
-          "limits": [
-            "スレッド返信数は前回値がないため増減比較不可",
-            "完了通知の新規tsは未取得。memoEvidenceは増やしていない",
-            "Amazon ¥2,473は事業者名・登録番号が読めず、今回の証憑有効性再検証とはしない"
-          ],
-          "doNotResend": [
-            "134323400028",
-            "134323400029",
-            "AB256FB3F5"
+            "tx-20261106-1553-danballace-7160"
           ],
           "statusChanges": [
-            "tx-20261102-2053-earth-23960"
+            "tx-20261105-1253-monotaro-17553",
+            "tx-20261105-1404-monotaro-4833",
+            "tx-20261104-2114-misumi-16614"
           ],
-          "attachmentsAttempted": 0,
+          "attachmentsObserved": 3,
+          "attachmentMethod": "ユーザーが手動でスレッドへ添付",
           "memosCreated": 0,
+          "doNotResend": [],
+          "note": "134323400028、134323400029、AB256FB3F5は手動添付済み。",
           "previous": {
-            "checkedAt": "2026-11-08 09:07 JST",
-            "routine": "UPSIDERチェック（毎日AM9時）",
+            "checkedAt": "2026-11-09 09:26:56 JST",
+            "routine": "UPSIDERチェック",
+            "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
             "newTransactions": 0,
-            "statusChanges": 0,
+            "threadsChecked": 18,
+            "ledgerRows": 19,
+            "registeredComplete": 10,
+            "needsAction": 7,
+            "refundExcluded": 2,
+            "refundExcludedIds": [
+              "tx-20261102-2053-earth-23960",
+              "tx-20261104-0923-danballace-23960"
+            ],
+            "needsActionIds": [
+              "tx-20261102-2054-earth-5570",
+              "tx-20261106-1553-danballace-7160",
+              "tx-20261104-2114-misumi-16614",
+              "tx-20261105-1241-akizuki-2600",
+              "tx-20261105-1253-monotaro-17553",
+              "tx-20261105-1357-nisshin-17600",
+              "tx-20261105-1404-monotaro-4833"
+            ],
+            "excludedOutOfScope": [
+              "DOCUSIGN INC. ¥13,310（11/7 22:25 JST、会社名義・SaaSカード）",
+              "VERCEL INC. ¥10,697（SaaS決済用、2026-11-09 07:48:31 JST、txn 683692ea-88be-4f53-a2ed-789063082ca0）"
+            ],
+            "limits": [
+              "スレッド返信数は前回値がないため増減比較不可",
+              "完了通知の新規tsは未取得。memoEvidenceは増やしていない",
+              "Amazon ¥2,473は事業者名・登録番号が読めず、今回の証憑有効性再検証とはしない"
+            ],
+            "doNotResend": [
+              "134323400028",
+              "134323400029",
+              "AB256FB3F5"
+            ],
+            "statusChanges": [
+              "tx-20261102-2053-earth-23960"
+            ],
             "attachmentsAttempted": 0,
             "memosCreated": 0,
-            "excludedOutOfScope": [
-              "DOCUSIGN INC（会社名義・SaaSカード）"
-            ],
-            "gmailAfter20261108": 0,
-            "driveInboxNewPdfs": 0,
-            "botInboxNewMail": 0
+            "previous": {
+              "checkedAt": "2026-11-08 09:07 JST",
+              "routine": "UPSIDERチェック（毎日AM9時）",
+              "newTransactions": 0,
+              "statusChanges": 0,
+              "attachmentsAttempted": 0,
+              "memosCreated": 0,
+              "excludedOutOfScope": [
+                "DOCUSIGN INC（会社名義・SaaSカード）"
+              ],
+              "gmailAfter20261108": 0,
+              "driveInboxNewPdfs": 0,
+              "botInboxNewMail": 0
+            }
           }
-        }
-      },
-      "refundExcludedIds": [
-        "tx-20261102-2053-earth-23960",
-        "tx-20261104-0923-danballace-23960"
-      ]
+        },
+        "refundExcludedIds": [
+          "tx-20261102-2053-earth-23960",
+          "tx-20261104-0923-danballace-23960"
+        ]
+      }
     }
   }
 }
