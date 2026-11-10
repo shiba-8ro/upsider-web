@@ -16,6 +16,7 @@ import { ledgerAcquiredAt, normalizeAcquiredAt } from "./acquired-at.js";
 import { memoTone } from "./memo-presence.js";
 
 const LOCAL_ONLY_NOTE = "Slackの参照・メモ追加・証憑添付はブラウザのみ。API・MCP・Webhook等の連携機能は使用しません。";
+const OPS_MEMO_LEAD = "運用メモ";
 
 const state = {
   ledger: null,
@@ -64,10 +65,8 @@ function render() {
   app.append(header, renderAttachmentResult(ledger), renderActionCount(ledger), renderMetrics(), renderAggregation());
 
   for (const callout of ledger.callouts) {
-    const box = el("aside", { class: `callout ${callout.tone}` });
-    const body = el("p", {}, callout.body);
-    box.append(el("strong", {}, callout.lead), body);
-    app.append(box);
+    if (isOpsMemo(callout)) continue;
+    app.append(renderCallout(callout));
   }
 
   const list = el("section", { "aria-labelledby": "tx-heading" });
@@ -93,6 +92,23 @@ function render() {
   const caution = el("section", { class: "caution" });
   caution.append(el("h2", {}, ledger.cautionHeading), el("p", {}, ledger.caution));
   app.append(caution);
+
+  for (const callout of ledger.callouts) {
+    if (!isOpsMemo(callout)) continue;
+    app.append(renderCallout(callout));
+  }
+}
+
+function isOpsMemo(callout) {
+  return Boolean(callout) && callout.lead === OPS_MEMO_LEAD;
+}
+
+function renderCallout(callout) {
+  const attrs = { class: `callout ${callout.tone}` };
+  if (isOpsMemo(callout)) attrs["data-ops-memo"] = "";
+  const box = el("aside", attrs);
+  box.append(el("strong", {}, callout.lead), el("p", {}, callout.body));
+  return box;
 }
 
 function renderAcquiredAt(ledger) {

@@ -758,6 +758,25 @@ async function browserChecks(base) {
     ]) {
       check(bodyText.includes(phrase), `missing phrase: ${phrase}`);
     }
+    const layout = await page.evaluate(() => [...document.querySelector("#app").children].map((node) => {
+      const heading = node.querySelector(":scope > h1, :scope > h2, :scope > strong");
+      if (heading) return heading.textContent;
+      if (node.matches("[data-ops-memo]")) return "運用メモ";
+      return node.getAttribute("data-attachment-result") !== null ? "今回の添付結果" : node.tagName;
+    }));
+    const opsAt = layout.lastIndexOf("運用メモ");
+    check(opsAt === layout.length - 1, `運用メモ is last: ${layout.join(" / ")}`);
+    check(layout.indexOf("運用メモ") === opsAt, "運用メモ is rendered once");
+    check(layout.indexOf("取引一覧") !== -1 && layout.indexOf("取引一覧") < opsAt, "運用メモ follows the ledger table");
+    check(layout.indexOf("集計") !== -1 && layout.indexOf("集計") < opsAt, "運用メモ follows the aggregation");
+    check(layout.indexOf("注意") !== -1 && layout.indexOf("注意") < opsAt, "運用メモ follows the caution");
+    check(layout.indexOf("今回のチェック（11/10 13:40）") < layout.indexOf("取引一覧"), "other callouts stay before the ledger");
+    const opsText = await page.$eval("[data-ops-memo]", (node) => ({
+      lead: node.querySelector("strong")?.textContent || "",
+      body: node.querySelector("p")?.textContent || "",
+    }));
+    const opsSource = ledger.callouts.find((item) => item.lead === "運用メモ");
+    check(opsText.lead === opsSource.lead && opsText.body === opsSource.body, "ops memo content unchanged");
     const pageSourceText = await page.evaluate(() => document.body.textContent);
     for (const url of Object.values(EVIDENCE_URLS)) {
       check(pageSourceText.includes(url), `page missing evidence url ${url}`);
