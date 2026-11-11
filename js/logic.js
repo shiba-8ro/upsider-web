@@ -10,12 +10,19 @@ import {
 export * from "./result.js";
 
 export const NOT_OWNER_STATUS = "本人以外の課金（シバタさん回答 2026-11-10）";
+export const NOT_OWNER_STATUS_20261111 = "本人以外の課金（シバタさん回答 2026-11-11）";
+
+export const NOT_OWNER_STATUSES = [NOT_OWNER_STATUS, NOT_OWNER_STATUS_20261111];
+
+export function isNotOwnerStatus(status) {
+  return NOT_OWNER_STATUSES.includes(status);
+}
 
 export const FILTERS = [
   "すべて",
   "登録完了",
   "返金（メモ・証憑不要）",
-  NOT_OWNER_STATUS,
+  ...NOT_OWNER_STATUSES,
   "メモなし",
   "証憑なし",
   "証憑保存済・Slack未添付",
@@ -69,13 +76,13 @@ export function countOf(transactions, status) {
 const SHARE_RESTRICTION_ERROR = "mcp_externally_shared_channel_restricted";
 
 export function needsAction(tx) {
-  return tx.status !== "登録完了" && tx.status !== "返金（メモ・証憑不要）" && tx.status !== NOT_OWNER_STATUS;
+  return tx.status !== "登録完了" && tx.status !== "返金（メモ・証憑不要）" && !isNotOwnerStatus(tx.status);
 }
 
 export function actionSummary(transactions) {
   const rows = Array.isArray(transactions) ? transactions : [];
   const refund = rows.filter((tx) => tx.status === "返金（メモ・証憑不要）").length;
-  const notOwner = rows.filter((tx) => tx.status === NOT_OWNER_STATUS).length;
+  const notOwner = rows.filter((tx) => isNotOwnerStatus(tx.status)).length;
   return {
     action: rows.filter(needsAction).length,
     refund,

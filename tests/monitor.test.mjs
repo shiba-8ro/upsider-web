@@ -9,6 +9,8 @@ import {
   buildExecutionRequest,
   buildGasPayload,
   NOT_OWNER_STATUS,
+  NOT_OWNER_STATUS_20261111,
+  isNotOwnerStatus,
   actionSummary,
   needsAction,
   attachmentResultView,
@@ -187,9 +189,10 @@ async function assertLedger() {
   check(ledger.lead.includes("2026-11-11 18:47 JST"), "lead check time");
   check(ledger.lead.includes("画面の更新時刻ではない"), "lead separates screen update time");
   check(ledger.lead.includes("登録完了17件"), "lead registered count");
-  check(ledger.lead.includes("要処理4件"), "lead action count");
-  check(ledger.lead.includes("除外5件（返金2件、本人以外の課金3件）"), "lead exclusion");
-  check(ledger.lead.includes("GITHUB, INC. ¥22") && ledger.lead.includes("1794369591.509309") && ledger.lead.includes("要確認"), "lead records github 22");
+  check(ledger.lead.includes("要処理3件"), "lead action count");
+  check(ledger.lead.includes("除外6件（返金2件、本人以外の課金4件）"), "lead exclusion");
+  check(ledger.lead.includes("GITHUB, INC. ¥22") && ledger.lead.includes("1794369591.509309") && ledger.lead.includes("本人以外の課金（シバタさん回答 2026-11-11）") && ledger.lead.includes("行は削除していない"), "lead records github 22 exclusion");
+  check(!ledger.lead.includes("本人以外の課金にはしていない"), "lead does not leave github 22 unconfirmed");
   check(ledger.lead.includes("134323400030") && ledger.lead.includes("664362973562") && ledger.lead.includes("9583853145") && ledger.lead.includes("納入待ち"), "lead records monotaro 30017");
   check(ledger.lead.includes("134323400031") && ledger.lead.includes("出荷待ち") && ledger.lead.includes("¥4,065"), "lead records monotaro 4065");
   check(ledger.lead.includes("AMAZON CO JP ¥0") && ledger.lead.includes("1794380035.547129") && ledger.lead.includes("250-6606641-6831015") && ledger.lead.includes("本決済¥2,399はSlack未着"), "lead records amazon zero");
@@ -219,8 +222,8 @@ async function assertLedger() {
   ]), `callout titles ${ledger.callouts.map((item) => item.lead).join(" / ")}`);
   const latestCheck = ledger.callouts.find((item) => item.lead === "今回のチェック（11/11 18:47）");
   check(latestCheck?.tone === "info" && latestCheck.body.includes("2026-11-11 18:47 JST") && latestCheck.body.includes("画面を更新した時刻ではない"), "latest check time");
-  check(latestCheck?.body.includes("登録完了17件、除外5件（返金2件、本人以外の課金3件）、要処理4件"), "latest counts");
-  check(latestCheck?.body.includes("1794369591.509309") && latestCheck.body.includes("USD 0.14") && latestCheck.body.includes("本人の課金か確認中") && latestCheck.body.includes("本人以外の課金にはしていない"), "github 22 stays unconfirmed");
+  check(latestCheck?.body.includes("登録完了17件、除外6件（返金2件、本人以外の課金4件）、要処理3件"), "latest counts");
+  check(latestCheck?.body.includes("1794369591.509309") && latestCheck.body.includes("USD 0.14") && latestCheck.body.includes("本人以外の課金（シバタさん回答 2026-11-11）") && latestCheck.body.includes("行は削除していない") && latestCheck.body.includes("返金とは別の除外理由") && !latestCheck.body.includes("本人以外の課金にはしていない"), "github 22 excluded like the earlier github rows");
   check(latestCheck?.body.includes("TX-20261111-MNT-001") && latestCheck.body.includes("134323400030") && latestCheck.body.includes("202639045") && latestCheck.body.includes("664362973562") && latestCheck.body.includes("9583853145") && latestCheck.body.includes("要処理（メモ未登録・証憑未取得、納入待ち）"), "monotaro 30017");
   check(latestCheck?.body.includes("TX-20261111-MNT-002") && latestCheck.body.includes("134323400031") && latestCheck.body.includes("202654082") && latestCheck.body.includes("要処理（メモ未登録・証憑未取得、出荷待ち）"), "monotaro 4065");
   check(latestCheck?.body.includes("1794380035.547129") && latestCheck.body.includes("250-6606641-6831015") && latestCheck.body.includes("TX-20261111-AMZ-001") && latestCheck.body.includes("要確認（¥0の確認決済とみられる。本決済待ち）") && latestCheck.body.includes("行は作っていない"), "amazon zero is not the 2399 charge");
@@ -296,10 +299,11 @@ async function assertLedger() {
     "登録完了": 17,
     [REFUND_STATUS]: 2,
     [NOT_OWNER_STATUS]: 3,
+    [NOT_OWNER_STATUS_20261111]: 1,
     "メモなし": 0,
     "証憑なし": 0,
     "証憑保存済・Slack未添付": 0,
-    "メモ・証憑なし": 4,
+    "メモ・証憑なし": 3,
     "証憑不一致": 0,
   };
   check(JSON.stringify(FILTERS.slice(1)) === JSON.stringify(Object.keys(counts)), "filters match counted statuses");
@@ -311,10 +315,11 @@ async function assertLedger() {
     "登録完了": 120614,
     [REFUND_STATUS]: 0,
     [NOT_OWNER_STATUS]: 1222,
+    [NOT_OWNER_STATUS_20261111]: 22,
     "メモなし": 0,
     "証憑なし": 0,
     "証憑保存済・Slack未添付": 0,
-    "メモ・証憑なし": 34104,
+    "メモ・証憑なし": 34082,
     "証憑不一致": 0,
   };
   check(sumOf(ledger.transactions) === 155940, `total ${sumOf(ledger.transactions)}`);
@@ -328,8 +333,9 @@ async function assertLedger() {
   check(filterTransactions(ledger.transactions, "証憑なし").length === 0, "証憑なし is empty");
   check(filterTransactions(ledger.transactions, "証憑保存済・Slack未添付").length === 0, "no receipt remains saved and unattached");
   check(filterTransactions(ledger.transactions, "メモなし").length === 0, "メモなし is empty");
-  check(filterTransactions(ledger.transactions, "メモ・証憑なし").length === 4, "four new rows are missing both memo and receipt");
-  check(filterTransactions(ledger.transactions, NOT_OWNER_STATUS).length === 3, "three not-owner charges stay listed");
+  check(filterTransactions(ledger.transactions, "メモ・証憑なし").length === 3, "three rows are missing both memo and receipt");
+  check(filterTransactions(ledger.transactions, NOT_OWNER_STATUS).length === 3, "three earlier not-owner charges stay listed");
+  check(filterTransactions(ledger.transactions, NOT_OWNER_STATUS_20261111).length === 1, "github 22 is listed under the 11/11 exclusion");
   check(new Set(ledger.transactions.map((tx) => tx.slack)).size === 26, "slack urls unique");
   const detailIds = ledger.transactions.filter((tx) => tx.detailSection).map((tx) => tx.id);
   check(detailIds.length === 0, `detail sections ${detailIds.join(",")}`);
@@ -417,24 +423,23 @@ async function assertLedger() {
   check(ledger.memoCheck?.lastIncrementalLimit.includes("増減比較はしない"), "reply counts are not compared");
   check(ledger.slackReceiptAttachment?.retryOn20261109 === false, "refused receipts were not resent");
   const actions = actionSummary(ledger.transactions);
-  check(actions.action === 4 && actions.refund === 2 && actions.notOwner === 3 && actions.excluded === 5 && actions.done === 17, `action summary ${JSON.stringify(actions)}`);
+  check(isNotOwnerStatus(NOT_OWNER_STATUS) && isNotOwnerStatus(NOT_OWNER_STATUS_20261111) && !isNotOwnerStatus("メモ・証憑なし"), "both not-owner statuses are excluded");
+  check(actions.action === 3 && actions.refund === 2 && actions.notOwner === 4 && actions.excluded === 6 && actions.done === 17, `action summary ${JSON.stringify(actions)}`);
   check(actions.action === ledger.transactions.length - actions.excluded - actions.done, "action count excludes refund, not-owner, and completed");
   const actionIds = ledger.transactions.filter(needsAction).map((tx) => tx.id).sort();
   const expectedActionIds = [
-    "tx-20261111-1259-github-22",
     "tx-20261111-1404-monotaro-30017",
     "tx-20261111-1546-monotaro-4065",
     "tx-20261111-1553-amazon-0",
   ].sort();
   check(JSON.stringify(actionIds) === JSON.stringify(expectedActionIds), `action ids ${actionIds.join(",")}`);
   check(JSON.stringify([...ledger.upsiderCheck.needsActionIds].sort()) === JSON.stringify(expectedActionIds), "stored action ids match the status count");
-  check(ledger.upsiderCheck.checkedAt === "2026-11-11 18:47 JST" && ledger.upsiderCheck.routine === "UPSIDERチェック" && ledger.upsiderCheck.registeredComplete === 17 && ledger.upsiderCheck.needsAction === 4 && ledger.upsiderCheck.refundExcluded === 2 && ledger.upsiderCheck.notOwnerExcluded === 3 && ledger.upsiderCheck.excluded === 5, "stored counts");
+  check(ledger.upsiderCheck.checkedAt === "2026-11-11 18:47 JST" && ledger.upsiderCheck.routine === "UPSIDERチェック" && ledger.upsiderCheck.registeredComplete === 17 && ledger.upsiderCheck.needsAction === 3 && ledger.upsiderCheck.refundExcluded === 2 && ledger.upsiderCheck.notOwnerExcluded === 4 && ledger.upsiderCheck.excluded === 6, "stored counts");
   check(ledger.upsiderCheck.newTransactions === 4 && ledger.upsiderCheck.ledgerRows === 26 && ledger.upsiderCheck.memosCreated === 0 && ledger.upsiderCheck.attachmentsAttempted === 0 && JSON.stringify(ledger.upsiderCheck.savedNotAttached) === "[]", "four new rows and nothing sent");
-  check(JSON.stringify(ledger.upsiderCheck.statusChanges) === JSON.stringify(["tx-20261105-1357-nisshin-17600"]), "stored status changes");
+  check(JSON.stringify(ledger.upsiderCheck.statusChanges) === JSON.stringify(["tx-20261105-1357-nisshin-17600", "tx-20261111-1259-github-22"]), "stored status changes");
   check(ledger.upsiderCheck.excludedOutOfScope?.[0]?.includes("¥2,399") && ledger.upsiderCheck.excludedOutOfScope[0].includes("TX-20261111-AMZ-001") && ledger.upsiderCheck.note.includes("Slack未着"), "the 2399 charge stays out of the ledger");
   check(ledger.upsiderCheck.excludedOutOfScope?.[1]?.includes("AMAZON CO JP ¥8,990") && ledger.upsiderCheck.excludedOutOfScope[1].includes("1794312604.656699"), "morning amazon stays out of scope");
-  check(JSON.stringify(ledger.upsiderCheck.notOwnerExcludedIds) === JSON.stringify(["tx-20261109-1754-github-392", "tx-20261109-1755-github-783", "tx-20261110-1051-github-47"]), "stored not-owner exclusion");
-  check(!ledger.upsiderCheck.notOwnerExcludedIds.includes("tx-20261111-1259-github-22"), "new github charge is not marked not-owner");
+  check(JSON.stringify(ledger.upsiderCheck.notOwnerExcludedIds) === JSON.stringify(["tx-20261109-1754-github-392", "tx-20261109-1755-github-783", "tx-20261110-1051-github-47", "tx-20261111-1259-github-22"]), "stored not-owner exclusion");
   check(ledger.upsiderCheck.previous?.checkedAt === "2026-11-11 09:34 JST" && ledger.upsiderCheck.previous?.routine === "UPSIDERチェック（毎日AM9時）" && ledger.upsiderCheck.previous?.registeredComplete === 16 && ledger.upsiderCheck.previous?.needsAction === 1 && ledger.upsiderCheck.previous?.ledgerRows === 22, "morning check nested");
   check(JSON.stringify(ledger.upsiderCheck.previous?.statusChanges) === JSON.stringify(["tx-20261102-2054-earth-5570", "tx-20261106-1553-danballace-7160"]), "morning status changes kept");
   check(ledger.upsiderCheck.previous?.previous?.checkedAt === "2026-11-10 13:40:00 JST" && ledger.upsiderCheck.previous?.previous?.registeredComplete === 14 && ledger.upsiderCheck.previous?.previous?.needsAction === 3, "previous afternoon check nested");
@@ -507,8 +512,11 @@ async function assertLedger() {
   }
   const github22 = ledger.transactions.find((tx) => tx.id === "tx-20261111-1259-github-22");
   check(github22?.merchant === "GITHUB, INC." && github22?.amount === "¥22" && github22?.amountYen === 22 && github22?.foreignAmount === "USD 0.14", "github 22 amount");
-  check(github22?.status === "メモ・証憑なし" && github22?.memoStatus === "未確認" && github22?.memoPresent !== true && github22?.drive === "なし" && github22?.cardName === "SaaS決済用", "github 22 is unconfirmed");
-  check(github22?.paidAt === "2026-11-11 12:59:50 JST" && github22?.slack.endsWith("1794369591.509309") && github22?.statusReason.includes("要確認") && github22?.purpose === "要確認" && needsAction(github22), "github 22 identity");
+  check(github22?.status === NOT_OWNER_STATUS_20261111 && github22?.priorStatus === "メモ・証憑なし" && github22?.memoStatus === "未確認" && github22?.memoPresent !== true && github22?.memoEvidence == null && github22?.drive === "なし" && github22?.cardName === "SaaS決済用", "github 22 excluded");
+  check(github22?.classification === "本人以外の課金" && github22?.purpose === "要処理対象外" && github22?.priorPurpose === "要確認" && github22?.content.includes("USD 0.14") && github22?.content.includes("シバタさん回答 2026-11-11"), "github 22 content");
+  check(github22?.paidAt === "2026-11-11 12:59:50 JST" && github22?.slack.endsWith("1794369591.509309") && github22?.statusUpdatedAt === "2026-11-11 18:47 JST" && !needsAction(github22), "github 22 identity");
+  check(github22?.statusReason.includes("行は削除しない") && github22?.statusReason.includes("返金除外とは別の理由"), "github 22 exclusion reason");
+  check(filterTransactions(ledger.transactions, "すべて").some((row) => row.id === github22.id), "github 22 stays listed");
   check(github22?.ledgerId === undefined && github22?.upSiderTransactionId === undefined, "github 22 has no invented ledger id");
   const monotaro30017 = ledger.transactions.find((tx) => tx.id === "tx-20261111-1404-monotaro-30017");
   check(monotaro30017?.merchant === "MonotaRO" && monotaro30017?.slackMerchant === "DP12*MONOTARO.COM" && monotaro30017?.amountYen === 30017 && monotaro30017?.cardholder === "柴田 善広" && monotaro30017?.cardName === "AIハンド決済用", "monotaro 30017 identity");
@@ -782,7 +790,7 @@ async function browserChecks(base) {
     const bodyText = await page.evaluate(() => document.body.innerText);
     for (const phrase of [
       "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-      "最新データ確認: 2026-11-11 18:47 JST（#bo_upsiderをブラウザで確認した時刻。画面の更新時刻ではない）。09:34以降の新規カード決済は4件で、返金はない。GITHUB, INC. ¥22（USD 0.14、SaaS決済用、2026-11-11 12:59:50 JST、スレッド1794369591.509309）はメモも証憑もなく要確認（本人の課金か確認中。過去のGitHub 3件は本人以外の課金）。DP12*MONOTARO.COM ¥30,017（柴田 善広、AIハンド決済用、2026-11-11 14:04:12 JST、スレッド1794373453.560069、注文書番号134323400030、受付202639045）は折りたたみコンテナ FCLD50-GR/C ×5と50L用台車 ×1。11/11に全数出荷（ヤマト 664362973562、西濃 9583853145）で納入待ち。メモ未登録・証憑未取得。DP12*MONOTARO.COM ¥4,065（同じカード、2026-11-11 15:46:15 JST、スレッド1794379576.006419、注文書番号134323400031、受付202654082）はセメダイン スーパーXゴールド AX-014 20mL ×5で出荷待ち。メモ未登録・証憑未取得。AMAZON CO JP ¥0（柴田 善広、AIハンド決済用、2026-11-11 15:53:54 JST、スレッド1794380035.547129）は注文250-6606641-6831015（TINMORRY コールドプレート ×1、¥2,399、TX-20261111-AMZ-001、納品予定11/12）の確認決済とみられる。本決済¥2,399はSlack未着。日進ゴム ¥17,600はメモ登録済みのため登録完了。証憑状態はSlack添付確認済（nisshin-4735.png、2026-11-05 18:50 JST、UPSIDER「領収証を添付しました」）。台帳ステータスはメモ・証憑なし4件。登録完了17件。除外5件（返金2件、本人以外の課金3件）。要処理4件。メモあり18件。",
+      "最新データ確認: 2026-11-11 18:47 JST（#bo_upsiderをブラウザで確認した時刻。画面の更新時刻ではない）。09:34以降の新規カード決済は4件で、返金はない。GITHUB, INC. ¥22（USD 0.14、SaaS決済用、2026-11-11 12:59:50 JST、スレッド1794369591.509309）はメモも証憑もない。シバタさんが2026-11-11に本人の課金ではないと回答したため、本人以外の課金（シバタさん回答 2026-11-11）として要処理から除外した。行は削除していない。DP12*MONOTARO.COM ¥30,017（柴田 善広、AIハンド決済用、2026-11-11 14:04:12 JST、スレッド1794373453.560069、注文書番号134323400030、受付202639045）は折りたたみコンテナ FCLD50-GR/C ×5と50L用台車 ×1。11/11に全数出荷（ヤマト 664362973562、西濃 9583853145）で納入待ち。メモ未登録・証憑未取得。DP12*MONOTARO.COM ¥4,065（同じカード、2026-11-11 15:46:15 JST、スレッド1794379576.006419、注文書番号134323400031、受付202654082）はセメダイン スーパーXゴールド AX-014 20mL ×5で出荷待ち。メモ未登録・証憑未取得。AMAZON CO JP ¥0（柴田 善広、AIハンド決済用、2026-11-11 15:53:54 JST、スレッド1794380035.547129）は注文250-6606641-6831015（TINMORRY コールドプレート ×1、¥2,399、TX-20261111-AMZ-001、納品予定11/12）の確認決済とみられる。本決済¥2,399はSlack未着。日進ゴム ¥17,600はメモ登録済みのため登録完了。証憑状態はSlack添付確認済（nisshin-4735.png、2026-11-05 18:50 JST、UPSIDER「領収証を添付しました」）。台帳ステータスはメモ・証憑なし3件。登録完了17件。除外6件（返金2件、本人以外の課金4件）。要処理3件。メモあり18件。",
       "今回のチェック（11/11 18:47）",
       "前回のチェック（11/11 09:34）",
       "前回のチェック（11/10 13:40）",
@@ -831,15 +839,46 @@ async function browserChecks(base) {
       if (node.matches("[data-ops-memo]")) return "運用メモ";
       return node.getAttribute("data-attachment-result") !== null ? "今回の添付結果" : node.tagName;
     }));
-    const opsAt = layout.lastIndexOf("運用メモ");
-    check(opsAt === layout.length - 1, `運用メモ is last: ${layout.join(" / ")}`);
-    check(layout.indexOf("運用メモ") === opsAt, "運用メモ is rendered once");
+    const logLeads = ledger.callouts.filter((item) => item.lead !== "運用メモ").map((item) => item.lead);
+    const opsAt = layout.indexOf("運用メモ");
+    const firstLogAt = layout.indexOf(logLeads[0]);
+    check(opsAt !== -1 && layout.indexOf("運用メモ") === layout.lastIndexOf("運用メモ"), "運用メモ is rendered once");
     check(layout.indexOf("取引一覧") !== -1 && layout.indexOf("取引一覧") < opsAt, "運用メモ follows the ledger table");
     check(layout.indexOf("集計") !== -1 && layout.indexOf("集計") < opsAt, "運用メモ follows the aggregation");
     check(layout.indexOf("注意") !== -1 && layout.indexOf("注意") < opsAt, "運用メモ follows the caution");
-    check(layout.indexOf("今回のチェック（11/11 18:47）") < layout.indexOf("取引一覧"), "other callouts stay before the ledger");
-    check(layout.indexOf("運用メモ") > layout.indexOf("今回のチェック（11/11 18:47）"), "運用メモ stays after the check callout");
-    check(layout.indexOf("前回のチェック（11/11 09:34）") < layout.indexOf("取引一覧"), "morning callout stays before the ledger");
+    check(firstLogAt === opsAt + 1, `check logs follow 運用メモ: ${layout.join(" / ")}`);
+    check(layout.lastIndexOf(logLeads[logLeads.length - 1]) === layout.length - 1, `check logs end the page: ${layout.join(" / ")}`);
+    check(logLeads.every((lead, index) => layout.indexOf(lead) === firstLogAt + index), `check logs newest first: ${layout.join(" / ")}`);
+    const controlOrder = await page.evaluate(() => {
+      const root = document.querySelector("#app");
+      const nodes = [
+        ["instruction", document.querySelector("[data-instruction]")],
+        ["action", document.querySelector("[data-action-count]")],
+        ["filters", document.querySelector(".filters")],
+        ["table", document.querySelector(".tx-table")],
+        ["caution", document.querySelector(".caution")],
+        ["ops", document.querySelector("[data-ops-memo]")],
+        ["firstLog", document.querySelector("[data-check-log]")],
+      ];
+      const missing = nodes.filter(([, node]) => !node).map(([name]) => name);
+      let inOrder = missing.length === 0;
+      for (let index = 1; index < nodes.length; index += 1) {
+        const previous = nodes[index - 1][1];
+        const current = nodes[index][1];
+        if (!previous || !current) continue;
+        if ((previous.compareDocumentPosition(current) & Node.DOCUMENT_POSITION_FOLLOWING) === 0) inOrder = false;
+      }
+      const logs = [...document.querySelectorAll("[data-check-log]")];
+      return {
+        missing,
+        inOrder,
+        leads: logs.map((node) => node.querySelector("strong")?.textContent || ""),
+        lastIsLog: Boolean(root.lastElementChild && root.lastElementChild.matches("[data-check-log]")),
+        logsBeforeTable: logs.some((node) => (node.compareDocumentPosition(document.querySelector(".tx-table")) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0),
+      };
+    });
+    check(controlOrder.missing.length === 0 && controlOrder.inOrder && !controlOrder.logsBeforeTable, `controls before logs ${JSON.stringify(controlOrder)}`);
+    check(controlOrder.lastIsLog && JSON.stringify(controlOrder.leads) === JSON.stringify(logLeads), `rendered log order ${controlOrder.leads.join(" / ")}`);
     const opsText = await page.$eval("[data-ops-memo]", (node) => ({
       lead: node.querySelector("strong")?.textContent || "",
       body: node.querySelector("p")?.textContent || "",
@@ -919,7 +958,7 @@ async function browserChecks(base) {
     check(await page.$("[data-attachment-result] button") === null, "attachment result has no button");
     check((await page.$$("[data-unattached]")).length === 0, "unattached cards are gone");
     const actionLine = await page.$eval("[data-action-count]", (node) => node.textContent);
-    check(actionLine === "要処理 4件。登録完了17件。除外5件（返金2件、本人以外の課金3件）は含めません。", actionLine);
+    check(actionLine === "要処理 3件。登録完了17件。除外6件（返金2件、本人以外の課金4件）は含めません。", actionLine);
     check(!bodyText.includes("トークン使用量"), "token heading removed");
     check(await page.$("[data-token-usage]") === null && await page.$("[data-token-field]") === null, "token fields removed");
     const instruction = await page.$eval("[data-instruction]", (node) => ({
@@ -961,8 +1000,9 @@ async function browserChecks(base) {
     check(agg.find((row) => row[0] === "メモなし")?.[1] === "0" && agg.find((row) => row[0] === "メモなし")?.[2] === "¥0", "agg メモなし");
     check(agg.find((row) => row[0] === "証憑なし")?.[1] === "0" && agg.find((row) => row[0] === "証憑なし")?.[2] === "¥0", "agg 証憑なし");
     check(agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[1] === "0" && agg.find((row) => row[0] === "証憑保存済・Slack未添付")?.[2] === "¥0", "agg saved receipts");
-    check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "4" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥34,104", "agg メモ・証憑なし");
+    check(agg.find((row) => row[0] === "メモ・証憑なし")?.[1] === "3" && agg.find((row) => row[0] === "メモ・証憑なし")?.[2] === "¥34,082", "agg メモ・証憑なし");
     check(agg.find((row) => row[0] === NOT_OWNER_STATUS)?.[1] === "3" && agg.find((row) => row[0] === NOT_OWNER_STATUS)?.[2] === "¥1,222", "agg not-owner");
+    check(agg.find((row) => row[0] === NOT_OWNER_STATUS_20261111)?.[1] === "1" && agg.find((row) => row[0] === NOT_OWNER_STATUS_20261111)?.[2] === "¥22", "agg github 22");
     const savedTone = await page.$eval("[data-tx-id='tx-20261105-1253-monotaro-17553'] [data-label='ステータス'] .status", (node) => node.className);
     check(savedTone.includes("success") && !savedTone.includes("warning"), `registered tone ${savedTone}`);
     check(agg.find((row) => row[0] === "証憑不一致")?.[1] === "0" && agg.find((row) => row[0] === "証憑不一致")?.[2] === "¥0", "agg zero mismatch");

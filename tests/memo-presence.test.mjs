@@ -63,11 +63,14 @@ const unconfirmed = ledger.transactions.filter((tx) => tx.memoStatus === "未確
 const exempt = ledger.transactions.filter((tx) => tx.memoStatus === "不要");
 check(present.length === 18, `memo present ${present.length}`);
 const priorUnconfirmed = ["tx-20261109-1754-github-392", "tx-20261109-1755-github-783", "tx-20261110-1051-github-47"];
-const newUnconfirmed = ["tx-20261111-1259-github-22", "tx-20261111-1404-monotaro-30017", "tx-20261111-1546-monotaro-4065", "tx-20261111-1553-amazon-0"];
+const github22Id = "tx-20261111-1259-github-22";
+const newUnconfirmed = ["tx-20261111-1404-monotaro-30017", "tx-20261111-1546-monotaro-4065", "tx-20261111-1553-amazon-0"];
 check(unconfirmed.length === 7, `unconfirmed memo ${unconfirmed.length}`);
-check(JSON.stringify(unconfirmed.map((tx) => tx.id)) === JSON.stringify([...priorUnconfirmed, ...newUnconfirmed]), "unconfirmed threads have no memo completion");
+check(JSON.stringify(unconfirmed.map((tx) => tx.id)) === JSON.stringify([...priorUnconfirmed, github22Id, ...newUnconfirmed]), "unconfirmed threads have no memo completion");
 check(unconfirmed.every((tx) => tx.memoEvidence == null && tx.memoPresent !== true), "unconfirmed rows have no invented notice");
 check(priorUnconfirmed.every((id) => ledger.transactions.find((tx) => tx.id === id)?.status === "本人以外の課金（シバタさん回答 2026-11-10）"), "prior github rows stay not-owner");
+const github22 = ledger.transactions.find((tx) => tx.id === github22Id);
+check(github22?.memoStatus === "未確認" && github22?.status === "本人以外の課金（シバタさん回答 2026-11-11）", "github 22 stays unconfirmed and is not-owner");
 check(newUnconfirmed.every((id) => ledger.transactions.find((tx) => tx.id === id)?.memoStatus === "未確認" && ledger.transactions.find((tx) => tx.id === id)?.status === "メモ・証憑なし"), "new rows stay unconfirmed without a completion notice");
 check(!ledgerText.includes("d16e28d2-5189-4b49-abec-738db26c8a5f"), "published ledger has no saas card user id");
 const danballace = ledger.transactions.find((tx) => tx.id === "tx-20261106-1553-danballace-7160");
