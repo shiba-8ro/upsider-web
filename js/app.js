@@ -64,11 +64,6 @@ function render() {
   );
   app.append(header, renderAttachmentResult(ledger), renderActionCount(ledger), renderMetrics(), renderAggregation());
 
-  for (const callout of ledger.callouts) {
-    if (isOpsMemo(callout)) continue;
-    app.append(renderCallout(callout));
-  }
-
   const list = el("section", { "aria-labelledby": "tx-heading" });
   list.append(
     el("h2", { id: "tx-heading" }, "取引一覧"),
@@ -92,10 +87,17 @@ function render() {
   const caution = el("section", { class: "caution" });
   caution.append(el("h2", {}, ledger.cautionHeading), el("p", {}, ledger.caution));
   app.append(caution);
+  // 操作部と件数・取引表を先に出す。チェック履歴は台帳の並び（新しい順）のまま、注意と運用メモの後に固定する。
+  appendTrailingCallouts(ledger.callouts);
+}
 
-  for (const callout of ledger.callouts) {
-    if (!isOpsMemo(callout)) continue;
-    app.append(renderCallout(callout));
+function appendTrailingCallouts(callouts) {
+  const items = Array.isArray(callouts) ? callouts : [];
+  for (const callout of items) {
+    if (isOpsMemo(callout)) app.append(renderCallout(callout));
+  }
+  for (const callout of items) {
+    if (isCheckLog(callout)) app.append(renderCallout(callout));
   }
 }
 
@@ -103,9 +105,14 @@ function isOpsMemo(callout) {
   return Boolean(callout) && callout.lead === OPS_MEMO_LEAD;
 }
 
+function isCheckLog(callout) {
+  return Boolean(callout) && !isOpsMemo(callout);
+}
+
 function renderCallout(callout) {
   const attrs = { class: `callout ${callout.tone}` };
   if (isOpsMemo(callout)) attrs["data-ops-memo"] = "";
+  if (isCheckLog(callout)) attrs["data-check-log"] = "";
   const box = el("aside", attrs);
   box.append(el("strong", {}, callout.lead), el("p", {}, callout.body));
   return box;
