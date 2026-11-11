@@ -8,7 +8,10 @@ import {
   filterTransactions,
   formatMemoText,
   formatYen,
-  initialMemo,
+  loadMemoDrafts,
+  MEMO_FIELDS,
+  MEMO_STORAGE_KEY,
+  memoDefaults,
   statusTone,
   sumOf,
 } from "./logic.js";
@@ -39,9 +42,9 @@ async function init() {
   const response = await fetch(new URL("../data/ledger.json", import.meta.url));
   if (!response.ok) throw new Error(`ledger ${response.status}`);
   state.ledger = await response.json();
-  for (const detail of state.ledger.details) {
-    const tx = state.ledger.transactions.find((row) => row.id === detail.transactionId);
-    state.memos[detail.transactionId] = initialMemo(tx.content);
+  const drafts = readMemoDrafts();
+  for (const tx of state.ledger.transactions) {
+    state.memos[tx.id] = drafts[tx.id] ? { ...drafts[tx.id] } : memoDefaults(tx);
   }
   render();
   app.addEventListener("click", onClick);
@@ -299,10 +302,21 @@ function renderTable() {
   table.append(el("caption", { class: "sr-only" }, "取引一覧"), el("thead", {}, head));
   const body = el("tbody", { "data-tx-body": "" });
   for (const tx of filterTransactions(state.ledger.transactions, state.filter)) {
-    body.append(renderRow(tx));
+    body.append(renderRow(tx), renderMemoRow(tx));
   }
   table.append(body);
   return table;
+}
+
+// 各取引行の直下に、詳細カードと同じ5欄のメモ入力を畳んで置く。ステータスでは分けない。
+function renderMemoRow(tx) {
+  const tr = el("tr", { class: "memo-row", "data-memo-row": tx.id });
+  const td = el("td", { colspan: "9" });
+  const details = el("details", { class: "memo-fold" });
+  details.append(el("summary", {}, "メモ作成"), renderMemo(tx, "row-memo"));
+  td.append(details);
+  tr.append(td);
+  return tr;
 }
 
 function renderRow(tx) {
@@ -350,9 +364,9 @@ function renderDetail(detail) {
   return article;
 }
 
-function renderMemo(tx) {
+function renderMemo(tx, idPrefix = "memo") {
   const memo = state.memos[tx.id];
-  const box = el("div", { class: "memo" });
+  const box = el("div", { class: "memo", "data-memo-card": tx.id });
   const fields = [
     ["purpose", "用途："],
     ["seg1", "セグメント1："],
@@ -361,7 +375,7 @@ function renderMemo(tx) {
     ["content", "内容："],
   ];
   for (const [field, label] of fields) {
-    const id = `memo-${tx.id}-${field}`;
+    const id = `${idPrefix}-${tx.id}-${field}`;
     const wrap = el("label", { class: "memo-field", for: id });
     const input = el("input", {
       id,
@@ -376,9 +390,10 @@ function renderMemo(tx) {
   }
 
   const actions = el("div", { class: "memo-actions" });
-  const noteId = `exec-note-${tx.id}`;
+  const noteId = `${idPrefix}-exec-note-${tx.id}`;
   actions.append(
     el("button", { type: "button", class: "btn primary", "data-copy": tx.id }, "クリップボードにコピー"),
+    el("button", { type: "button", class: "btn secondary tiny", "data-memo-reset": tx.id }, "初期値に戻す"),
   );
   const status = el("p", { class: "copy-status", "data-copy-status": "", role: "status" }, "");
   status.hidden = true;
@@ -388,7 +403,7 @@ function renderMemo(tx) {
     el("p", {}, "自動コピーに失敗しました。下の5行を選択してコピーしてください。"),
     el("textarea", { readonly: "", "data-copy-fallback-text": "" }),
   );
-  box.append(actions, status, fallback, el("p", { class: "exec-note", id: noteId }, "このメモはブラウザの中だけです。送信しません。"));
+  box.append(actions, status, fallback, el("p", { class: "exec-note", id: noteId }, "このメモはブラウザの中だけです。編集内容はこのブラウザに残ります。送信しません。"));
   return box;
 }
 
@@ -411,10 +426,16 @@ function onClick(event) {
     paintFilter();
     return;
   }
+  const resetButton = event.target.closest("[data-memo-reset]");
+  if (resetButton) {
+    event.preventDefault();
+    resetMemo(resetButton.dataset.memoReset);
+    return;
+  }
   const copyButton = event.target.closest("[data-copy]");
   if (copyButton) {
     event.preventDefault();
-    copyMemo(copyButton.dataset.copy);
+    copyMemo(copyButton.dataset.copy, copyButton.closest("[data-memo-card]"));
   }
 }
 
@@ -422,7 +443,13 @@ function onInput(event) {
   const input = event.target.closest("[data-memo-field]");
   if (!input) return;
   const id = input.dataset.memoId;
-  state.memos[id][input.dataset.memoField] = input.value;
+  const field = input.dataset.memoField;
+  if (!state.memos[id]) return;
+  state.memos[id][field] = input.value;
+  for (const node of app.querySelectorAll(`[data-memo-id="${CSS.escape(id)}"][data-memo-field="${CSS.escape(field)}"]`)) {
+    if (node !== input) node.value = input.value;
+  }
+  persistMemos();
 }
 
 function paintFilter() {
@@ -432,17 +459,18 @@ function paintFilter() {
   const body = app.querySelector("[data-tx-body]");
   body.replaceChildren();
   const rows = filterTransactions(state.ledger.transactions, state.filter);
-  for (const tx of rows) body.append(renderRow(tx));
+  for (const tx of rows) body.append(renderRow(tx), renderMemoRow(tx));
   app.querySelector("[data-empty]").hidden = rows.length !== 0;
 }
 
-function copyMemo(id) {
+function copyMemo(id, card) {
+  if (!card || !state.memos[id]) return;
   const text = formatMemoText(state.memos[id]);
   const legacyOk = execCommandCopy(text);
   const clipboard = navigator.clipboard;
   if (legacyOk) {
-    hideFallback(id);
-    markCopied(id);
+    hideFallback(card);
+    markCopied(card);
     if (clipboard && typeof clipboard.writeText === "function") {
       clipboard.writeText(text).catch(() => {});
     }
@@ -451,30 +479,30 @@ function copyMemo(id) {
   if (clipboard && typeof clipboard.writeText === "function") {
     clipboard.writeText(text).then(
       () => {
-        hideFallback(id);
-        markCopied(id);
+        hideFallback(card);
+        markCopied(card);
       },
-      () => copyWithClipboardItem(id, text),
+      () => copyWithClipboardItem(card, text),
     );
     return;
   }
-  copyWithClipboardItem(id, text);
+  copyWithClipboardItem(card, text);
 }
 
-function copyWithClipboardItem(id, text) {
+function copyWithClipboardItem(card, text) {
   const clipboard = navigator.clipboard;
   if (clipboard && typeof clipboard.write === "function" && typeof ClipboardItem !== "undefined") {
     const item = new ClipboardItem({ "text/plain": new Blob([text], { type: "text/plain" }) });
     clipboard.write([item]).then(
       () => {
-        hideFallback(id);
-        markCopied(id);
+        hideFallback(card);
+        markCopied(card);
       },
-      () => showFallback(id, text),
+      () => showFallback(card, text),
     );
     return;
   }
-  showFallback(id, text);
+  showFallback(card, text);
 }
 
 function execCommandCopy(text) {
@@ -499,12 +527,12 @@ function execCommandCopy(text) {
   return ok;
 }
 
-function markCopied(id) {
-  state.copiedId = id;
+function markCopied(card) {
+  state.copiedId = card?.dataset.memoCard || null;
   state.copySeq += 1;
   const seq = state.copySeq;
   for (const node of app.querySelectorAll("[data-copy-status]")) {
-    const active = node.closest("[data-detail]")?.dataset.detail === id;
+    const active = node.closest("[data-memo-card]") === card;
     node.hidden = !active;
     node.textContent = active ? "コピーしました" : "";
   }
@@ -519,18 +547,17 @@ function markCopied(id) {
   }, COPY_SUCCESS_MS);
 }
 
-function hideFallback(id) {
-  const node = detailOf(id)?.querySelector("[data-copy-fallback]");
+function hideFallback(card) {
+  const node = card?.querySelector("[data-copy-fallback]");
   if (node) node.hidden = true;
 }
 
-function showFallback(id, text) {
+function showFallback(card, text) {
   for (const node of app.querySelectorAll("[data-copy-status]")) {
     node.hidden = true;
     node.textContent = "";
   }
   state.copiedId = null;
-  const card = detailOf(id);
   const fallback = card.querySelector("[data-copy-fallback]");
   const area = fallback.querySelector("[data-copy-fallback-text]");
   area.value = text;
@@ -539,8 +566,50 @@ function showFallback(id, text) {
   area.select();
 }
 
-function detailOf(id) {
-  return app.querySelector(`[data-detail="${CSS.escape(id)}"]`);
+function resetMemo(id) {
+  const tx = state.ledger.transactions.find((row) => row.id === id);
+  if (!tx || !state.memos[id]) return;
+  state.memos[id] = memoDefaults(tx);
+  for (const field of MEMO_FIELDS) {
+    for (const node of app.querySelectorAll(`[data-memo-id="${CSS.escape(id)}"][data-memo-field="${field}"]`)) {
+      node.value = state.memos[id][field];
+    }
+  }
+  for (const card of app.querySelectorAll(`[data-memo-card="${CSS.escape(id)}"]`)) {
+    hideFallback(card);
+    const status = card.querySelector("[data-copy-status]");
+    if (status) {
+      status.hidden = true;
+      status.textContent = "";
+    }
+  }
+  persistMemos();
+}
+
+function readMemoDrafts() {
+  try {
+    return loadMemoDrafts(localStorage.getItem(MEMO_STORAGE_KEY));
+  } catch {
+    return {};
+  }
+}
+
+function persistMemos() {
+  const memos = {};
+  for (const tx of state.ledger.transactions) {
+    const memo = state.memos[tx.id];
+    if (!memo) continue;
+    const defaults = memoDefaults(tx);
+    const edited = MEMO_FIELDS.some((field) => memo[field] !== defaults[field]);
+    if (!edited) continue;
+    memos[tx.id] = {};
+    for (const field of MEMO_FIELDS) memos[tx.id][field] = memo[field];
+  }
+  try {
+    localStorage.setItem(MEMO_STORAGE_KEY, JSON.stringify({ version: 1, memos }));
+  } catch {
+    // 保存できなくても画面上の編集とコピーはそのまま使える。
+  }
 }
 
 function renderDrive(tx) {

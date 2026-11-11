@@ -20,6 +20,10 @@ import {
   formatMemoText,
   formatYen,
   initialMemo,
+  loadMemoDrafts,
+  MEMO_STORAGE_KEY,
+  memoDefaults,
+  memoSeedText,
   isAllowedSlackThread,
   isExecutionRequest,
   loadStoredRequests,
@@ -561,6 +565,7 @@ async function assertLedger() {
       "分類：消耗品",
       `内容：${tx.content}`,
     ].join("\n"), `memo text ${tx.memoKey}`);
+    check(memoSeedText(tx) === tx.content && JSON.stringify(memoDefaults(tx)) === JSON.stringify(memo), `row defaults stay the content text ${tx.id}`);
     const request = buildExecutionRequest({
       transactionId: tx.id,
       slackThread: tx.slack,
@@ -570,6 +575,32 @@ async function assertLedger() {
     check(isExecutionRequest(tx.id, request), `request valid ${tx.id}`);
     check(!isExecutionRequest(tx.id, { ...request, token: "x" }), "token rejected");
   }
+  for (const tx of ledger.transactions) {
+    check(memoSeedText(tx) === tx.content, `seed uses the row content ${tx.id}`);
+    const defaults = memoDefaults(tx);
+    check(defaults.purpose === tx.content && defaults.seg1 === "AIハンド" && defaults.seg2 === "" && defaults.category === "消耗品" && defaults.content === tx.content, `defaults ${tx.id}`);
+  }
+  const composed = memoSeedText({
+    merchant: "MonotaRO",
+    amount: "¥4,065",
+    datetime: "11/11 15:46",
+    orderNumber: "134323400031",
+    items: ["セメダイン スーパーXゴールド AX-014 20mL ×5"],
+    purpose: "消耗品",
+    content: "  ",
+  });
+  check(composed === "MonotaRO ¥4,065 11/11 15:46 注文書番号134323400031 セメダイン スーパーXゴールド AX-014 20mL ×5 消耗品", `composed seed ${composed}`);
+  check(memoSeedText({ merchant: "Amazon", paidAt: "2026-11-11 15:53:54 JST", content: "" }) === "Amazon 2026-11-11 15:53:54 JST", "date falls back to paidAt");
+  check(JSON.stringify(loadMemoDrafts("")) === "{}" && JSON.stringify(loadMemoDrafts("{")) === "{}", "bad memo storage is ignored");
+  const storedDrafts = loadMemoDrafts(JSON.stringify({
+    version: 1,
+    memos: {
+      "tx-1": { purpose: "a", seg1: "b", seg2: "c", category: "d", content: "e", token: "no" },
+      "tx-2": { purpose: "a", token: "x" },
+    },
+  }));
+  check(storedDrafts["tx-1"]?.content === "e" && !("token" in storedDrafts["tx-1"]), "stored memo keeps the five strings");
+  check(storedDrafts["tx-2"] === undefined, "incomplete memo draft is dropped");
 
   const hashes = {
     "17553.jpg": "8dd1567b719033aa6802aa90ce77300f80a2f9800ee6081d6f2ff435c8611b2c",
@@ -603,6 +634,9 @@ async function assertLedger() {
   check(/gasUrl:\s*""/.test(publishedConfig), "published gas url is empty");
   const appSource = fs.readFileSync(path.join(root, "js/app.js"), "utf8");
   check(!/postGasPayload|fetchResult|loadGasConfig|resumePolling|data-instruction-send|data-ai|data-recheck|script\.google\.com/.test(appSource), "page does not call reception");
+  check(appSource.includes("メモ作成") && appSource.includes("初期値に戻す") && appSource.includes("localStorage.getItem(MEMO_STORAGE_KEY)"), "row memo card is part of the page");
+  check(sources.includes(MEMO_STORAGE_KEY), "memo drafts use a local storage key");
+  check((appSource.match(/fetch\(/g) || []).length === 1, "page still fetches only the ledger");
   check(appSource.includes("Slackの参照・メモ追加・証憑添付はブラウザのみ。API・MCP・Webhook等の連携機能は使用しません。"), "policy is on the page");
   const stoppedGas = fs.readFileSync(path.join(root, "gas/live-getter-reception-stopped.gs"), "utf8");
   check(stoppedGas.includes("受付を停止しています") && !/SpreadsheetApp|PropertiesService|UrlFetchApp|LockService|CacheService|SLACK_WEBHOOK|hooks\.slack/.test(stoppedGas), "stopped gas touches neither sheets nor secrets");
@@ -1014,10 +1048,84 @@ async function browserChecks(base) {
       const ids = await page.$$eval("[data-tx-id]", (nodes) => nodes.map((node) => node.dataset.txId));
       const expected = filterTransactions(ledger.transactions, filter).map((tx) => tx.id);
       check(JSON.stringify(ids) === JSON.stringify(expected), `filter ${filter}: ${ids.join(",")}`);
+      const memoIds = await page.$$eval("[data-memo-row]", (nodes) => nodes.map((node) => node.dataset.memoRow));
+      check(JSON.stringify(memoIds) === JSON.stringify(expected), `memo rows follow ${filter}`);
       const emptyHidden = await page.$eval("[data-empty]", (node) => node.hidden);
       check(emptyHidden === (expected.length !== 0), `empty state ${filter}`);
     }
     await page.click('[data-filter="すべて"]');
+
+    const memoRows = await page.$$eval("[data-memo-row]", (nodes) => nodes.map((node) => {
+      const details = node.querySelector("details");
+      const inputs = [...node.querySelectorAll("[data-memo-field]")];
+      const summary = node.querySelector("summary");
+      const summaryBox = summary ? summary.getBoundingClientRect() : { width: 0, height: 0 };
+      return {
+        id: node.dataset.memoRow,
+        attachedTo: node.previousElementSibling?.dataset.txId || "",
+        summary: summary?.textContent || "",
+        summaryVisible: summaryBox.width > 0 && summaryBox.height > 0,
+        open: Boolean(details?.open),
+        fields: Object.fromEntries(inputs.map((input) => [input.dataset.memoField, input.value])),
+        editable: inputs.length === 5 && inputs.every((input) => !input.disabled && !input.readOnly && input.type === "text"),
+        copy: node.querySelector("[data-copy]")?.textContent || "",
+        reset: node.querySelector("[data-memo-reset]")?.textContent || "",
+        slackLinks: node.querySelectorAll("a[href*='slack']").length,
+      };
+    }));
+    check(memoRows.length === ledger.transactions.length, `memo rows ${memoRows.length}`);
+    memoRows.forEach((row, index) => {
+      const tx = ledger.transactions[index];
+      check(row.id === tx.id && row.attachedTo === tx.id, `memo row attached under ${tx.id}`);
+      check(row.summary === "メモ作成" && row.summaryVisible, `memo toggle visible ${tx.id}`);
+      check(row.open === false, `memo starts collapsed ${tx.id}`);
+      check(row.editable, `five editable fields ${tx.id}`);
+      check(row.copy === "クリップボードにコピー" && row.reset === "初期値に戻す", `memo actions ${tx.id}`);
+      check(row.slackLinks === 0, `memo row does not add a slack link ${tx.id}`);
+      check(JSON.stringify(row.fields) === JSON.stringify(memoDefaults(tx)), `memo defaults ${tx.id} ${JSON.stringify(row.fields)}`);
+    });
+    const memoId = "tx-20261111-1404-monotaro-30017";
+    const memoTx = ledger.transactions.find((tx) => tx.id === memoId);
+    await page.$eval(`[data-memo-row="${memoId}"] details`, (node) => { node.open = true; });
+    const copyVisible = await page.$eval(`[data-memo-row="${memoId}"] [data-copy]`, (node) => {
+      const rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+    check(copyVisible, "opened memo copy button is visible in the table");
+    await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="purpose"]`, (input) => {
+      input.value = "折りたたみコンテナの追記";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="content"]`, (input) => {
+      input.value = "台車を含む";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const beforeMemoNet = network.length;
+    await page.click(`[data-memo-row="${memoId}"] [data-copy]`);
+    const editedMemo = memoDefaults(memoTx);
+    editedMemo.purpose = "折りたたみコンテナの追記";
+    editedMemo.content = "台車を含む";
+    await page.waitForFunction((expected) => navigator.clipboard.readText().then((text) => text === expected).catch(() => false), { timeout: 5000 }, formatMemoText(editedMemo));
+    const memoCalls = network.slice(beforeMemoNet).filter((url) => /mock-gas|script\.google|slack\.com\/api|hooks\.slack|op=result/.test(url));
+    check(memoCalls.length === 0, `memo copy stays local ${memoCalls.join(",")}`);
+    const storedMemo = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), MEMO_STORAGE_KEY));
+    check(storedMemo.version === 1 && storedMemo.memos[memoId].purpose === "折りたたみコンテナの追記" && storedMemo.memos[memoId].content === "台車を含む", "draft stored by transaction id");
+    check(!JSON.stringify(storedMemo).includes("token"), "stored memo has no token");
+    await page.reload({ waitUntil: "networkidle0" });
+    await page.waitForSelector("body[data-ready='true']");
+    const persistedPurpose = await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="purpose"]`, (input) => input.value);
+    const persistedContent = await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="content"]`, (input) => input.value);
+    check(persistedPurpose === "折りたたみコンテナの追記" && persistedContent === "台車を含む", `memo survives reload ${persistedPurpose}`);
+    await page.$eval(`[data-memo-row="${memoId}"] details`, (node) => { node.open = true; });
+    await page.click(`[data-memo-row="${memoId}"] [data-memo-reset]`);
+    const resetPurpose = await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="purpose"]`, (input) => input.value);
+    check(resetPurpose === memoTx.content, `reset restores the row content ${resetPurpose}`);
+    const cleared = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), MEMO_STORAGE_KEY));
+    check(cleared.memos[memoId] === undefined, "reset removes the stored draft");
+    await page.reload({ waitUntil: "networkidle0" });
+    await page.waitForSelector("body[data-ready='true']");
+    const afterResetReload = await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="purpose"]`, (input) => input.value);
+    check(afterResetReload === memoTx.content, "reset value remains after reload");
 
     const details = await page.$$eval("[data-detail]", (cards) => cards.map((card) => {
       const image = card.querySelector("img");
@@ -1126,7 +1234,12 @@ async function browserChecks(base) {
     await page.reload({ waitUntil: "networkidle0" });
     await page.waitForSelector(`[data-detail="${NEW_ORDER_ID}"] [data-copy]`);
     const purposeAfterReload = await page.$eval(`[data-detail="${NEW_ORDER_ID}"] [data-memo-field="purpose"]`, (input) => input.value);
-    check(purposeAfterReload === "YUBI梱包用ダンボール80サイズ 50枚", "form resets to initial value");
+    const rowPurposeAfterReload = await page.$eval(`[data-memo-row="${NEW_ORDER_ID}"] [data-memo-field="purpose"]`, (input) => input.value);
+    check(purposeAfterReload === "段ボールの追加注文" && rowPurposeAfterReload === "段ボールの追加注文", `edited memo persists ${purposeAfterReload} / ${rowPurposeAfterReload}`);
+    await page.click(`[data-detail="${NEW_ORDER_ID}"] [data-memo-reset]`);
+    const purposeAfterReset = await page.$eval(`[data-detail="${NEW_ORDER_ID}"] [data-memo-field="purpose"]`, (input) => input.value);
+    const rowSegAfterReset = await page.$eval(`[data-memo-row="${NEW_ORDER_ID}"] [data-memo-field="seg2"]`, (input) => input.value);
+    check(purposeAfterReset === "YUBI梱包用ダンボール80サイズ 50枚" && rowSegAfterReset === "", `reset restores both cards ${purposeAfterReset} / ${rowSegAfterReset}`);
 
     await page.evaluate(() => {
       document.execCommand = () => false;
@@ -1154,7 +1267,7 @@ async function browserChecks(base) {
       };
     }, copyId);
     check(mobile.overflow <= 1, `mobile overflow ${mobile.overflow}`);
-    check(mobile.buttons.length === 1 && mobile.buttons[0].text === "クリップボードにコピー", `memo buttons ${JSON.stringify(mobile.buttons)}`);
+    check(mobile.buttons.length === 2 && mobile.buttons[0].text === "クリップボードにコピー" && mobile.buttons[1].text === "初期値に戻す", `memo buttons ${JSON.stringify(mobile.buttons)}`);
 
     await page.setViewport({ width: 320, height: 700 });
     const narrow = await page.evaluate((id) => {

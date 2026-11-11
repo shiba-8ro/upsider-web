@@ -142,6 +142,10 @@ export function filterTransactions(transactions, filter) {
   return transactions.filter((tx) => tx.status === filter);
 }
 
+export const MEMO_FIELDS = ["purpose", "seg1", "seg2", "category", "content"];
+
+export const MEMO_STORAGE_KEY = "upsider-monitor.memos.v1";
+
 export function initialMemo(content) {
   return {
     purpose: content,
@@ -150,6 +154,56 @@ export function initialMemo(content) {
     category: "消耗品",
     content,
   };
+}
+
+// 内容がある行はその文言を初期値にする。空の行だけ、台帳にある利用先・金額・日時・注文書番号・品目・用途から組む。
+export function memoSeedText(tx) {
+  const content = typeof tx?.content === "string" ? tx.content.trim() : "";
+  if (content) return content;
+  if (!tx || typeof tx !== "object") return "";
+  const bits = [];
+  if (tx.merchant) bits.push(String(tx.merchant));
+  if (tx.amount) bits.push(String(tx.amount));
+  if (tx.datetime) bits.push(String(tx.datetime));
+  else if (tx.paidAt) bits.push(String(tx.paidAt));
+  if (typeof tx.orderNumber === "string" && tx.orderNumber.trim()) bits.push(`注文書番号${tx.orderNumber.trim()}`);
+  if (Array.isArray(tx.items) && tx.items.length) bits.push(tx.items.map((item) => String(item)).join("、"));
+  if (typeof tx.purpose === "string" && tx.purpose.trim()) bits.push(tx.purpose.trim());
+  return bits.join(" ");
+}
+
+export function memoDefaults(tx) {
+  return initialMemo(memoSeedText(tx));
+}
+
+export function loadMemoDrafts(raw) {
+  if (!raw) return {};
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return {};
+  }
+  if (!parsed || parsed.version !== 1 || typeof parsed.memos !== "object" || parsed.memos === null || Array.isArray(parsed.memos)) {
+    return {};
+  }
+  const memos = Object.create(null);
+  for (const [id, value] of Object.entries(parsed.memos)) {
+    if (id === "__proto__" || id === "prototype" || id === "constructor") continue;
+    const draft = sanitizeMemoDraft(value);
+    if (draft) memos[id] = draft;
+  }
+  return memos;
+}
+
+function sanitizeMemoDraft(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const draft = {};
+  for (const field of MEMO_FIELDS) {
+    if (typeof value[field] !== "string") return null;
+    draft[field] = value[field];
+  }
+  return draft;
 }
 
 export function formatMemoText(memo) {
