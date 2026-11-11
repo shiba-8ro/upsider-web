@@ -75,7 +75,7 @@ for (const tx of present) {
   check(memoPresence(messages) === "メモあり", `notice confirms ${tx.id}`);
   check(tx.memoEvidence.every((item) => item.notice === "決済メモを追加しました！" && (item.botId === UPSIDER_BOT_ID || (tx.id === "tx-20261106-1553-danballace-7160" && item.noticeBy === "UPSIDER アプリ" && item.slackUiTime === "2026-11-08 00:59 JST" && !item.botId && !item.ts))), `notice text ${tx.id}`);
 }
-check(danballace.memoEvidence.length === 2 && danballace.status === "証憑保存済・Slack未添付", "extra Slack UI observation stays with the saved receipt");
+check(danballace.memoEvidence.length === 2 && danballace.status === "登録完了", "extra Slack UI observation stays after registration");
 check(present.filter((tx) => tx.memoEvidence.some((item) => !item.botId)).map((tx) => tx.id).join() === "tx-20261106-1553-danballace-7160", "only the 7160 Slack UI observation lacks a bot id");
 check(memoPresence([]) === "未確認", "empty evidence stays unconfirmed");
 const pageSource = fs.readFileSync(path.join(root, "js/app.js"), "utf8");
