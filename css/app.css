@@ -310,6 +310,41 @@ table {
 
 .memo-actions .btn { flex: 0 1 auto; white-space: normal; text-align: center; }
 
+.btn.tiny {
+  min-height: 32px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tx-table tr.memo-row td {
+  padding-top: 0;
+  background: transparent;
+}
+
+.memo-fold > summary {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.memo-fold .memo {
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.memo-fold .memo-field { margin-bottom: 6px; }
+.memo-fold .memo-field input { min-height: 36px; padding: 6px 8px; }
+
 .copy-status {
   margin: 8px 0 0;
   color: var(--success);
@@ -436,6 +471,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .props, .request dl { grid-template-columns: 1fr; gap: 2px 0; }
   .props dt, .request dt { margin-top: 8px; }
   .memo-actions .btn { flex: 1 1 0; min-width: 0; padding: 8px 10px; }
+  .tx-table tr.memo-row {
+    margin-top: -10px;
+    border-top: 0;
+    border-radius: 0 0 12px 12px;
+  }
+  .tx-table tr.memo-row td {
+    display: block;
+    padding-top: 0;
+  }
+  .tx-table tr.memo-row td::before { content: none; }
   .tx-table thead { display: none; }
   .tx-table, .tx-table tbody, .tx-table tr, .tx-table td { display: block; width: auto; }
   .tx-table tr {
