@@ -61,29 +61,45 @@ check(!ledgerText.includes('"raw"'), "published ledger has no raw slack log");
 const present = ledger.transactions.filter((tx) => tx.memoPresent === true);
 const unconfirmed = ledger.transactions.filter((tx) => tx.memoStatus === "未確認");
 const exempt = ledger.transactions.filter((tx) => tx.memoStatus === "不要");
-check(present.length === 18, `memo present ${present.length}`);
+check(present.length === 20, `memo present ${present.length}`);
 const priorUnconfirmed = ["tx-20261109-1754-github-392", "tx-20261109-1755-github-783", "tx-20261110-1051-github-47"];
 const github22Id = "tx-20261111-1259-github-22";
-const newUnconfirmed = ["tx-20261111-1404-monotaro-30017", "tx-20261111-1546-monotaro-4065", "tx-20261111-1553-amazon-0"];
+const stillUnconfirmed = ["tx-20261111-1553-amazon-0", "tx-20261111-1940-misumi-44189", "tx-20261111-2343-amazon-2399"];
 check(unconfirmed.length === 7, `unconfirmed memo ${unconfirmed.length}`);
-check(JSON.stringify(unconfirmed.map((tx) => tx.id)) === JSON.stringify([...priorUnconfirmed, github22Id, ...newUnconfirmed]), "unconfirmed threads have no memo completion");
+check(JSON.stringify(unconfirmed.map((tx) => tx.id)) === JSON.stringify([...priorUnconfirmed, github22Id, ...stillUnconfirmed]), "unconfirmed threads have no memo completion");
 check(unconfirmed.every((tx) => tx.memoEvidence == null && tx.memoPresent !== true), "unconfirmed rows have no invented notice");
 check(priorUnconfirmed.every((id) => ledger.transactions.find((tx) => tx.id === id)?.status === "本人以外の課金（シバタさん回答 2026-11-10）"), "prior github rows stay not-owner");
 const github22 = ledger.transactions.find((tx) => tx.id === github22Id);
 check(github22?.memoStatus === "未確認" && github22?.status === "本人以外の課金（シバタさん回答 2026-11-11）", "github 22 stays unconfirmed and is not-owner");
-check(newUnconfirmed.every((id) => ledger.transactions.find((tx) => tx.id === id)?.memoStatus === "未確認" && ledger.transactions.find((tx) => tx.id === id)?.status === "メモ・証憑なし"), "new rows stay unconfirmed without a completion notice");
+check(ledger.transactions.find((tx) => tx.id === "tx-20261111-1940-misumi-44189")?.memoStatus === "未確認" && ledger.transactions.find((tx) => tx.id === "tx-20261111-2343-amazon-2399")?.status === "メモ・証憑なし", "new rows stay unconfirmed without a completion notice");
+check(["tx-20261111-1404-monotaro-30017", "tx-20261111-1546-monotaro-4065"].every((id) => {
+  const tx = ledger.transactions.find((row) => row.id === id);
+  return tx?.memoStatus === "あり" && tx?.memoPresent === true;
+}), "monotaro rows gained a completion notice");
 check(!ledgerText.includes("d16e28d2-5189-4b49-abec-738db26c8a5f"), "published ledger has no saas card user id");
 const danballace = ledger.transactions.find((tx) => tx.id === "tx-20261106-1553-danballace-7160");
 check(danballace.memoStatus === "あり" && danballace.memoPresent === true, "DANBALLACE 7160 memo confirmed");
 check(exempt.length === 1 && exempt[0].status === "返金（メモ・証憑不要）" && exempt[0].memoPresent == null, "refund is exempt");
 for (const tx of present) {
   check(tx.memoStatus === "あり" && tx.memoEvidence.length > 0, `evidence for ${tx.id}`);
-  const messages = tx.memoEvidence.map((item) => ({ botId: item.botId, body: item.notice }));
+  const messages = tx.memoEvidence.map((item) => ({
+    botId: item.botId,
+    body: item.notice,
+    author: item.postedBy === "UPSIDER" ? "upsider" : undefined,
+  }));
   check(memoPresence(messages) === "メモあり", `notice confirms ${tx.id}`);
-  check(tx.memoEvidence.every((item) => item.notice === "決済メモを追加しました！" && (item.botId === UPSIDER_BOT_ID || (tx.id === "tx-20261106-1553-danballace-7160" && item.noticeBy === "UPSIDER アプリ" && item.slackUiTime === "2026-11-08 00:59 JST" && !item.botId && !item.ts))), `notice text ${tx.id}`);
+  check(tx.memoEvidence.every((item) => item.notice === "決済メモを追加しました！" && (
+    item.botId === UPSIDER_BOT_ID
+    || (tx.id === "tx-20261106-1553-danballace-7160" && item.noticeBy === "UPSIDER アプリ" && item.slackUiTime === "2026-11-08 00:59 JST" && !item.botId && !item.ts)
+    || (item.postedBy === "UPSIDER" && typeof item.postedAt === "string" && item.ts === null && !item.botId)
+  )), `notice text ${tx.id}`);
 }
 check(danballace.memoEvidence.length === 2 && danballace.status === "登録完了", "extra Slack UI observation stays after registration");
-check(present.filter((tx) => tx.memoEvidence.some((item) => !item.botId)).map((tx) => tx.id).join() === "tx-20261106-1553-danballace-7160", "only the 7160 Slack UI observation lacks a bot id");
+check(present.filter((tx) => tx.memoEvidence.some((item) => !item.botId)).map((tx) => tx.id).join() === [
+  "tx-20261106-1553-danballace-7160",
+  "tx-20261111-1404-monotaro-30017",
+  "tx-20261111-1546-monotaro-4065",
+].join(), "notices without a captured bot id stay limited");
 check(memoPresence([]) === "未確認", "empty evidence stays unconfirmed");
 const pageSource = fs.readFileSync(path.join(root, "js/app.js"), "utf8");
 check(pageSource.includes("memoStatus"), "page shows the stored memo status");
