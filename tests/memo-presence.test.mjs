@@ -64,14 +64,15 @@ const exempt = ledger.transactions.filter((tx) => tx.memoStatus === "不要");
 check(present.length === 20, `memo present ${present.length}`);
 const priorUnconfirmed = ["tx-20261109-1754-github-392", "tx-20261109-1755-github-783", "tx-20261110-1051-github-47"];
 const github22Id = "tx-20261111-1259-github-22";
-const stillUnconfirmed = ["tx-20261111-1553-amazon-0", "tx-20261111-1940-misumi-44189", "tx-20261111-2343-amazon-2399"];
-check(unconfirmed.length === 7, `unconfirmed memo ${unconfirmed.length}`);
+const stillUnconfirmed = ["tx-20261111-1553-amazon-0", "tx-20261111-1940-misumi-44189", "tx-20261111-2343-amazon-2399", "tx-20261113-0053-monotaro-18678"];
+check(unconfirmed.length === 8, `unconfirmed memo ${unconfirmed.length}`);
 check(JSON.stringify(unconfirmed.map((tx) => tx.id)) === JSON.stringify([...priorUnconfirmed, github22Id, ...stillUnconfirmed]), "unconfirmed threads have no memo completion");
 check(unconfirmed.every((tx) => tx.memoEvidence == null && tx.memoPresent !== true), "unconfirmed rows have no invented notice");
 check(priorUnconfirmed.every((id) => ledger.transactions.find((tx) => tx.id === id)?.status === "本人以外の課金（シバタさん回答 2026-11-10）"), "prior github rows stay not-owner");
 const github22 = ledger.transactions.find((tx) => tx.id === github22Id);
 check(github22?.memoStatus === "未確認" && github22?.status === "本人以外の課金（シバタさん回答 2026-11-11）", "github 22 stays unconfirmed and is not-owner");
 check(ledger.transactions.find((tx) => tx.id === "tx-20261111-1940-misumi-44189")?.memoStatus === "未確認" && ledger.transactions.find((tx) => tx.id === "tx-20261111-2343-amazon-2399")?.status === "メモ・証憑なし", "new rows stay unconfirmed without a completion notice");
+check(ledger.transactions.find((tx) => tx.id === "tx-20261113-0053-monotaro-18678")?.memoStatus === "未確認" && ledger.transactions.find((tx) => tx.id === "tx-20261113-0053-monotaro-18678")?.memoPresent === false, "monotaro 18678 has no completion notice");
 check(["tx-20261111-1404-monotaro-30017", "tx-20261111-1546-monotaro-4065"].every((id) => {
   const tx = ledger.transactions.find((row) => row.id === id);
   return tx?.memoStatus === "あり" && tx?.memoPresent === true;
