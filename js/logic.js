@@ -172,7 +172,18 @@ export function memoSeedText(tx) {
   return bits.join(" ");
 }
 
+// 行に memoDefault があるときはその5欄を初期値にする。無い行は内容文から組む。
 export function memoDefaults(tx) {
+  const preset = tx && tx.memoDefault;
+  if (preset && typeof preset === "object" && !Array.isArray(preset) && MEMO_FIELDS.every((field) => typeof preset[field] === "string")) {
+    return {
+      purpose: preset.purpose,
+      seg1: preset.seg1,
+      seg2: preset.seg2,
+      category: preset.category,
+      content: preset.content,
+    };
+  }
   return initialMemo(memoSeedText(tx));
 }
 

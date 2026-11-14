@@ -31,7 +31,7 @@ check(ledgerAcquiredAt({}).text === "未取得" && ledgerAcquiredAt(null).text =
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ledger = JSON.parse(fs.readFileSync(path.join(root, "data/ledger.json"), "utf8"));
 const shown = ledgerAcquiredAt(ledger);
-check(shown.source === "asOf" && shown.text === "2026-11-13 19:30（日本時間）", `published asOf ${shown.text}`);
+check(shown.source === "asOf" && shown.text === "2026-11-14 09:20（日本時間）", `published asOf ${shown.text}`);
 check(normalizeAcquiredAt(ledger.evidencePatrol.lastSuccessfulAcquisitionAt) === "2026-11-13 19:30（日本時間）", "receipt pdf time");
 check(normalizeAcquiredAt(ledger.evidencePatrol.previousLastSuccessfulAcquisitionAt) === "2026-11-09 16:25（日本時間）", "carton pdf time kept");
 check(!("tokenUsage" in ledger), "token usage is not stored");
