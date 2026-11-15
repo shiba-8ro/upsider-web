@@ -1059,6 +1059,14 @@
       "memoKey": null,
       "detailSection": false,
       "memoStatus": "未確認",
+      "memoDefault": {
+        "purpose": "YUBI製造SDS用3Dプリンター部品購入（¥2,399本決済の¥0確認決済）",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "備品",
+        "content": "確認決済（¥0）。本決済はTINMORRY 257×257mm コールドプレート ×1（注文250-6606641-6831015）"
+      },
+      "memoBasis": "¥0の確認決済。内容は本決済¥2,399と同じ注文。UPSIDERでメモ欄が出ない場合は入力不要",
       "paidAt": "2026-11-11 15:53:54 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1174,6 +1182,14 @@
       "memoKey": null,
       "detailSection": false,
       "memoStatus": "未確認",
+      "memoDefault": {
+        "purpose": "YUBI製造SDS用3Dプリンター部品購入",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "備品",
+        "content": "3Dプリンター用ビルドプレート、TINMORRY 257×257mm コールドプレート（Bambu Lab対応）×1"
+      },
+      "memoBasis": "発注番号「YUBI製造SDS」。同系の「YUBI製造SDS備品」はシバタさんが「製造用備品購入、SDS常設／その他」と記入（M14,M15）。Bambu Lab用の造形プレートで、繰り返し使う治具のため分類は備品",
       "paidAt": "2026-11-11 23:43:44 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1207,6 +1223,14 @@
       "detailSection": false,
       "memoStatus": "未確認",
       "memoPresent": false,
+      "memoDefault": {
+        "purpose": "YUBI Glove製造用資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "マイコンボード、Seeed Studio XIAO ESP32C6 ×10"
+      },
+      "memoBasis": "参照番号「YUBI Glove製造」。用途はシバタさん記入の「YUBI Glove製造用資材購入」（M06,M20）と同じ。Wi-Fi 6／BLE対応の超小型マイコンで、YUBI Gloveに組み込む部品",
       "paidAt": "2026-11-13 00:53:56 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1240,12 +1264,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "AIハンド製造ライン用資材収納用品購入",
         "seg1": "AIハンド",
-        "seg2": "要確認",
+        "seg2": "その他",
         "category": "備品",
-        "content": "TRUSCO NS-10N R ×1"
+        "content": "部品コンテナ、TRUSCO NS型コンテナ 10L NS-10N R（赤）×1"
       },
+      "memoBasis": "参照番号「製造用収納」。同じ参照番号「製造用収納用品」の折りたたみコンテナに、シバタさんがこの用途・その他・備品と記入（M18）。NS-10Nは工具や部品を収める10Lの工場用コンテナ",
       "paidAt": "2026-11-13 10:23:56 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1285,12 +1310,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "YUBI Glove製造用資材購入",
         "seg1": "AIハンド",
-        "seg2": "要確認",
+        "seg2": "プロダクト販売",
         "category": "製造用資材",
-        "content": "HUD-42601 ウルトラサート4 M2.6×1000"
+        "content": "熱圧入インサートナット、黄銅 ウルトラサートⅣ M2.6 HUD-42601 ×1000"
       },
+      "memoBasis": "注文番号欄「AIハンド製造用資材」。3Dプリント部品にはんだごてで熱圧入するねじ山部品。翌日にM2.6用のインサート挿入こて先（Amazon ¥5,003、発注番号「製造用工具」）を発注しており、量産組立用。ねじ類はM04、軸受はM20でプロダクト販売",
       "paidAt": "2026-11-13 22:55:08 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1321,12 +1347,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "AIハンド製造ライン用ゴミ箱購入",
         "seg1": "AIハンド",
-        "seg2": "要確認",
+        "seg2": "その他",
         "category": "備品",
-        "content": "くず入れ GX-003B-N ×1"
+        "content": "ゴミ箱、モノタロウ くず入れ 角型 GX-003B-N ×1"
       },
+      "memoBasis": "参照番号「ゴミ箱」。同じ夜に注文した製造用収納用品（NS-10N Y）と同じ送り状504504134374で出荷されたため、製造ライン用と判断。製造ライン用品はM18で「その他・備品」",
       "paidAt": "2026-11-14 01:23:32 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1357,12 +1384,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "AIハンド製造ライン用資材収納用品購入",
         "seg1": "AIハンド",
-        "seg2": "要確認",
+        "seg2": "その他",
         "category": "備品",
-        "content": "NS-10N Y ×3"
+        "content": "部品コンテナ、TRUSCO NS型コンテナ 10L NS-10N Y（黄）×3"
       },
+      "memoBasis": "参照番号「製造用収納用品」がM18（シバタさん記入）と完全一致",
       "paidAt": "2026-11-14 02:09:55 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1393,12 +1421,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "LEAP開発用フレーム資材購入",
         "seg1": "AIハンド",
-        "seg2": "要確認",
+        "seg2": "研究開発",
         "category": "製造用資材",
-        "content": "HFSC5-2020-500 ×1、HFSB6-3060-1000-RTP ×1"
+        "content": "アルミフレーム、HFSC5-2020-500（20×20）×1、HFSB6-3060-1000-RTP（30×60 黒）×1"
       },
+      "memoBasis": "お客様注文番号「LEAP DEV」。LEAPはKDDI総合研究所から見積依頼があった「LEAP V1 Kaizen」の案件名（R-LEAP-1）、DEVは開発の意味のため研究開発とした。装置の骨組み用アルミフレーム",
       "paidAt": "2026-11-14 04:26:36 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1432,12 +1461,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "技術書購入、新聞図書費",
         "seg1": "AIハンド",
-        "seg2": "要確認",
-        "category": "要確認",
-        "content": "『口紅から機関車まで』 ×1（発注番号 図書新聞）"
+        "seg2": "研究開発",
+        "category": "新聞図書費",
+        "content": "インダストリアルデザイン書籍『口紅から機関車まで：インダストリアル・デザイナーの個人的記録』（レイモンド・ローウィ著）×1"
       },
+      "memoBasis": "発注番号「図書新聞」。過去の技術書2件をシバタさんが「技術書購入／新聞図書費／研究開発」と記入（M00,M01）。ただし当時のセグメント1は「共通」だったが、今回の指示どおり「AIハンド」とした",
       "paidAt": "2026-11-15 21:23:47 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1470,12 +1500,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "AIハンド事業部オフィス什器購入",
         "seg1": "AIハンド",
-        "seg2": "要確認",
+        "seg2": "その他",
         "category": "備品",
-        "content": "KoiFlow ファイルラック4段 ×1（発注番号 オフィス什器）"
+        "content": "書類棚、KoiFlow ファイルラック ファイルワゴン 4段 A4対応 キャスター付き ×1"
       },
+      "memoBasis": "発注番号「オフィス什器」。オフィス用品はM16で「その他」。繰り返し使う什器のため分類は備品",
       "paidAt": "2026-11-15 21:34:14 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1507,12 +1538,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "Google Chromeへのカード登録時の有効性確認（¥0確認決済・費用なし）",
         "seg1": "AIハンド",
-        "seg2": "要確認",
-        "category": "要確認",
-        "content": "確認決済（¥0。メモを追加するボタンはない。台帳の取引はない）"
+        "seg2": "その他",
+        "category": "確認決済（費用なし）",
+        "content": "確認決済（¥0）。GOOGLE *CHROME TEMPによるカード有効性確認"
       },
+      "memoBasis": "Chromeの自動入力にカードを保存した時の¥0の一時確認。UPSIDERにメモを追加するボタンはなく、台帳の取引もない",
       "paidAt": "2026-11-15 21:40:12 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1537,12 +1569,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "ロボット工学セミナー参加費",
+        "purpose": "人型ロボットハンド開発セミナー参加費",
         "seg1": "AIハンド",
-        "seg2": "要確認",
-        "category": "研修費（要確認）",
-        "content": "日本ロボット学会「第169回ロボット工学セミナー（11/24・オンライン）」参加費"
+        "seg2": "研究開発",
+        "category": "研修費",
+        "content": "日本ロボット学会 第169回ロボット工学セミナー「人型ロボットハンド開発の現状と課題」（11/24・オンライン）参加費 正会員×1"
       },
+      "memoBasis": "セミナーのテーマが人型ロボットハンド開発で、AIハンドの研究開発に直結する。「研修費」は過去のメモに例がない新しい分類",
       "paidAt": "2026-11-15 21:40:24 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1583,12 +1616,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "要確認",
+        "purpose": "YUBI試作用センサー部品購入",
         "seg1": "AIハンド",
-        "seg2": "要確認",
-        "category": "製造用資材",
-        "content": "AS5601 磁気式エンコーダ Breakout Board ×2"
+        "seg2": "研究開発",
+        "category": "消耗品",
+        "content": "磁気式エンコーダ、12bit AS5601 Breakout Board ×2"
       },
+      "memoBasis": "非接触で回転角を測るエンコーダ。参照番号はなく、少量（×2）なので試作の関節角度計測用と判断。試作用の購入はM07,M08で研究開発",
       "paidAt": "2026-11-15 21:52:24 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1619,12 +1653,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "YUBI製造用資材購入",
+        "purpose": "YUBI製造ライン用工具購入",
         "seg1": "AIハンド",
-        "seg2": "プロダクト販売",
+        "seg2": "その他",
         "category": "備品",
-        "content": "LOBSTER シャコ万力 B125V ×4"
+        "content": "クランプ、LOBSTER シャコ万力B型 スタンダードエコ B125V ×4"
       },
+      "memoBasis": "参照番号「YUBI製造工具」。製造ライン用の備品はM14,M15,M18で「その他」。ただし11/5の工具（参照「YUBI製造用工具」）はシバタさんが「YUBI試作用工具類購入／研究開発」と記入（M08）しており、セグメント2は研究開発の可能性もある",
       "paidAt": "2026-11-15 22:30:24 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
@@ -1656,12 +1691,13 @@
       "memoStatus": "未確認",
       "memoPresent": false,
       "memoDefault": {
-        "purpose": "YUBI製造用資材購入",
+        "purpose": "YUBI製造ライン用工具購入",
         "seg1": "AIハンド",
-        "seg2": "プロダクト販売",
+        "seg2": "その他",
         "category": "備品",
-        "content": "タニタ でか見えタイマー TD429GY ×2"
+        "content": "タイマー、タニタ 抗菌でか見えタイマー TD429GY ×2"
       },
+      "memoBasis": "参照番号「YUBI製造工具」で、シャコ万力と同時の注文。接着硬化などの工程時間を管理する用途とみられる。セグメント2の判断はシャコ万力と同じ",
       "paidAt": "2026-11-15 22:31:58 JST",
       "cardName": "AIハンド決済用",
       "cardholder": "柴田 善広",
