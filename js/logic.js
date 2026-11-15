@@ -172,19 +172,35 @@ export function memoSeedText(tx) {
   return bits.join(" ");
 }
 
-// 行に memoDefault があるときはその5欄を初期値にする。無い行は内容文から組む。
+function presetText(value) {
+  return typeof value === "string" && value.trim() ? value : "";
+}
+
+// セグメント1が空なら AIハンド にする。AIハンド決済用の行は空のままにしない。
+function withSegment1(memo) {
+  return {
+    purpose: memo.purpose,
+    seg1: presetText(memo.seg1) || "AIハンド",
+    seg2: memo.seg2,
+    category: memo.category,
+    content: memo.content,
+  };
+}
+
+// 行に memoDefault があるときは、空でない欄だけそれを使う。空欄は内容文から組んだ初期値に戻す。
 export function memoDefaults(tx) {
+  const seed = initialMemo(memoSeedText(tx));
   const preset = tx && tx.memoDefault;
-  if (preset && typeof preset === "object" && !Array.isArray(preset) && MEMO_FIELDS.every((field) => typeof preset[field] === "string")) {
-    return {
-      purpose: preset.purpose,
-      seg1: preset.seg1,
-      seg2: preset.seg2,
-      category: preset.category,
-      content: preset.content,
-    };
+  if (!preset || typeof preset !== "object" || Array.isArray(preset) || !MEMO_FIELDS.every((field) => typeof preset[field] === "string")) {
+    return withSegment1(seed);
   }
-  return initialMemo(memoSeedText(tx));
+  return withSegment1({
+    purpose: presetText(preset.purpose) || seed.purpose,
+    seg1: presetText(preset.seg1) || seed.seg1,
+    seg2: presetText(preset.seg2) || seed.seg2,
+    category: presetText(preset.category) || seed.category,
+    content: presetText(preset.content) || seed.content,
+  });
 }
 
 export function loadMemoDrafts(raw) {
