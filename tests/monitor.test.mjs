@@ -683,12 +683,49 @@ async function assertLedger() {
     ["tx-20261114-0209-monotaro-3953", "MonotaRO", "DP12*MONOTARO.COM", "¥3,953", 3953, "11/14 02:09", "2026-11-14 02:09:55 JST", "1794589796.697149", "7d447db2-fe12-42b6-8103-21d277c56bc4", "TX-20261114-MNT-003", "134323400035", "NS-10N Y ×3", "出荷予定11/16まで"],
     ["tx-20261114-0426-misumi-3267", "ミスミ", "DP5*MISUMI", "¥3,267", 3267, "11/14 04:26", "2026-11-14 04:26:36 JST", "1794597997.191909", "8f74525f-ac8f-445a-9ec7-43056c166b2e", "TX-20261114-MSM-001", "AB25764G15", "HFSC5-2020-500 ×1、HFSB6-3060-1000-RTP ×1", "出荷予定11/17、お届け予定11/18"],
   ];
+  const addedMemos = {
+    "tx-20261113-1023-monotaro-1318": {
+      purpose: "AIハンド製造ライン用資材収納用品購入",
+      seg1: "AIハンド",
+      seg2: "その他",
+      category: "備品",
+      content: "部品コンテナ、TRUSCO NS型コンテナ 10L NS-10N R（赤）×1",
+    },
+    "tx-20261113-2255-wilco-20900": {
+      purpose: "YUBI Glove製造用資材購入",
+      seg1: "AIハンド",
+      seg2: "プロダクト販売",
+      category: "製造用資材",
+      content: "熱圧入インサートナット、黄銅 ウルトラサートⅣ M2.6 HUD-42601 ×1000",
+    },
+    "tx-20261114-0123-monotaro-439": {
+      purpose: "AIハンド製造ライン用ゴミ箱購入",
+      seg1: "AIハンド",
+      seg2: "その他",
+      category: "備品",
+      content: "ゴミ箱、モノタロウ くず入れ 角型 GX-003B-N ×1",
+    },
+    "tx-20261114-0209-monotaro-3953": {
+      purpose: "AIハンド製造ライン用資材収納用品購入",
+      seg1: "AIハンド",
+      seg2: "その他",
+      category: "備品",
+      content: "部品コンテナ、TRUSCO NS型コンテナ 10L NS-10N Y（黄）×3",
+    },
+    "tx-20261114-0426-misumi-3267": {
+      purpose: "LEAP開発用フレーム資材購入",
+      seg1: "AIハンド",
+      seg2: "研究開発",
+      category: "製造用資材",
+      content: "アルミフレーム、HFSC5-2020-500（20×20）×1、HFSB6-3060-1000-RTP（30×60 黒）×1",
+    },
+  };
   for (const [id, merchant, slackMerchant, amount, yen, datetime, paidAt, thread, transactionId, ledgerId, orderNumber, content, delivery] of added) {
     const tx = ledger.transactions.find((row) => row.id === id);
     check(tx?.merchant === merchant && tx?.slackMerchant === slackMerchant && tx?.amount === amount && tx?.amountYen === yen && tx?.datetime === datetime, `added identity ${id}`);
     check(tx?.status === "メモ・証憑なし" && tx?.memoStatus === "未確認" && tx?.memoPresent === false && tx?.memoEvidence == null && tx?.drive === "なし" && tx?.cardholder === "柴田 善広" && tx?.cardName === "AIハンド決済用" && needsAction(tx), `added status ${id}`);
     check(tx?.paidAt === paidAt && tx?.slack.endsWith(thread) && tx?.upSiderTransactionId === transactionId && tx?.ledgerId === ledgerId && tx?.orderNumber === orderNumber && tx?.content === content && tx?.deliveryStatus === delivery && tx?.statusUpdatedAt === "2026-11-14 09:20 JST", `added order ${id}`);
-    check(tx?.memoDefault?.purpose === "要確認" && tx?.memoDefault?.seg1 === "AIハンド" && tx?.memoDefault?.seg2 === "要確認" && tx?.memoDefault?.content === content && !tx?.registeredMemo, `added memo is filled ${id}`);
+    check(JSON.stringify(tx?.memoDefault) === JSON.stringify(addedMemos[id]) && !tx?.registeredMemo, `added memo is filled ${id}`);
   }
   check(ledger.transactions.find((tx) => tx.id === "tx-20261113-1023-monotaro-1318")?.shipments?.[0]?.trackingNumber === "426978777971", "monotaro 1318 tracking");
   const eveningRows = [
@@ -696,12 +733,35 @@ async function assertLedger() {
     ["tx-20261115-2134-amazon-14549", "Amazon", "AMAZON CO JP", "¥14,549", 14549, "11/15 21:34", "2026-11-15 21:34:14 JST", "1794746054.930309", "dae09261-8253-4cf5-b2d8-10ae108ac1a7", "TX-20261115-AMZ-003", "249-7546580-9987019", "KoiFlow ファイルラック4段 ×1（発注番号 オフィス什器）", "納入待ち（着予定11/26〜12/8）", "メモ・証憑なし"],
     ["tx-20261115-2152-switchscience-3560", "スイッチサイエンス", "SP SWITCHSCIENCE", "¥3,560", 3560, "11/15 21:52", "2026-11-15 21:52:24 JST", "1794747144.256949", "4c9ec042-d484-47ff-bdf3-ed35f3f65b56", "TX-20261115-SWS-001", "Y245720", "AS5601 磁気式エンコーダ Breakout Board ×2", "納入待ち（ネコポス）", "メモ・証憑なし"],
   ];
+  const eveningMemos = {
+    "tx-20261115-2123-amazon-3080": {
+      purpose: "技術書購入、新聞図書費",
+      seg1: "AIハンド",
+      seg2: "研究開発",
+      category: "新聞図書費",
+      content: "インダストリアルデザイン書籍『口紅から機関車まで：インダストリアル・デザイナーの個人的記録』（レイモンド・ローウィ著）×1",
+    },
+    "tx-20261115-2134-amazon-14549": {
+      purpose: "AIハンド事業部オフィス什器購入",
+      seg1: "AIハンド",
+      seg2: "その他",
+      category: "備品",
+      content: "書類棚、KoiFlow ファイルラック ファイルワゴン 4段 A4対応 キャスター付き ×1",
+    },
+    "tx-20261115-2152-switchscience-3560": {
+      purpose: "YUBI試作用センサー部品購入",
+      seg1: "AIハンド",
+      seg2: "研究開発",
+      category: "消耗品",
+      content: "磁気式エンコーダ、12bit AS5601 Breakout Board ×2",
+    },
+  };
   for (const [id, merchant, slackMerchant, amount, yen, datetime, paidAt, thread, transactionId, ledgerId, orderNumber, content, delivery, status] of eveningRows) {
     const tx = ledger.transactions.find((row) => row.id === id);
     check(tx?.merchant === merchant && tx?.slackMerchant === slackMerchant && tx?.amount === amount && tx?.amountYen === yen && tx?.datetime === datetime && tx?.status === status, `evening identity ${id}`);
     check(tx?.memoStatus === "未確認" && tx?.memoPresent === false && tx?.memoEvidence == null && tx?.drive === "なし" && tx?.cardholder === "柴田 善広" && tx?.cardName === "AIハンド決済用" && needsAction(tx), `evening status ${id}`);
     check(tx?.paidAt === paidAt && tx?.slack.endsWith(thread) && tx?.upSiderTransactionId === transactionId && tx?.ledgerId === ledgerId && tx?.orderNumber === orderNumber && tx?.content === content && tx?.deliveryStatus === delivery && tx?.statusUpdatedAt === "2026-11-15 22:45 JST", `evening order ${id}`);
-    check(tx?.memoDefault?.purpose === "要確認" && tx?.memoDefault?.seg1 === "AIハンド" && tx?.memoDefault?.seg2 === "要確認" && tx?.memoDefault?.content === content && !tx?.registeredMemo && !("token" in tx), `evening memo is filled ${id}`);
+    check(JSON.stringify(tx?.memoDefault) === JSON.stringify(eveningMemos[id]) && !tx?.registeredMemo && !("token" in tx), `evening memo is filled ${id}`);
   }
   const chromeZero = ledger.transactions.find((tx) => tx.id === "tx-20261115-2140-google-0");
   check(chromeZero?.merchant === "Google" && chromeZero?.slackMerchant === "GOOGLE *CHROME TEMP" && chromeZero?.amount === "¥0" && chromeZero?.amountYen === 0 && chromeZero?.status === "確認決済（¥0）" && chromeZero?.ledgerId === undefined && chromeZero?.drive === "なし" && chromeZero?.memoStatus === "未確認" && chromeZero?.memoEvidence == null && needsAction(chromeZero), "chrome zero matches the amazon zero category");
@@ -713,9 +773,27 @@ async function assertLedger() {
   check(monotaroVise?.amountYen === 17151 && monotaroVise?.ledgerId === "TX-20261115-MNT-001" && monotaroVise?.receptionNumber === "202927990" && monotaroVise?.orderReference === "YUBI製造工具" && monotaroVise?.orderNumber === undefined && monotaroVise?.content === "LOBSTER シャコ万力 B125V ×4" && monotaroVise?.status === "メモ・証憑なし", "monotaro 17151");
   const monotaroTimer = ledger.transactions.find((tx) => tx.id === "tx-20261115-2231-monotaro-2198");
   check(monotaroTimer?.amountYen === 2198 && monotaroTimer?.ledgerId === "TX-20261115-MNT-002" && monotaroTimer?.receptionNumber === "202928013" && monotaroTimer?.content === "タニタ でか見えタイマー TD429GY ×2" && monotaroTimer?.slack.endsWith("1794749518.102389"), "monotaro 2198");
-  check(eventPay?.memoDefault?.purpose === "ロボット工学セミナー参加費" && eventPay?.memoDefault?.seg1 === "AIハンド" && eventPay?.memoDefault?.seg2 === "要確認" && eventPay?.memoDefault?.category === "研修費（要確認）" && eventPay?.memoDefault?.content === eventPay.content, "event pay memo default");
-  check(monotaroVise?.memoDefault?.purpose === "YUBI製造用資材購入" && monotaroVise?.memoDefault?.seg2 === "プロダクト販売" && monotaroVise?.memoDefault?.category === "備品" && monotaroVise?.memoDefault?.content === monotaroVise.content, "vise memo uses the YUBI reference");
-  check(monotaroTimer?.memoDefault?.purpose === "YUBI製造用資材購入" && monotaroTimer?.memoDefault?.seg2 === "プロダクト販売" && monotaroTimer?.memoDefault?.category === "備品", "timer memo uses the YUBI reference");
+  check(JSON.stringify(eventPay?.memoDefault) === JSON.stringify({
+    purpose: "人型ロボットハンド開発セミナー参加費",
+    seg1: "AIハンド",
+    seg2: "研究開発",
+    category: "研修費",
+    content: "日本ロボット学会 第169回ロボット工学セミナー「人型ロボットハンド開発の現状と課題」（11/24・オンライン）参加費 正会員×1",
+  }), "event pay memo default");
+  check(JSON.stringify(monotaroVise?.memoDefault) === JSON.stringify({
+    purpose: "YUBI製造ライン用工具購入",
+    seg1: "AIハンド",
+    seg2: "その他",
+    category: "備品",
+    content: "クランプ、LOBSTER シャコ万力B型 スタンダードエコ B125V ×4",
+  }), "vise memo uses the YUBI reference");
+  check(JSON.stringify(monotaroTimer?.memoDefault) === JSON.stringify({
+    purpose: "YUBI製造ライン用工具購入",
+    seg1: "AIハンド",
+    seg2: "その他",
+    category: "備品",
+    content: "タイマー、タニタ 抗菌でか見えタイマー TD429GY ×2",
+  }), "timer memo uses the YUBI reference");
   check(ledger.transactions.find((tx) => tx.id === "tx-20261113-2255-wilco-20900")?.memoDefault?.category === "製造用資材" && ledger.transactions.find((tx) => tx.id === "tx-20261114-0426-misumi-3267")?.memoDefault?.category === "製造用資材" && ledger.transactions.find((tx) => tx.id === "tx-20261113-1023-monotaro-1318")?.memoDefault?.category === "備品", "item categories");
   check(!ledger.transactions.some((tx) => /Bambu|CubeMars|JLCPCB|^SLACK$/.test(tx.merchant) || tx.amountYen === 228000 || tx.amountYen === 114000 || tx.amountYen === 369268 || tx.amountYen === 8576 || tx.amountYen === 35729 || tx.amountYen === 8218), "out of scope charges are not rows");
   const amazon2473 = ledger.transactions.find((tx) => tx.id === "tx-20261101-0440-amazon-2473");
@@ -748,7 +826,13 @@ async function assertLedger() {
       "分類：消耗品",
       `内容：${tx.content}`,
     ].join("\n"), `memo text ${tx.memoKey}`);
-    check(memoSeedText(tx) === tx.content && JSON.stringify(memoDefaults(tx)) === JSON.stringify(memo), `row defaults stay the content text ${tx.id}`);
+    check(memoSeedText(tx) === tx.content && JSON.stringify(memoDefaults(tx)) === JSON.stringify({
+      purpose: "YUBI梱包用ダンボール購入",
+      seg1: "AIハンド",
+      seg2: "プロダクト販売",
+      category: "消耗品",
+      content: "梱包用ダンボール80サイズ 50枚",
+    }), `stored memo default ${tx.id}`);
     const request = buildExecutionRequest({
       transactionId: tx.id,
       slackThread: tx.slack,
@@ -776,6 +860,12 @@ async function assertLedger() {
       check(defaults.seg1 === "AIハンド", `required seg1 ${tx.id}`);
     }
   }
+  check(ledger.transactions.length === 41 && ledger.transactions.every((tx) => {
+    const preset = tx.memoDefault;
+    return preset
+      && MEMO_FIELDS.every((field) => typeof preset[field] === "string" && preset[field].trim() && !preset[field].includes("要確認"))
+      && preset.seg1 === "AIハンド";
+  }), "every row has a filled memoDefault with AIハンド and no 要確認");
   const partialMemo = memoDefaults({
     content: "軸受",
     memoDefault: { purpose: "  ", seg1: "", seg2: "プロダクト販売", category: "", content: "" },
@@ -1362,13 +1452,13 @@ async function browserChecks(base) {
     await page.$eval(`[data-memo-row="${memoId}"] details`, (node) => { node.open = true; });
     await page.click(`[data-memo-row="${memoId}"] [data-memo-reset]`);
     const resetPurpose = await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="purpose"]`, (input) => input.value);
-    check(resetPurpose === memoTx.content, `reset restores the row content ${resetPurpose}`);
+    check(resetPurpose === "AIハンド製造ライン用資材収納用品購入" && resetPurpose === memoTx.memoDefault.purpose, `reset restores the stored purpose ${resetPurpose}`);
     const cleared = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), MEMO_STORAGE_KEY));
     check(cleared.memos[memoId] === undefined, "reset removes the stored draft");
     await page.reload({ waitUntil: "networkidle0" });
     await page.waitForSelector("body[data-ready='true']");
     const afterResetReload = await page.$eval(`[data-memo-row="${memoId}"] [data-memo-field="purpose"]`, (input) => input.value);
-    check(afterResetReload === memoTx.content, "reset value remains after reload");
+    check(afterResetReload === "AIハンド製造ライン用資材収納用品購入" && afterResetReload === memoTx.memoDefault.purpose, "reset value remains after reload");
 
     const details = await page.$$eval("[data-detail]", (cards) => cards.map((card) => {
       const image = card.querySelector("img");
@@ -1400,11 +1490,12 @@ async function browserChecks(base) {
       check(found.intro === detail.intro, `intro ${detail.transactionId}`);
       check(JSON.stringify(found.labels) === JSON.stringify(detail.properties.map((item) => item.label)), `labels ${detail.transactionId}`);
       check(JSON.stringify(found.values) === JSON.stringify(detail.properties.map((item) => item.value)), `values ${detail.transactionId} ${found.values}`);
-      check(found.fields.purpose === tx.content, `purpose ${tx.id}`);
-      check(found.fields.seg1 === "AIハンド", `seg1 ${tx.id}`);
-      check(found.fields.seg2 === "", `seg2 ${tx.id}`);
-      check(found.fields.category === "消耗品", `category ${tx.id}`);
-      check(found.fields.content === tx.content, `memo content ${tx.id}`);
+      const expectedMemo = memoDefaults(tx);
+      check(found.fields.purpose === expectedMemo.purpose, `purpose ${tx.id}`);
+      check(found.fields.seg1 === expectedMemo.seg1 && expectedMemo.seg1 === "AIハンド", `seg1 ${tx.id}`);
+      check(found.fields.seg2 === expectedMemo.seg2, `seg2 ${tx.id}`);
+      check(found.fields.category === expectedMemo.category, `category ${tx.id}`);
+      check(found.fields.content === expectedMemo.content, `memo content ${tx.id}`);
       check(found.slackTarget === "_blank", `detail slack target ${tx.id}`);
       check(found.copy === "クリップボードにコピー", "copy label");
       check(found.ai === "", "memo send button is gone");
@@ -1436,7 +1527,15 @@ async function browserChecks(base) {
     await page.reload({ waitUntil: "networkidle0" });
     await page.waitForSelector(`[data-detail="${NEW_ORDER_ID}"] [data-copy]`);
     const copyId = NEW_ORDER_ID;
-    const expectedCopy = formatMemoText(initialMemo(ledger.transactions.find((tx) => tx.id === copyId).content));
+    const copyTx = ledger.transactions.find((tx) => tx.id === copyId);
+    const expectedCopy = formatMemoText(memoDefaults(copyTx));
+    check(expectedCopy === [
+      "用途：YUBI梱包用ダンボール購入",
+      "セグメント1：AIハンド",
+      "セグメント2：プロダクト販売",
+      "分類：消耗品",
+      "内容：梱包用ダンボール80サイズ 50枚",
+    ].join("\n"), `detail copy uses the stored memo ${expectedCopy}`);
     await page.click(`[data-detail="${copyId}"] [data-copy]`);
     await page.waitForFunction((id) => {
       const node = document.querySelector(`[data-detail="${id}"] [data-copy-status]`);
@@ -1482,7 +1581,7 @@ async function browserChecks(base) {
     await page.click(`[data-detail="${NEW_ORDER_ID}"] [data-memo-reset]`);
     const purposeAfterReset = await page.$eval(`[data-detail="${NEW_ORDER_ID}"] [data-memo-field="purpose"]`, (input) => input.value);
     const rowSegAfterReset = await page.$eval(`[data-memo-row="${NEW_ORDER_ID}"] [data-memo-field="seg2"]`, (input) => input.value);
-    check(purposeAfterReset === "YUBI梱包用ダンボール80サイズ 50枚" && rowSegAfterReset === "", `reset restores both cards ${purposeAfterReset} / ${rowSegAfterReset}`);
+    check(purposeAfterReset === "YUBI梱包用ダンボール購入" && rowSegAfterReset === "プロダクト販売", `reset restores both cards ${purposeAfterReset} / ${rowSegAfterReset}`);
 
     await page.evaluate(() => {
       document.execCommand = () => false;
@@ -1495,7 +1594,7 @@ async function browserChecks(base) {
     const fallbackValue = await page.$eval(`[data-detail="${fallbackId}"] [data-copy-fallback-text]`, (node) => node.value);
     const fallbackHiddenStatus = await page.$eval(`[data-detail="${fallbackId}"] [data-copy-status]`, (node) => node.hidden);
     check(fallbackHiddenStatus, "failed copy does not claim success");
-    check(fallbackValue.startsWith("用途：YUBI梱包用ダンボール80サイズ 50枚\n"), `fallback text ${fallbackValue}`);
+    check(fallbackValue.startsWith("用途：YUBI梱包用ダンボール購入\nセグメント1：AIハンド\nセグメント2：プロダクト販売\n分類：消耗品\n内容：梱包用ダンボール80サイズ 50枚"), `fallback text ${fallbackValue}`);
 
     await page.setViewport({ width: 390, height: 844 });
     const mobile = await page.evaluate((id) => {

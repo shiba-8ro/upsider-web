@@ -140,6 +140,14 @@
       "upSiderTransactionId": "6b72dd24-e724-419e-97fe-6707d6bfef2b",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "技術書購入",
+        "seg1": "AIハンド",
+        "seg2": "研究開発",
+        "category": "新聞図書費",
+        "content": "「シリアル伝送技術入門: パソコンと外部機器、公衆回線との接続の基礎」"
+      },
+      "memoBasis": "証憑台帳 row30 X列（TX-20261101-AMZ-001）＝M00。原文: 用途：技術書購入 / セグメント1: 共通 / セグメント2: 研究開発 / 内容： 新聞図書費、「シリアル伝送技術入門: パソコンと外部機器、公衆回線との接続の基礎」。原文セグメント1は「共通」→ルールでAIハンドに統一。原文「内容：新聞図書費、…」の新聞図書費を分類欄へ移した",
       "memoEvidence": [
         {
           "ts": "1793811342.480279",
@@ -165,6 +173,14 @@
       "upSiderTransactionId": "f366f19a-d6e4-4cb4-b3a8-12a23c103e13",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "技術書購入",
+        "seg1": "AIハンド",
+        "seg2": "研究開発",
+        "category": "新聞図書費",
+        "content": "「シリアル伝送完全マスタ: RS-232-CからRS-422/423までの詳細」"
+      },
+      "memoBasis": "証憑台帳 row31 X列（TX-20261101-AMZ-002）＝M01。原文: 用途：技術書購入、新聞図書費、「シリアル伝送完全マスタ: RS-232-CからRS-422/423までの詳細」 / セグメント1: 共通 / セグメント2: 研究開発。原文セグメント1は「共通」→AIハンドに統一。原文は用途行に「新聞図書費」と書名を含む→分類・内容に分けた",
       "memoEvidence": [
         {
           "ts": "1793564845.102619",
@@ -195,6 +211,14 @@
       "upSiderTransactionId": "2b8791a5-fde4-4d58-a481-e5a297d3bccb",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI製造用3Dプリンター材料購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "Polymaker HT-PLA（赤）1kg x6巻"
+      },
+      "memoBasis": "証憑台帳 row35 X列（TX-20261102-SST-001）＝M05。原文: 用途：YUBI製造用3Dプリンター材料購入 / セグメント1：AIハンド / セグメント2：プロダクト販売 / 内容：Polymaker HT-PLA（赤）1kg x6巻。原文に分類なし→シバタさんの慣例（M09/M11 製造用材料=製造用資材）で推定",
       "memoEvidence": [
         {
           "ts": "1793615608.869499",
@@ -220,6 +244,14 @@
       "upSiderTransactionId": "720f98dd-24e3-4650-b6ec-4c93dd52f4d4",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "プロダクト販売用梱包資材",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "消耗品",
+        "content": "プチプチロール、布テープ"
+      },
+      "memoBasis": "証憑台帳 row32 X列（TX-20261102-MNT-001）＝M02。原文: 用途：プロダクト販売用梱包資材 / セグメント１：AIハンド / セグメント２：プロダクト販売 / 内容：プチプチロール、布テープ。原文に分類なし→同日同種のM03で「消耗品」と記入済みのため消耗品",
       "memoEvidence": [
         {
           "ts": "1793620769.285939",
@@ -245,6 +277,14 @@
       "upSiderTransactionId": "fb482c96-5597-48d2-90bd-980b5e7f5989",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "プロダクト販売用梱包資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "消耗品",
+        "content": "布テープ"
+      },
+      "memoBasis": "証憑台帳 row33 X列（TX-20261102-MNT-002）＝M03。原文: 用途：プロダクト販売用梱包資材購入、消耗品、布テープ / セグメント1：AIハンド / セグメント２：プロダクト販売。原文「用途：…購入、消耗品、布テープ」→用途/分類/内容に分けた",
       "memoEvidence": [
         {
           "ts": "1793620945.503209",
@@ -280,6 +320,14 @@
       "upSiderTransactionId": "549bde33-c564-4db9-91af-7d776fc10282",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "プロダクト販売用段ボール購入（返金済み）",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "消耗品",
+        "content": "梱包用段ボール ５０セット（印刷付）注文1881489、全額返金（11/04 DANBALLACE -¥23,960）"
+      },
+      "memoBasis": "証憑台帳 row52 X列（TX-20261102-EDB-001）＝M12。原文: 用途：プロダクト販売用段ボール購入 / セグメント1: AIハンド / セグメント2: プロダクト販売 / 内容：梱包用段ボール ５０セット（印刷付）。返金元。原文に分類なし→段ボールはM17で「消耗品」。返金の対はtx-20261104-0923-danballace-23960",
       "memoEvidence": [
         {
           "ts": "1793621042.623809",
@@ -310,6 +358,14 @@
       "upSiderTransactionId": "0b505227-ac47-4250-81e3-4f647c742176",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "プロダクト販売用段ボール購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "消耗品",
+        "content": "梱包用段ボール ５０セット（印刷付）"
+      },
+      "memoBasis": "証憑台帳 row53 X列（TX-20261102-EDB-002）＝M13。原文: 用途：プロダクト販売用段ボール購入 / セグメント1: AIハンド / セグメント2: プロダクト販売 / 内容：梱包用段ボール ５０セット（印刷付）。原文に分類なし→段ボールはM17で「消耗品」",
       "memoEvidence": [
         {
           "ts": "1793621061.271959",
@@ -362,6 +418,14 @@
       "memoKey": null,
       "detailSection": false,
       "memoStatus": "不要",
+      "memoDefault": {
+        "purpose": "プロダクト販売用段ボール購入の返金",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "消耗品",
+        "content": "返金：梱包用段ボール ５０セット（印刷付）注文1881489 ¥23,960（返金元 11/02 アースダンボール）"
+      },
+      "memoBasis": "返金投稿（メモ不要）。返金元 tx-20261102-2053-earth-23960 の登録メモM12（証憑台帳row52「用途：プロダクト販売用段ボール購入 / 内容：梱包用段ボール ５０セット（印刷付）」）の文言に合わせた。分類は段ボールの慣例M17「消耗品」",
       "refundPairId": "tx-20261102-2053-earth-23960",
       "refundRole": "返金投稿"
     },
@@ -380,6 +444,14 @@
       "upSiderTransactionId": "4224295f-093e-4eb8-9393-bce132c2d2f8",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "オリジナルYUBI制作用資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "APTO向け及び社内用トヨタオリジナル版YUBI Glove用ねじ類"
+      },
+      "memoBasis": "証憑台帳 row34 X列（TX-20261104-MSM-001）＝M04。原文: 用途：オリジナルYUBI制作用資材購入 / セグメント1: AIハンド / セグメント2: プロダクト販売 / 内容：APTO向け及び社内用トヨタオリジナル版YUBI Glove用ねじ類。原文に分類なし→ミスミの部品はM20で「製造用資材」",
       "memoEvidence": [
         {
           "ts": "1793799504.382109",
@@ -434,6 +506,14 @@
       "upSiderTransactionId": "5da122aa-3354-4597-b158-d6b4b2b9b977",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI製造用資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "Hub基板用ピンヘッダー購入"
+      },
+      "memoBasis": "証憑台帳 row49 X列（TX-20261105-AKZ-001）＝M09。原文: 用途：YUBI製造用資材購入 / セグメント1：AIハンド / セグメント2：プロダクト販売 / 分類：製造用資材 / 内容：Hub基板用ピンヘッダー購入",
       "memoEvidence": [
         {
           "ts": "1793869227.062139",
@@ -483,6 +563,14 @@
       "upSiderTransactionId": "db46e925-b726-405b-baa5-8be57fd775fa",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI試作用工具類購入",
+        "seg1": "AIハンド",
+        "seg2": "研究開発",
+        "category": "消耗品",
+        "content": "パーツケース4段×2・ゴム切はさみ・L型カッターなど工具7点"
+      },
+      "memoBasis": "証憑台帳 row48 X列（TX-20261105-MNT-001）＝M08。原文: 用途：YUBI試作用工具類購入 / セグメント1：AIハンド / セグメント2：研究開発 / 分類：消耗品 / 内容：パーツケース4段×2・ゴム切はさみ・L型カッターなど工具7点",
       "memoEvidence": [
         {
           "ts": "1793950453.744309",
@@ -532,6 +620,14 @@
       "upSiderTransactionId": "bb5bfe6a-5715-4830-b0f2-6306ba548944",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI製造用資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "HyperVシート PX-10H 15 非耐油 W270×L270×H1.5mm ×5"
+      },
+      "memoBasis": "証憑台帳 row51 X列（TX-20261105-NSG-001）＝M11。原文: 用途：YUBI製造用資材購入 / セグメント1：AIハンド / セグメント2：プロダクト販売 / 分類：製造用資材 / 内容：HyperVシート PX-10H 15 非耐油 W270×L270×H1.5mm ×5",
       "memoEvidence": [
         {
           "ts": "1793950502.876529",
@@ -570,6 +666,14 @@
       "upSiderTransactionId": "c6b98583-746e-4dcd-9682-102591fc9c90",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "オフィス消耗品購入",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "消耗品",
+        "content": "チャック付き袋 M8G×2・M8I×1"
+      },
+      "memoBasis": "証憑台帳 row57 X列（TX-20261105-MNT-002）＝M16。原文: 用途：オフィス消耗品購入 / セグメント1：AIハンド / セグメント2：その他 / 分類：消耗品 / 内容：チャック付き袋 M8G×2・M8I×1",
       "memoEvidence": [
         {
           "ts": "1793950552.138329",
@@ -619,6 +723,14 @@
       "upSiderTransactionId": "292fcdfa-a146-456e-82c9-b73eae1a8955",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI試作用工具購入",
+        "seg1": "AIハンド",
+        "seg2": "研究開発",
+        "category": "備品",
+        "content": "NEEWER 六角ドライバー4本セット、李用"
+      },
+      "memoBasis": "証憑台帳 row47 X列（TX-20261105-AMZ-002）＝M07。原文: 用途：YUBI試作用工具購入 / セグメント1：AIハンド / セグメント2：研究開発 / 分類：備品 / 内容：NEEWER 六角ドライバー4本セット、李用",
       "memoEvidence": [
         {
           "ts": "1793950603.457329",
@@ -644,6 +756,14 @@
       "upSiderTransactionId": "b072f018-28d3-4477-afad-0714a28f78e2",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI Glove製造用資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "UGREEN USB Type-Cケーブル 1m ×20"
+      },
+      "memoBasis": "証憑台帳 row44 X列（TX-20261105-AMZ-001）＝M06。原文: 用途：YUBI Glove製造用資材購入 / セグメント1：AIハンド / セグメント2：プロダクト販売 / 分類：製造用資材 / 内容：UGREEN USB Type-Cケーブル 1m ×20",
       "memoEvidence": [
         {
           "ts": "1793950685.816499",
@@ -669,6 +789,14 @@
       "upSiderTransactionId": "89321f62-7774-4428-a0e2-b8233d2578fd",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "製造用備品購入、SDS常設",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "消耗品",
+        "content": "KIOXIA microSDカード64GB ×6"
+      },
+      "memoBasis": "証憑台帳 row55 X列（TX-20261105-AMZ-004）＝M14。原文: 用途：製造用備品購入、SDS常設 / セグメント1：AIハンド / セグメント2：その他 / 分類：消耗品 / 内容：KIOXIA microSDカード64GB ×6",
       "memoEvidence": [
         {
           "ts": "1793950743.717579",
@@ -694,6 +822,14 @@
       "upSiderTransactionId": "9e02ab60-9ec1-4473-ae65-4efa3dd21a08",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "製造用備品購入、SDS常設",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "備品",
+        "content": "UGREEN SDカードリーダー 収納型"
+      },
+      "memoBasis": "証憑台帳 row56 X列（TX-20261105-AMZ-005）＝M15。原文: 用途：製造用備品購入、SDS常設 / セグメント1：AIハンド / セグメント2：その他 / 分類：備品 / 内容：UGREEN SDカードリーダー 収納型",
       "memoEvidence": [
         {
           "ts": "1793950809.127189",
@@ -719,6 +855,14 @@
       "upSiderTransactionId": "0ee09432-f3ba-4768-bcbb-2f0e568eeae2",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI製造用資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "輪ゴム オーバンド#16 100g箱"
+      },
+      "memoBasis": "証憑台帳 row50 X列（TX-20261105-AMZ-003）＝M10。原文: 用途：YUBI製造用資材購入 / セグメント1：AIハンド / セグメント2：プロダクト販売 / 分類：製造用資材 / 内容：輪ゴム オーバンド#16 100g箱。台帳IDはTX-20261105-AMZ-003（決済は11/06 01:13）",
       "memoEvidence": [
         {
           "ts": "1793950861.376479",
@@ -744,6 +888,14 @@
       "upSiderTransactionId": "eef3830c-f733-45f2-8afe-fb2b9fa365a9",
       "memoStatus": "あり",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI梱包用ダンボール購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "消耗品",
+        "content": "梱包用ダンボール80サイズ 50枚"
+      },
+      "memoBasis": "証憑台帳 row59 X列（TX-20261106-EDB-001）＝M17。原文: 用途：YUBI梱包用ダンボール購入 / セグメント1：AIハンド / セグメント2：プロダクト販売 / 分類：消耗品 / 内容：梱包用ダンボール80サイズ 50枚",
       "memoEvidence": [
         {
           "ts": "1794031186.136499",
@@ -805,6 +957,14 @@
       "detailSection": false,
       "upSiderTransactionId": "19d4ace8-8c22-4266-b43e-f55d6ec58050",
       "memoStatus": "未確認",
+      "memoDefault": {
+        "purpose": "本人以外の課金（対象外）",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "対象外",
+        "content": "GitHub USD 2.42（¥392）本人以外の課金・対象外（シバタさん回答 2026-11-10）"
+      },
+      "memoBasis": "live.json status「本人以外の課金（シバタさん回答 2026-11-10）」/ classification「本人以外の課金」/ purpose「要処理対象外」。シバタさんの回答で本人以外と確定。カード名「SaaS決済用」",
       "paidAt": "2026-11-09 17:54:16 JST",
       "cardName": "SaaS決済用",
       "classification": "本人以外の課金",
@@ -832,6 +992,14 @@
       "detailSection": false,
       "upSiderTransactionId": "d910f06d-69ce-4253-81cd-8311c5a46b31",
       "memoStatus": "未確認",
+      "memoDefault": {
+        "purpose": "本人以外の課金（対象外）",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "対象外",
+        "content": "GitHub USD 4.83（¥783）本人以外の課金・対象外（シバタさん回答 2026-11-10）"
+      },
+      "memoBasis": "live.json status「本人以外の課金（シバタさん回答 2026-11-10）」/ classification「本人以外の課金」/ purpose「要処理対象外」。シバタさんの回答で本人以外と確定。カード名「SaaS決済用」",
       "paidAt": "2026-11-09 17:55:29 JST",
       "cardName": "SaaS決済用",
       "classification": "本人以外の課金",
@@ -858,6 +1026,14 @@
       "memoKey": null,
       "detailSection": false,
       "memoStatus": "未確認",
+      "memoDefault": {
+        "purpose": "本人以外の課金（対象外）",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "対象外",
+        "content": "GitHub USD 0.29（¥47）本人以外の課金・対象外（シバタさん回答 2026-11-10）"
+      },
+      "memoBasis": "live.json status「本人以外の課金（シバタさん回答 2026-11-10）」/ classification「本人以外の課金」/ purpose「要処理対象外」。シバタさんの回答で本人以外と確定。カード名「記載なし」",
       "paidAt": "2026-11-10 10:51:03 JST",
       "classification": "本人以外の課金",
       "purpose": "要処理対象外",
@@ -881,6 +1057,14 @@
       "memoKey": null,
       "detailSection": false,
       "memoStatus": "未確認",
+      "memoDefault": {
+        "purpose": "本人以外の課金（対象外）",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "対象外",
+        "content": "GitHub USD 0.14（¥22）本人以外の課金・対象外（シバタさん回答 2026-11-11）"
+      },
+      "memoBasis": "live.json status「本人以外の課金（シバタさん回答 2026-11-11）」/ classification「本人以外の課金」/ purpose「要処理対象外」。シバタさんの回答で本人以外と確定。カード名「SaaS決済用」",
       "paidAt": "2026-11-11 12:59:50 JST",
       "cardName": "SaaS決済用",
       "classification": "本人以外の課金",
@@ -936,6 +1120,14 @@
       "priorStatusReason": "要処理（メモ登録済み・証憑はDrive保存済、Slack未添付）。登録完了にはしていない。領収証 No.B8538556、発行2026-11-13、登録番号 T6140001054380。",
       "statusUpdatedAt": "2026-11-14 09:20 JST",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "AIハンド製造ライン用資材収納用品購入",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "備品",
+        "content": "折りたたみコンテナ FCLD50-GR/C ×5、50L用台車 ×1"
+      },
+      "memoBasis": "証憑台帳 row60 X列（TX-20261111-MNT-001）＝M18。原文: 用途：AIハンド製造ライン用資材収納用品購入／セグメント1：AIハンド／セグメント2：その他／分類：備品／内容：折りたたみコンテナ FCLD50-GR/C ×5、50L用台車 ×1。live.json registeredMemo（repliedBy Yoshihiro Shibata 2026-11-11 20:48:41 JST）と一致",
       "memoEvidence": [
         {
           "notice": "決済メモを追加しました！",
@@ -1003,6 +1195,14 @@
       "priorDeliveryStatus": "出荷待ち",
       "statusUpdatedAt": "2026-11-14 09:20 JST",
       "memoPresent": true,
+      "memoDefault": {
+        "purpose": "YUBI製造用副資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "副資材",
+        "content": "接着剤、セメダイン スーパーXゴールド AX-014 20mL ×5"
+      },
+      "memoBasis": "証憑台帳 row61 X列（TX-20261111-MNT-002）＝M19。原文: 用途：YUBI製造用副資材購入／セグメント1：AIハンド／セグメント2：プロダクト販売／分類：副資材／内容：接着剤、セメダイン スーパーXゴールド AX-014 20mL ×5。live.json registeredMemo と一致",
       "memoEvidence": [
         {
           "notice": "決済メモを追加しました！",
