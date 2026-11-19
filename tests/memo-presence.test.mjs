@@ -85,8 +85,11 @@ const stillUnconfirmed = [
   "tx-20261117-0001-jlcpcb-25017",
   "tx-20261117-1823-monotaro-10993",
   "tx-20261117-1831-misumi-7878",
+  "tx-20261118-2127-misumi-10890",
+  "tx-20261118-2211-nejikuru-5782",
+  "tx-20261118-2234-misumi-5984",
 ];
-check(unconfirmed.length === 24, `unconfirmed memo ${unconfirmed.length}`);
+check(unconfirmed.length === 27, `unconfirmed memo ${unconfirmed.length}`);
 check(JSON.stringify(unconfirmed.map((tx) => tx.id)) === JSON.stringify([...priorUnconfirmed, github22Id, ...stillUnconfirmed]), "unconfirmed threads have no memo completion");
 check(unconfirmed.every((tx) => tx.memoEvidence == null && tx.memoPresent !== true), "unconfirmed rows have no invented notice");
 check(priorUnconfirmed.every((id) => ledger.transactions.find((tx) => tx.id === id)?.status === "本人以外の課金（シバタさん回答 2026-11-10）"), "prior github rows stay not-owner");
