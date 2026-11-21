@@ -91,10 +91,12 @@ const stillUnconfirmed = [
   "tx-20261119-1514-misumi-8745",
   "tx-20261119-2351-jtbamarys-8000",
   "tx-20261120-0345-adam-33246",
+  "tx-20261120-1654-paypal-0",
+  "tx-20261120-1655-seeed-691525",
 ];
-check(unconfirmed.length === 30, `unconfirmed memo ${unconfirmed.length}`);
+check(unconfirmed.length === 32, `unconfirmed memo ${unconfirmed.length}`);
 check(JSON.stringify(unconfirmed.map((tx) => tx.id)) === JSON.stringify([...priorUnconfirmed, github22Id, ...stillUnconfirmed]), "unconfirmed threads have no memo completion");
-check(unconfirmed.every((tx) => tx.memoEvidence == null && tx.memoPresent !== true), "unconfirmed rows have no invented notice");
+check(unconfirmed.every((tx) => tx.memoPresent !== true && (tx.memoEvidence == null || (tx.id === "tx-20261120-1655-seeed-691525" && tx.memoEvidence.every((item) => item.notice !== "決済メモを追加しました！")))), "unconfirmed rows have no invented notice");
 check(priorUnconfirmed.every((id) => ledger.transactions.find((tx) => tx.id === id)?.status === "本人以外の課金（シバタさん回答 2026-11-10）"), "prior github rows stay not-owner");
 const github22 = ledger.transactions.find((tx) => tx.id === github22Id);
 check(github22?.memoStatus === "未確認" && github22?.status === "本人以外の課金（シバタさん回答 2026-11-11）", "github 22 stays unconfirmed and is not-owner");
