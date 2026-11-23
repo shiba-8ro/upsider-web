@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-11-22T09:14:00+09:00",
+  "asOf": "2026-11-23T09:24:00+09:00",
   "title": "UPSIDERモニター",
   "summary": "AIハンド決済用カードのUPSIDERチェック結果ダッシュボード。チェック実行のたびに更新します。",
-  "lead": "最新データ確認 2026-11-22 09:14 JST（ブラウザで#bo_upsiderを読んだ時刻）。新規の対象取引はなし。11/21 09:13以降の新規カード（TRIPO AI ¥3,200、OPENAI ¥30,000、GITHUB ¥117）は対象外。行は追加しない。既存の要処理26スレッドに新しい返信・UPSIDER通知はなかった。この実行での証憑添付・メモ登録はしていない。台帳57件。登録完了22件。除外6件（返金2件、本人以外の課金4件）。確認決済（¥0）3件。メモなし14件。証憑なし1件。証憑保存済・Slack未添付0件。メモ・証憑なし11件。要処理29件（¥0確認決済3件を含む）。メモあり24件。メモ作成は行っていない。",
+  "lead": "最新データ確認 2026-11-23 09:24 JST（ブラウザで#bo_upsiderを読んだ時刻）。新規の対象取引は3件（DHL ¥4,500、MonotaRO ¥23,857、ネジクル ¥27,379）。いずれも返信0件で、決済メモも領収証もなく、Drive証憑もない。ステータスはメモ・証憑なし。11/22 09:14以降の対象外（AMAZON CO JP ¥8,862（ECサイト決済用）、1PASSWORD ¥4,893 / USD 29.95（SaaS決済用）、AMAZON CO JP ¥10,220（イベント事業決済用、吉野 哲仁））。行は追加しない。既存の要処理26スレッドに新しい返信・UPSIDER通知はなかった。この実行での証憑添付・メモ登録はしていない。台帳60件。登録完了22件。除外6件（返金2件、本人以外の課金4件）。確認決済（¥0）3件。メモなし14件。証憑なし1件。証憑保存済・Slack未添付0件。メモ・証憑なし14件。要処理32件（¥0確認決済3件を含む）。メモあり24件。メモ作成は行っていない。",
   "callouts": [
     {
       "tone": "info",
@@ -11,7 +11,12 @@
     },
     {
       "tone": "info",
-      "lead": "今回のチェック（11/22 09:14）",
+      "lead": "今回のチェック（11/23 09:24）",
+      "body": "ブラウザで#bo_upsiderを2026-11-23 09:24 JSTに確認。この実行での証憑添付・メモ登録はしていない。新規の対象取引は3件。いずれもAIハンド決済用（柴田 善広）、返信は0件、「決済メモを追加しました！」も「領収証を添付しました」もなく、Drive証憑はない。ステータスはメモ・証憑なし。DHL ¥4,500（カード表示 DHL JAPAN, INC.、決済2026-11-22 18:41:52 JST、スレッド1795340512.381139、台帳TX-20261117-JLC-001、関連するJLCPCB注文W2026111623018994の輸入関税・消費税、AD-YUBI_Hub_01基板、DHL運送状5343843293、DHL取引ID 222815396-126505698）。MonotaRO ¥23,857（カード表示 DP12*MONOTARO.COM、決済2026-11-22 21:26:17 JST、スレッド1795350377.941919、台帳TX-20261122-MNT-001、注文書番号134323400042、参照「資材収納用品」。折りたたみコンテナ 扉付きタイプ FCLD50-GR/C ×3、扉付きタイプ用フタ 50GN ×2、折りたたみコンテナ(50L)用台車 緑 52666618 ×1。フタ 50GN ×2 は12/02入荷待ち）。ネジクル ¥27,379（カード表示 DP04*NEJIKURU、決済2026-11-23 03:53:07 JST、スレッド1795373587.639099、台帳TX-20261123-TRG-001、注文番号EC261123-004790140。サンコータイト Pタイプ トラス 黒 2.3×8 ×8,000、十字穴付トラス小ねじ 黒 2.3×6 ×1,000）。既存の要処理26スレッド（メモなし14件、メモ・証憑なし11件、証憑なし1件）に2026-11-22 09:14 JST以降の新しい返信・UPSIDER通知はなかった。ステータス・メモ・Driveリンク・メモ初期値は変えていない。対象外（行は追加しない）：AMAZON CO JP ¥8,862（ECサイト決済用）、1PASSWORD ¥4,893（USD 29.95、SaaS決済用）、AMAZON CO JP ¥10,220（イベント事業決済用、吉野 哲仁）。前回記載のTRIPO AI ¥3,200（AIトイ決済用、池滝 俊太）、OPENAI ¥30,000（南里さん決済用）、GITHUB ¥117（SaaS決済用）、RUNPOD.IO ¥8,175×2、GOOGLE*CLOUD ¥3,200、LENOVO.COM JP EPRO ¥296,010（池滝 俊太が2026-11-21 00:54 JSTにメモ登録済み）、GITHUB, INC. ¥549、RUNPOD.IO ¥8,160×3、DHL JAPAN ¥31,900、AMAZON CO JP ¥0・¥18,490・¥4,027、ANTHROPIC* CLAUDE SUB ¥35,892、RUNPOD.IO ¥8,157、HANABI AI INC. ¥16,314、DP4*RAKSUL ¥7,805、VERCEL INC. ¥3,595、SHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。台帳60件。登録完了22件、除外6件（返金2件、本人以外の課金4件）、確認決済（¥0）3件、メモなし14件、証憑なし1件、証憑保存済・Slack未添付0件、メモ・証憑なし14件、要処理32件（¥0確認決済3件を含む）。メモあり24件。新しい返金はない。メモ作成は行っていない。"
+    },
+    {
+      "tone": "info",
+      "lead": "前回のチェック（11/22 09:14）",
       "body": "ブラウザで#bo_upsiderを2026-11-22 09:14 JSTに確認。この実行での証憑添付・メモ登録はしていない。新規の対象取引はなし。AIハンド決済用（柴田 善広）の新しいカード決済は2026-11-21 09:13 JST以降にない。既存の要処理26スレッド（メモなし14件、メモ・証憑なし11件、証憑なし1件）に2026-11-21 09:13 JST以降の新しい返信・UPSIDER通知はなかった。添付もメモ登録もしていない。ステータス・メモ・Driveリンク・メモ初期値は変えていない。対象外（行は追加しない）：TRIPO AI ¥3,200（AIトイ決済用、池滝 俊太）、OPENAI ¥30,000（南里さん決済用）、GITHUB ¥117（SaaS決済用）。前回記載のRUNPOD.IO ¥8,175×2、GOOGLE*CLOUD ¥3,200、LENOVO.COM JP EPRO ¥296,010（池滝 俊太が2026-11-21 00:54 JSTにメモ登録済み）、GITHUB, INC. ¥549、RUNPOD.IO ¥8,160×3、DHL JAPAN ¥31,900、AMAZON CO JP ¥0・¥18,490・¥4,027、ANTHROPIC* CLAUDE SUB ¥35,892、RUNPOD.IO ¥8,157、HANABI AI INC. ¥16,314、DP4*RAKSUL ¥7,805、VERCEL INC. ¥3,595、SHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。台帳57件。登録完了22件、除外6件（返金2件、本人以外の課金4件）、確認決済（¥0）3件、メモなし14件、証憑なし1件、証憑保存済・Slack未添付0件、メモ・証憑なし11件、要処理29件。メモあり24件。新しい返金はない。メモ作成は行っていない。"
     },
     {
@@ -2891,6 +2896,125 @@
       "evidenceStorageStatus": "Slack添付済・Drive未保存",
       "statusReason": "要処理（メモ未登録）。証憑はSlack添付済み。Iwasaki_BO/Secretaryが2026-11-20 16:57 JSTに品目を投稿し、16:58にUPSIDERのアップロードがファイルサイズ超過で失敗した。16:59に「AIハンド その他」と同じ品目をinvoice.pdfとともに再投稿し、UPSIDER「領収証を添付しました」を16:59 JSTに確認した（スレッド1795161320.143969）。発行事業者・登録番号は読めない。Driveコピーはない。決済メモの完了通知はなく、人間の投稿はメモ完了に数えないため登録完了にはしていない。注文5000005852。Seeedの注文は池滝 俊太が行い、支払いはPayPal。カード利用者は柴田 善広、カードはAIハンド決済用。",
       "evidenceCheck": "invoice.pdf。Iwasaki_BO/Secretaryが2026-11-20 16:59 JSTにスレッドへ添付し、UPSIDER「領収証を添付しました」を16:59 JSTに確認した（スレッド1795161320.143969）。16:58のアップロードはファイルサイズ超過で失敗している。発行事業者・登録番号は読めない。Driveコピーはない。登録完了にはしていない。決済メモの完了通知はなく、未登録のまま。人間の投稿はメモ完了に数えない。"
+    },
+    {
+      "id": "tx-20261122-1841-dhl-4500",
+      "datetime": "11/22 18:41",
+      "merchant": "DHL",
+      "slackMerchant": "DHL JAPAN, INC.",
+      "amount": "¥4,500",
+      "amountYen": 4500,
+      "content": "DHL輸入関税・消費税、JLCPCB AD-YUBI_Hub_01基板（注文W2026111623018994・運送状5343843293）",
+      "status": "メモ・証憑なし",
+      "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1795340512.381139",
+      "drive": "なし",
+      "memoKey": null,
+      "detailSection": false,
+      "memoStatus": "未確認",
+      "memoPresent": false,
+      "memoDefault": {
+        "purpose": "YUBI製造用資材の輸入関税・消費税",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "DHL輸入関税・消費税、JLCPCB AD-YUBI_Hub_01基板（注文W2026111623018994・運送状5343843293）"
+      },
+      "memoBasis": "JLCPCB注文W2026111623018994（AD-YUBI_Hub_01基板、既存行 tx-20261117-0001-jlcpcb-25017、台帳TX-20261117-JLC-001）の輸入関税・消費税。DHL運送状5343843293、DHL取引ID 222815396-126505698。カード表示は DHL JAPAN, INC.。既存のJLCPCB ¥25,017（YUBI製造用資材購入／プロダクト販売／製造用資材）と同じ区分にした。返信は0件。「決済メモを追加しました！」も「領収証を添付しました」もなく、Drive証憑もない。",
+      "paidAt": "2026-11-22 18:41:52 JST",
+      "cardName": "AIハンド決済用",
+      "cardholder": "柴田 善広",
+      "deliveryConfirmed": false,
+      "statusUpdatedAt": "2026-11-23 09:24 JST",
+      "ledgerId": "TX-20261117-JLC-001",
+      "orderNumber": "W2026111623018994",
+      "waybillNumber": "5343843293",
+      "dhlTransactionId": "222815396-126505698",
+      "relatedTransactionId": "tx-20261117-0001-jlcpcb-25017",
+      "items": [
+        "DHL輸入関税・消費税（JLCPCB AD-YUBI_Hub_01基板、注文W2026111623018994、運送状5343843293）"
+      ],
+      "slackThreadTs": "1795340512.381139",
+      "slackReplyCount": 0,
+      "statusReason": "要処理（メモ未登録・証憑未取得）。返信は0件。決済メモも領収証もない。「決済メモを追加しました！」も「領収証を添付しました」もない。Drive証憑はない。JLCPCB注文W2026111623018994（AD-YUBI_Hub_01基板、関連行 tx-20261117-0001-jlcpcb-25017、台帳TX-20261117-JLC-001）の輸入関税・消費税。DHL運送状5343843293。DHL取引ID 222815396-126505698。"
+    },
+    {
+      "id": "tx-20261122-2126-monotaro-23857",
+      "datetime": "11/22 21:26",
+      "merchant": "MonotaRO",
+      "slackMerchant": "DP12*MONOTARO.COM",
+      "amount": "¥23,857",
+      "amountYen": 23857,
+      "content": "折りたたみコンテナ(50L)用台車 緑 52666618 ×1、折りたたみコンテナ 扉付きタイプ FCLD50-GR/C ×3、扉付きタイプ用フタ 50GN ×2",
+      "status": "メモ・証憑なし",
+      "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1795350377.941919",
+      "drive": "なし",
+      "memoKey": null,
+      "detailSection": false,
+      "memoStatus": "未確認",
+      "memoPresent": false,
+      "memoDefault": {
+        "purpose": "YUBI製造用資材の収納用品購入",
+        "seg1": "AIハンド",
+        "seg2": "その他",
+        "category": "備品",
+        "content": "折りたたみコンテナ・台車、モノタロウ 折りたたみコンテナ扉付き FCLD50-GR/C ×3、同用フタ 50GN ×2、同(50L)用台車 緑 ×1"
+      },
+      "memoBasis": "注文書番号134323400042、参照番号「資材収納用品」。折りたたみコンテナ 扉付きタイプ FCLD50-GR/C ×3、扉付きタイプ用フタ 50GN ×2、折りたたみコンテナ(50L)用台車 緑 52666618 ×1。フタ 50GN ×2 は12/02入荷待ち。製造ラインの収納用品はシバタさん記入の折りたたみコンテナ（セグメント2はその他、分類は備品）に合わせ、セグメント2はその他、分類は備品。返信は0件。「決済メモを追加しました！」も「領収証を添付しました」もなく、Drive証憑もない。",
+      "paidAt": "2026-11-22 21:26:17 JST",
+      "cardName": "AIハンド決済用",
+      "cardholder": "柴田 善広",
+      "deliveryConfirmed": false,
+      "statusUpdatedAt": "2026-11-23 09:24 JST",
+      "ledgerId": "TX-20261122-MNT-001",
+      "orderNumber": "134323400042",
+      "orderReference": "資材収納用品",
+      "items": [
+        "折りたたみコンテナ(50L)用台車 緑 52666618 ×1",
+        "折りたたみコンテナ 扉付きタイプ FCLD50-GR/C ×3",
+        "扉付きタイプ用フタ 50GN ×2"
+      ],
+      "deliveryStatus": "フタ 50GN ×2 は12/02入荷待ち",
+      "slackThreadTs": "1795350377.941919",
+      "slackReplyCount": 0,
+      "statusReason": "要処理（メモ未登録・証憑未取得）。返信は0件。決済メモも領収証もない。「決済メモを追加しました！」も「領収証を添付しました」もない。Drive証憑はない。注文書番号134323400042。参照は資材収納用品。折りたたみコンテナ 扉付きタイプ FCLD50-GR/C ×3、扉付きタイプ用フタ 50GN ×2、折りたたみコンテナ(50L)用台車 緑 52666618 ×1。フタ 50GN ×2 は12/02入荷待ち。"
+    },
+    {
+      "id": "tx-20261123-0353-nejikuru-27379",
+      "datetime": "11/23 03:53",
+      "merchant": "ネジクル",
+      "slackMerchant": "DP04*NEJIKURU",
+      "amount": "¥27,379",
+      "amountYen": 27379,
+      "content": "サンコータイト Pタイプ トラス 黒 2.3×8 ×8,000、十字穴付トラス小ねじ 黒 2.3×6 ×1,000",
+      "status": "メモ・証憑なし",
+      "slack": "https://app.slack.com/client/T0AS9K3390T/C0BG07UF1EY/thread/C0BG07UF1EY-1795373587.639099",
+      "drive": "なし",
+      "memoKey": null,
+      "detailSection": false,
+      "memoStatus": "未確認",
+      "memoPresent": false,
+      "memoDefault": {
+        "purpose": "YUBI Glove製造用資材購入",
+        "seg1": "AIハンド",
+        "seg2": "プロダクト販売",
+        "category": "製造用資材",
+        "content": "ねじ、サンコータイト Pタイプ トラス 黒 2.3×8 ×8,000、十字穴付トラス小ねじ 黒 2.3×6 ×1,000"
+      },
+      "memoBasis": "注文番号EC261123-004790140。サンコータイト Pタイプ トラス 黒 2.3×8 ×8,000、十字穴付トラス小ねじ 黒 2.3×6 ×1,000。既存のネジクル ¥5,782（花ボルト、YUBI Glove製造用資材購入／プロダクト販売／製造用資材）と同じ区分にした。返信は0件。「決済メモを追加しました！」も「領収証を添付しました」もなく、Drive証憑もない。",
+      "paidAt": "2026-11-23 03:53:07 JST",
+      "cardName": "AIハンド決済用",
+      "cardholder": "柴田 善広",
+      "deliveryConfirmed": false,
+      "statusUpdatedAt": "2026-11-23 09:24 JST",
+      "ledgerId": "TX-20261123-TRG-001",
+      "orderNumber": "EC261123-004790140",
+      "items": [
+        "サンコータイト Pタイプ トラス 黒 2.3×8 ×8,000",
+        "十字穴付トラス小ねじ 黒 2.3×6 ×1,000"
+      ],
+      "slackThreadTs": "1795373587.639099",
+      "slackReplyCount": 0,
+      "statusReason": "要処理（メモ未登録・証憑未取得）。返信は0件。決済メモも領収証もない。「決済メモを追加しました！」も「領収証を添付しました」もない。Drive証憑はない。注文番号EC261123-004790140。サンコータイト Pタイプ トラス 黒 2.3×8 ×8,000、十字穴付トラス小ねじ 黒 2.3×6 ×1,000。"
     }
   ],
   "details": [],
@@ -2909,123 +3033,131 @@
     "previousIncrementalThreadsScanned": 8,
     "lastIncrementalLimit": "18スレッドでUPSIDER自身の完了通知を確認。返信数は前回値を保持していないため増減比較はしない。新規tsは未取得のためmemoEvidenceは増やしていない。",
     "latestCheck": {
-      "checkedAt": "2026-11-22 09:14 JST",
+      "checkedAt": "2026-11-23 09:24 JST",
       "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
       "memoPresent": 24,
-      "unconfirmed": 28,
+      "unconfirmed": 31,
       "newMemoCompletions": 0,
-      "note": "新しい決済メモ完了通知はない。既存の要処理26スレッドに11/21 09:13以降の新しい返信・「決済メモを追加しました！」はない。新規の対象取引はない。対象外のTRIPO AI ¥3,200、OPENAI ¥30,000、GITHUB ¥117は行を追加しない。",
+      "note": "新しい決済メモ完了通知はない。既存の要処理26スレッドに11/22 09:14以降の新しい返信・「決済メモを追加しました！」はない。新規3件（DHL ¥4,500、MonotaRO ¥23,857、ネジクル ¥27,379）も「決済メモを追加しました！」はなく、返信は0件。対象外のAMAZON CO JP ¥8,862、1PASSWORD ¥4,893、AMAZON CO JP ¥10,220は行を追加しない。",
       "previous": {
-        "checkedAt": "2026-11-21 09:13 JST",
+        "checkedAt": "2026-11-22 09:14 JST",
         "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
         "memoPresent": 24,
         "unconfirmed": 28,
         "newMemoCompletions": 0,
-        "note": "新しい決済メモ完了通知はない。既存の要処理27スレッドに11/20 09:20以降の新しい返信・「決済メモを追加しました！」はない。新規2件のうちPAYPALWALLET ¥0は返信0件。Seeed Studio ¥691,525はIwasaki_BO/Secretaryの本文（16:57・16:59）と領収証添付通知（16:59、スレッドts 1795161320.143969）のみで、「決済メモを追加しました！」はない。人間の投稿はメモ完了に数えない。対象外のRUNPOD.IO ¥8,175×2、GOOGLE*CLOUD ¥3,200、LENOVO.COM JP EPRO ¥296,010は行を追加しない。",
+        "note": "新しい決済メモ完了通知はない。既存の要処理26スレッドに11/21 09:13以降の新しい返信・「決済メモを追加しました！」はない。新規の対象取引はない。対象外のTRIPO AI ¥3,200、OPENAI ¥30,000、GITHUB ¥117は行を追加しない。",
         "previous": {
-          "checkedAt": "2026-11-20 09:20 JST",
+          "checkedAt": "2026-11-21 09:13 JST",
           "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
           "memoPresent": 24,
-          "unconfirmed": 26,
+          "unconfirmed": 28,
           "newMemoCompletions": 0,
-          "note": "新しい決済メモ完了通知はない。既存の要処理25スレッドに11/19 09:20以降の新しい返信・「決済メモを追加しました！」はない（MonotaRO ¥18,678・¥10,993の領収証添付通知を除く）。新規3件（JTBAMARYS ¥8,000、ミスミ ¥8,745、ADAM AI LABS ¥33,246）も決済メモ完了通知はなく、JTBAMARYSは領収証添付のみ。ミスミ ¥8,745とADAM AI LABS ¥33,246は返信0件。対象外のGITHUB, INC. ¥549、RUNPOD.IO ¥8,160×3、DHL JAPAN ¥31,900、AMAZON CO JP ¥0・¥18,490・¥4,027は行を追加しない。",
+          "note": "新しい決済メモ完了通知はない。既存の要処理27スレッドに11/20 09:20以降の新しい返信・「決済メモを追加しました！」はない。新規2件のうちPAYPALWALLET ¥0は返信0件。Seeed Studio ¥691,525はIwasaki_BO/Secretaryの本文（16:57・16:59）と領収証添付通知（16:59、スレッドts 1795161320.143969）のみで、「決済メモを追加しました！」はない。人間の投稿はメモ完了に数えない。対象外のRUNPOD.IO ¥8,175×2、GOOGLE*CLOUD ¥3,200、LENOVO.COM JP EPRO ¥296,010は行を追加しない。",
           "previous": {
-            "checkedAt": "2026-11-19 09:20 JST",
+            "checkedAt": "2026-11-20 09:20 JST",
             "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
             "memoPresent": 24,
-            "unconfirmed": 23,
+            "unconfirmed": 26,
             "newMemoCompletions": 0,
-            "note": "新しい決済メモ完了通知はない。既存の要処理20スレッドに13:40以降の新しい返信・「決済メモを追加しました！」はない（11/18 13:36の領収証添付3件は反映済み）。新規3件（ミスミ ¥10,890、ネジクル ¥5,782、ミスミ ¥5,984）も返信0件。対象外のANTHROPIC* CLAUDE SUB ¥35,892、RUNPOD.IO ¥8,157、HANABI AI INC. ¥16,314は行を追加しない。",
+            "note": "新しい決済メモ完了通知はない。既存の要処理25スレッドに11/19 09:20以降の新しい返信・「決済メモを追加しました！」はない（MonotaRO ¥18,678・¥10,993の領収証添付通知を除く）。新規3件（JTBAMARYS ¥8,000、ミスミ ¥8,745、ADAM AI LABS ¥33,246）も決済メモ完了通知はなく、JTBAMARYSは領収証添付のみ。ミスミ ¥8,745とADAM AI LABS ¥33,246は返信0件。対象外のGITHUB, INC. ¥549、RUNPOD.IO ¥8,160×3、DHL JAPAN ¥31,900、AMAZON CO JP ¥0・¥18,490・¥4,027は行を追加しない。",
             "previous": {
-              "checkedAt": "2026-11-18 13:40 JST",
-              "source": "臨時巡回。ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
+              "checkedAt": "2026-11-19 09:20 JST",
+              "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
               "memoPresent": 24,
-              "unconfirmed": 20,
+              "unconfirmed": 23,
               "newMemoCompletions": 0,
-              "note": "新しい決済メモ完了通知はない。ミスミ ¥3,267、MonotaRO ¥8,965・¥2,109は領収証通知のみ（11/18 13:36）。MonotaRO ¥10,993とミスミ ¥7,878は返信0件のまま。他の要処理スレッドは返信0件。対象外のRUNPOD.IO ¥8,157とDP4*RAKSUL ¥7,805は行を追加しない。",
+              "note": "新しい決済メモ完了通知はない。既存の要処理20スレッドに13:40以降の新しい返信・「決済メモを追加しました！」はない（11/18 13:36の領収証添付3件は反映済み）。新規3件（ミスミ ¥10,890、ネジクル ¥5,782、ミスミ ¥5,984）も返信0件。対象外のANTHROPIC* CLAUDE SUB ¥35,892、RUNPOD.IO ¥8,157、HANABI AI INC. ¥16,314は行を追加しない。",
               "previous": {
-                "checkedAt": "2026-11-18 09:12 JST",
-                "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
+                "checkedAt": "2026-11-18 13:40 JST",
+                "source": "臨時巡回。ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
                 "memoPresent": 24,
                 "unconfirmed": 20,
                 "newMemoCompletions": 0,
-                "note": "新しい決済メモ完了通知はない。Amazon ¥2,399・MonotaRO ¥18,678は既存のメモ完了通知のみ。ウィルコ ¥20,900、MonotaRO ¥2,198・¥1,868、Amazon ¥49,704・¥5,003は領収証通知のみ（11/18 09:11〜09:12）。新規2件（MonotaRO ¥10,993、ミスミ ¥7,878）も返信0件。他の要処理スレッドは返信0件。",
+                "note": "新しい決済メモ完了通知はない。ミスミ ¥3,267、MonotaRO ¥8,965・¥2,109は領収証通知のみ（11/18 13:36）。MonotaRO ¥10,993とミスミ ¥7,878は返信0件のまま。他の要処理スレッドは返信0件。対象外のRUNPOD.IO ¥8,157とDP4*RAKSUL ¥7,805は行を追加しない。",
                 "previous": {
-                  "checkedAt": "2026-11-17 18:09 JST",
-                  "source": "臨時巡回。ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
+                  "checkedAt": "2026-11-18 09:12 JST",
+                  "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
                   "memoPresent": 24,
-                  "unconfirmed": 18,
+                  "unconfirmed": 20,
                   "newMemoCompletions": 0,
-                  "note": "新しい決済メモ完了通知はない。Amazon ¥2,399・MonotaRO ¥18,678は既存のメモ完了通知のみ。MonotaRO ¥439・¥3,953、Amazon ¥3,080は領収証通知のみ（11/17 09:12〜09:15）。他の要処理スレッドは返信0件。",
+                  "note": "新しい決済メモ完了通知はない。Amazon ¥2,399・MonotaRO ¥18,678は既存のメモ完了通知のみ。ウィルコ ¥20,900、MonotaRO ¥2,198・¥1,868、Amazon ¥49,704・¥5,003は領収証通知のみ（11/18 09:11〜09:12）。新規2件（MonotaRO ¥10,993、ミスミ ¥7,878）も返信0件。他の要処理スレッドは返信0件。",
                   "previous": {
-                    "checkedAt": "2026-11-17 09:18 JST",
-                    "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
+                    "checkedAt": "2026-11-17 18:09 JST",
+                    "source": "臨時巡回。ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
                     "memoPresent": 24,
                     "unconfirmed": 18,
                     "newMemoCompletions": 0,
-                    "note": "新しい決済メモ完了通知はない。Amazon ¥2,399・MonotaRO ¥18,678は既存のメモ完了通知のみ。他の要処理スレッドは返信0件（今回添付した3件は領収証通知のみ）。新規3件も返信0件。",
+                    "note": "新しい決済メモ完了通知はない。Amazon ¥2,399・MonotaRO ¥18,678は既存のメモ完了通知のみ。MonotaRO ¥439・¥3,953、Amazon ¥3,080は領収証通知のみ（11/17 09:12〜09:15）。他の要処理スレッドは返信0件。",
                     "previous": {
-                      "checkedAt": "2026-11-16 16:30 JST",
-                      "source": "ユーザー依頼の随時パトロール。ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+                      "checkedAt": "2026-11-17 09:18 JST",
+                      "source": "ブラウザで#bo_upsiderを確認。メモ登録はしていない。",
                       "memoPresent": 24,
-                      "unconfirmed": 19,
+                      "unconfirmed": 18,
                       "newMemoCompletions": 0,
-                      "note": "新しい決済メモ完了通知はない。新規1件（Amazon ¥49,704）は返信0件で未確認。MonotaRO ¥439、MonotaRO ¥3,953、Amazon ¥3,080のメモは未登録のまま。メモあり24件。未確認は19件。メモ作成は行っていない。",
+                      "note": "新しい決済メモ完了通知はない。Amazon ¥2,399・MonotaRO ¥18,678は既存のメモ完了通知のみ。他の要処理スレッドは返信0件（今回添付した3件は領収証通知のみ）。新規3件も返信0件。",
                       "previous": {
-                        "checkedAt": "2026-11-16 09:16 JST",
-                        "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+                        "checkedAt": "2026-11-16 16:30 JST",
+                        "source": "ユーザー依頼の随時パトロール。ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
                         "memoPresent": 24,
-                        "unconfirmed": 18,
+                        "unconfirmed": 19,
                         "newMemoCompletions": 0,
-                        "note": "新しい決済メモ完了通知はない。EVENT PAY ¥9,000のメモは2026-11-15 23:55:35 JSTのまま。新規2件は返信0件で未確認。メモあり24件。未確認は18件。メモ作成は行っていない。",
+                        "note": "新しい決済メモ完了通知はない。新規1件（Amazon ¥49,704）は返信0件で未確認。MonotaRO ¥439、MonotaRO ¥3,953、Amazon ¥3,080のメモは未登録のまま。メモあり24件。未確認は19件。メモ作成は行っていない。",
                         "previous": {
-                          "checkedAt": "2026-11-16 00:02 JST",
+                          "checkedAt": "2026-11-16 09:16 JST",
                           "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
                           "memoPresent": 24,
-                          "unconfirmed": 16,
-                          "newMemoCompletions": 3,
-                          "note": "Slackブラウザ確認 11/16 00:02、15件のスレッド確認、メモ登録済3件（EVENT PAY ¥9,000・Amazon ¥2,399・MonotaRO ¥18,678）、領収証添付なし、新規カードなし",
+                          "unconfirmed": 18,
+                          "newMemoCompletions": 0,
+                          "note": "新しい決済メモ完了通知はない。EVENT PAY ¥9,000のメモは2026-11-15 23:55:35 JSTのまま。新規2件は返信0件で未確認。メモあり24件。未確認は18件。メモ作成は行っていない。",
                           "previous": {
-                            "checkedAt": "2026-11-15 22:45 JST",
+                            "checkedAt": "2026-11-16 00:02 JST",
                             "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                            "memoPresent": 21,
-                            "unconfirmed": 19,
-                            "newMemoCompletions": 0,
-                            "note": "新しい決済メモ完了通知はない。既存要処理8件のスレッドは返信0件。新規7件にも決済メモ完了通知はない。",
+                            "memoPresent": 24,
+                            "unconfirmed": 16,
+                            "newMemoCompletions": 3,
+                            "note": "Slackブラウザ確認 11/16 00:02、15件のスレッド確認、メモ登録済3件（EVENT PAY ¥9,000・Amazon ¥2,399・MonotaRO ¥18,678）、領収証添付なし、新規カードなし",
                             "previous": {
-                              "checkedAt": "2026-11-15 09:20 JST",
+                              "checkedAt": "2026-11-15 22:45 JST",
                               "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
                               "memoPresent": 21,
-                              "unconfirmed": 12,
+                              "unconfirmed": 19,
                               "newMemoCompletions": 0,
-                              "note": "新しい決済メモ完了通知はない。要処理8件のスレッドは返信0件。",
+                              "note": "新しい決済メモ完了通知はない。既存要処理8件のスレッドは返信0件。新規7件にも決済メモ完了通知はない。",
                               "previous": {
-                                "checkedAt": "2026-11-14 09:20 JST",
+                                "checkedAt": "2026-11-15 09:20 JST",
                                 "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
                                 "memoPresent": 21,
                                 "unconfirmed": 12,
-                                "newMemoCompletions": 1,
-                                "note": "ミスミ ¥44,189で決済メモ完了通知を確認した。完了通知のエコーは内容の行を省略していた。メモあり21件。未確認は12件。MonotaRO ¥30,017と¥4,065のメモは登録済みのまま。Amazon ¥2,399、MonotaRO ¥18,678、Amazon ¥0、新規5件に決済メモ完了通知はない。",
+                                "newMemoCompletions": 0,
+                                "note": "新しい決済メモ完了通知はない。要処理8件のスレッドは返信0件。",
                                 "previous": {
-                                  "checkedAt": "2026-11-13 19:30 JST",
-                                  "source": "証憑の保存を台帳へ記録した。投稿・添付・メモ登録はしていない。",
-                                  "memoPresent": 20,
-                                  "unconfirmed": 8,
-                                  "newMemoCompletions": 0,
-                                  "note": "新規の決済メモ完了通知はない。ミスミ ¥44,189、Amazon ¥2,399、MonotaRO ¥18,678のメモは未登録のまま。",
+                                  "checkedAt": "2026-11-14 09:20 JST",
+                                  "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+                                  "memoPresent": 21,
+                                  "unconfirmed": 12,
+                                  "newMemoCompletions": 1,
+                                  "note": "ミスミ ¥44,189で決済メモ完了通知を確認した。完了通知のエコーは内容の行を省略していた。メモあり21件。未確認は12件。MonotaRO ¥30,017と¥4,065のメモは登録済みのまま。Amazon ¥2,399、MonotaRO ¥18,678、Amazon ¥0、新規5件に決済メモ完了通知はない。",
                                   "previous": {
-                                    "checkedAt": "2026-11-13 09:21 JST",
-                                    "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+                                    "checkedAt": "2026-11-13 19:30 JST",
+                                    "source": "証憑の保存を台帳へ記録した。投稿・添付・メモ登録はしていない。",
                                     "memoPresent": 20,
                                     "unconfirmed": 8,
                                     "newMemoCompletions": 0,
-                                    "note": "新規DP12*MONOTARO.COM ¥18,678（スレッド1794498836.125669）は返信がなく未確認。既存要処理5件のスレッドに新しい決済メモ完了通知はない。",
+                                    "note": "新規の決済メモ完了通知はない。ミスミ ¥44,189、Amazon ¥2,399、MonotaRO ¥18,678のメモは未登録のまま。",
                                     "previous": {
-                                      "checkedAt": "2026-11-12 09:20 JST",
+                                      "checkedAt": "2026-11-13 09:21 JST",
+                                      "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
                                       "memoPresent": 20,
-                                      "unconfirmed": 7,
-                                      "newMemoCompletions": 2,
-                                      "note": "MonotaRO ¥30,017と¥4,065で決済メモ完了通知を確認。メモあり20件。未確認は7件。"
+                                      "unconfirmed": 8,
+                                      "newMemoCompletions": 0,
+                                      "note": "新規DP12*MONOTARO.COM ¥18,678（スレッド1794498836.125669）は返信がなく未確認。既存要処理5件のスレッドに新しい決済メモ完了通知はない。",
+                                      "previous": {
+                                        "checkedAt": "2026-11-12 09:20 JST",
+                                        "memoPresent": 20,
+                                        "unconfirmed": 7,
+                                        "newMemoCompletions": 2,
+                                        "note": "MonotaRO ¥30,017と¥4,065で決済メモ完了通知を確認。メモあり20件。未確認は7件。"
+                                      }
                                     }
                                   }
                                 }
@@ -3056,10 +3188,10 @@
     "lastSuccessfulAcquisitionMeaning": "MonotaRO ¥18,678（領収証 20261118_18678JPY_モノタロウ_領収書.pdf、領収日11/18、T6140001054380）・MonotaRO ¥10,993（領収証 20261118_10993JPY_モノタロウ_領収書.pdf、T6140001054380）・JTBAMARYS ¥8,000（領収証 20261119_8000JPY_計測自動制御学会_領収証.pdf、領収証番号326396607015686001、T3010005015907）をDriveへ保存し、2026-11-20 09:10〜09:11ごろにスレッドへ本文なしで添付した。UPSIDER「領収証を添付しました」は09:12 JST（MonotaRO 2件）と09:13 JST（JTBAMARYS）に確認した。",
     "previousLastSuccessfulAcquisitionAt": "2026-11-18 13:36 JST"
   },
-  "dataAcquiredAt": "2026-11-22T09:14:00+09:00",
-  "dataAcquiredAtLabel": "ブラウザで#bo_upsiderを読み取り確認した時刻（2026-11-22 09:14 JST）。画面を更新した時刻やページを開いた時刻ではない。この実行での証憑添付・メモ登録はしていない。",
-  "previousDataAcquiredAt": "2026-11-21T09:13:00+09:00",
-  "earlierDataAcquiredAt": "2026-11-20T09:20:00+09:00",
+  "dataAcquiredAt": "2026-11-23T09:24:00+09:00",
+  "dataAcquiredAtLabel": "ブラウザで#bo_upsiderを読み取り確認した時刻（2026-11-23 09:24 JST）。画面を更新した時刻やページを開いた時刻ではない。この実行での証憑添付・メモ登録はしていない。",
+  "previousDataAcquiredAt": "2026-11-22T09:14:00+09:00",
+  "earlierDataAcquiredAt": "2026-11-21T09:13:00+09:00",
   "slackReceiptAttachment": {
     "attempted": 3,
     "attached": 3,
@@ -3094,170 +3226,178 @@
       "attachmentsAttempted": 1
     },
     "latestRun": {
-      "checkedAt": "2026-11-22 09:14 JST",
+      "checkedAt": "2026-11-23 09:24 JST",
       "attempted": 0,
       "attached": 0,
       "upSiderRegistered": 0,
       "method": "この実行での証憑添付はなし",
       "items": [],
       "previous": {
-        "checkedAt": "2026-11-21 09:13 JST",
+        "checkedAt": "2026-11-22 09:14 JST",
         "attempted": 0,
         "attached": 0,
         "upSiderRegistered": 0,
         "method": "この実行での証憑添付はなし",
         "items": [],
         "previous": {
-          "checkedAt": "2026-11-20 09:20 JST",
-          "attempted": 3,
-          "attached": 3,
-          "upSiderRegistered": 3,
-          "method": "ブラウザでスレッドへ本文なし添付",
-          "items": [
-            {
-              "transactionId": "tx-20261113-0053-monotaro-18678",
-              "file": "20261118_18678JPY_モノタロウ_領収書.pdf",
-              "postedAt": "2026-11-20 09:10ごろ",
-              "notice": "領収証を添付しました",
-              "noticeAt": "2026-11-20 09:12 JST",
-              "body": ""
-            },
-            {
-              "transactionId": "tx-20261117-1823-monotaro-10993",
-              "file": "20261118_10993JPY_モノタロウ_領収書.pdf",
-              "postedAt": "2026-11-20 09:10ごろ",
-              "notice": "領収証を添付しました",
-              "noticeAt": "2026-11-20 09:12 JST",
-              "body": ""
-            },
-            {
-              "transactionId": "tx-20261119-2351-jtbamarys-8000",
-              "file": "20261119_8000JPY_計測自動制御学会_領収証.pdf",
-              "postedAt": "2026-11-20 09:11ごろ",
-              "notice": "領収証を添付しました",
-              "noticeAt": "2026-11-20 09:13 JST",
-              "body": ""
-            }
-          ],
+          "checkedAt": "2026-11-21 09:13 JST",
+          "attempted": 0,
+          "attached": 0,
+          "upSiderRegistered": 0,
+          "method": "この実行での証憑添付はなし",
+          "items": [],
           "previous": {
-            "checkedAt": "2026-11-19 09:20 JST",
-            "attempted": 0,
-            "attached": 0,
-            "upSiderRegistered": 0,
-            "method": "新規の証憑添付はなし",
-            "items": [],
+            "checkedAt": "2026-11-20 09:20 JST",
+            "attempted": 3,
+            "attached": 3,
+            "upSiderRegistered": 3,
+            "method": "ブラウザでスレッドへ本文なし添付",
+            "items": [
+              {
+                "transactionId": "tx-20261113-0053-monotaro-18678",
+                "file": "20261118_18678JPY_モノタロウ_領収書.pdf",
+                "postedAt": "2026-11-20 09:10ごろ",
+                "notice": "領収証を添付しました",
+                "noticeAt": "2026-11-20 09:12 JST",
+                "body": ""
+              },
+              {
+                "transactionId": "tx-20261117-1823-monotaro-10993",
+                "file": "20261118_10993JPY_モノタロウ_領収書.pdf",
+                "postedAt": "2026-11-20 09:10ごろ",
+                "notice": "領収証を添付しました",
+                "noticeAt": "2026-11-20 09:12 JST",
+                "body": ""
+              },
+              {
+                "transactionId": "tx-20261119-2351-jtbamarys-8000",
+                "file": "20261119_8000JPY_計測自動制御学会_領収証.pdf",
+                "postedAt": "2026-11-20 09:11ごろ",
+                "notice": "領収証を添付しました",
+                "noticeAt": "2026-11-20 09:13 JST",
+                "body": ""
+              }
+            ],
             "previous": {
-              "checkedAt": "2026-11-18 13:40 JST",
-              "attempted": 3,
-              "attached": 3,
-              "upSiderRegistered": 3,
-              "method": "ブラウザでスレッドへ本文なし添付",
-              "items": [
-                {
-                  "transactionId": "tx-20261114-0426-misumi-3267",
-                  "file": "20261114_3267JPY_ミスミ_領収書・ご注文明細書.pdf",
-                  "postedAt": "2026-11-18 13:36 JST",
-                  "notice": "領収証を添付しました",
-                  "noticeAt": "2026-11-18 13:36 JST",
-                  "body": ""
-                },
-                {
-                  "transactionId": "tx-20261116-2027-monotaro-8965",
-                  "file": "20261116_8965JPY_モノタロウ_領収証.pdf",
-                  "postedAt": "2026-11-18 13:36 JST",
-                  "notice": "領収証を添付しました",
-                  "noticeAt": "2026-11-18 13:36 JST",
-                  "body": ""
-                },
-                {
-                  "transactionId": "tx-20261116-2030-monotaro-2109",
-                  "file": "20261116_2109JPY_モノタロウ_領収証.pdf",
-                  "postedAt": "2026-11-18 13:36 JST",
-                  "notice": "領収証を添付しました",
-                  "noticeAt": "2026-11-18 13:36 JST",
-                  "body": ""
-                }
-              ],
+              "checkedAt": "2026-11-19 09:20 JST",
+              "attempted": 0,
+              "attached": 0,
+              "upSiderRegistered": 0,
+              "method": "新規の証憑添付はなし",
+              "items": [],
               "previous": {
-                "checkedAt": "2026-11-18 09:12 JST",
-                "attempted": 5,
-                "attached": 5,
-                "upSiderRegistered": 5,
+                "checkedAt": "2026-11-18 13:40 JST",
+                "attempted": 3,
+                "attached": 3,
+                "upSiderRegistered": 3,
                 "method": "ブラウザでスレッドへ本文なし添付",
                 "items": [
                   {
-                    "transactionId": "tx-20261113-2255-wilco-20900",
-                    "file": "20261113_20900JPY_ウィルコ_適格請求書.pdf",
-                    "postedAt": "2026-11-18 09:11 JST",
+                    "transactionId": "tx-20261114-0426-misumi-3267",
+                    "file": "20261114_3267JPY_ミスミ_領収書・ご注文明細書.pdf",
+                    "postedAt": "2026-11-18 13:36 JST",
                     "notice": "領収証を添付しました",
-                    "noticeAt": "2026-11-18 09:11 JST",
+                    "noticeAt": "2026-11-18 13:36 JST",
                     "body": ""
                   },
                   {
-                    "transactionId": "tx-20261115-2231-monotaro-2198",
-                    "file": "20261115_2198JPY_モノタロウ_領収証.pdf",
-                    "postedAt": "2026-11-18 09:12 JST",
+                    "transactionId": "tx-20261116-2027-monotaro-8965",
+                    "file": "20261116_8965JPY_モノタロウ_領収証.pdf",
+                    "postedAt": "2026-11-18 13:36 JST",
                     "notice": "領収証を添付しました",
-                    "noticeAt": "2026-11-18 09:12 JST",
+                    "noticeAt": "2026-11-18 13:36 JST",
                     "body": ""
                   },
                   {
-                    "transactionId": "tx-20261116-0006-monotaro-1868",
-                    "file": "20261116_1868JPY_モノタロウ_領収証.pdf",
-                    "postedAt": "2026-11-18 09:12 JST",
+                    "transactionId": "tx-20261116-2030-monotaro-2109",
+                    "file": "20261116_2109JPY_モノタロウ_領収証.pdf",
+                    "postedAt": "2026-11-18 13:36 JST",
                     "notice": "領収証を添付しました",
-                    "noticeAt": "2026-11-18 09:12 JST",
-                    "body": ""
-                  },
-                  {
-                    "transactionId": "tx-20261116-0023-amazon-49704",
-                    "file": "20261115_49704JPY_Amazon_適格請求書.pdf",
-                    "postedAt": "2026-11-18 09:12 JST",
-                    "notice": "領収証を添付しました",
-                    "noticeAt": "2026-11-18 09:12 JST",
-                    "body": ""
-                  },
-                  {
-                    "transactionId": "tx-20261116-0232-amazon-5003",
-                    "file": "20261114_5003JPY_Amazon_適格請求書.pdf",
-                    "postedAt": "2026-11-18 09:12 JST",
-                    "notice": "領収証を添付しました",
-                    "noticeAt": "2026-11-18 09:12 JST",
+                    "noticeAt": "2026-11-18 13:36 JST",
                     "body": ""
                   }
                 ],
                 "previous": {
-                  "checkedAt": "2026-11-17 09:18 JST",
-                  "attempted": 3,
-                  "attached": 3,
-                  "upSiderRegistered": 3,
+                  "checkedAt": "2026-11-18 09:12 JST",
+                  "attempted": 5,
+                  "attached": 5,
+                  "upSiderRegistered": 5,
                   "method": "ブラウザでスレッドへ本文なし添付",
                   "items": [
                     {
-                      "transactionId": "tx-20261114-0123-monotaro-439",
-                      "file": "20261114_439JPY_モノタロウ_領収証.pdf",
-                      "postedAt": "2026-11-17 09:12:46 JST",
+                      "transactionId": "tx-20261113-2255-wilco-20900",
+                      "file": "20261113_20900JPY_ウィルコ_適格請求書.pdf",
+                      "postedAt": "2026-11-18 09:11 JST",
                       "notice": "領収証を添付しました",
-                      "noticeAt": "2026-11-17 09:12 JST",
+                      "noticeAt": "2026-11-18 09:11 JST",
                       "body": ""
                     },
                     {
-                      "transactionId": "tx-20261114-0209-monotaro-3953",
-                      "file": "20261114_3953JPY_モノタロウ_領収証.pdf",
-                      "postedAt": "2026-11-17 09:14:51 JST",
+                      "transactionId": "tx-20261115-2231-monotaro-2198",
+                      "file": "20261115_2198JPY_モノタロウ_領収証.pdf",
+                      "postedAt": "2026-11-18 09:12 JST",
                       "notice": "領収証を添付しました",
-                      "noticeAt": "2026-11-17 09:14 JST",
+                      "noticeAt": "2026-11-18 09:12 JST",
                       "body": ""
                     },
                     {
-                      "transactionId": "tx-20261115-2123-amazon-3080",
-                      "file": "20261115_3080JPY_Amazon_適格請求書.pdf",
-                      "postedAt": "2026-11-17 09:15:11 JST",
+                      "transactionId": "tx-20261116-0006-monotaro-1868",
+                      "file": "20261116_1868JPY_モノタロウ_領収証.pdf",
+                      "postedAt": "2026-11-18 09:12 JST",
                       "notice": "領収証を添付しました",
-                      "noticeAt": "2026-11-17 09:15 JST",
+                      "noticeAt": "2026-11-18 09:12 JST",
+                      "body": ""
+                    },
+                    {
+                      "transactionId": "tx-20261116-0023-amazon-49704",
+                      "file": "20261115_49704JPY_Amazon_適格請求書.pdf",
+                      "postedAt": "2026-11-18 09:12 JST",
+                      "notice": "領収証を添付しました",
+                      "noticeAt": "2026-11-18 09:12 JST",
+                      "body": ""
+                    },
+                    {
+                      "transactionId": "tx-20261116-0232-amazon-5003",
+                      "file": "20261114_5003JPY_Amazon_適格請求書.pdf",
+                      "postedAt": "2026-11-18 09:12 JST",
+                      "notice": "領収証を添付しました",
+                      "noticeAt": "2026-11-18 09:12 JST",
                       "body": ""
                     }
-                  ]
+                  ],
+                  "previous": {
+                    "checkedAt": "2026-11-17 09:18 JST",
+                    "attempted": 3,
+                    "attached": 3,
+                    "upSiderRegistered": 3,
+                    "method": "ブラウザでスレッドへ本文なし添付",
+                    "items": [
+                      {
+                        "transactionId": "tx-20261114-0123-monotaro-439",
+                        "file": "20261114_439JPY_モノタロウ_領収証.pdf",
+                        "postedAt": "2026-11-17 09:12:46 JST",
+                        "notice": "領収証を添付しました",
+                        "noticeAt": "2026-11-17 09:12 JST",
+                        "body": ""
+                      },
+                      {
+                        "transactionId": "tx-20261114-0209-monotaro-3953",
+                        "file": "20261114_3953JPY_モノタロウ_領収証.pdf",
+                        "postedAt": "2026-11-17 09:14:51 JST",
+                        "notice": "領収証を添付しました",
+                        "noticeAt": "2026-11-17 09:14 JST",
+                        "body": ""
+                      },
+                      {
+                        "transactionId": "tx-20261115-2123-amazon-3080",
+                        "file": "20261115_3080JPY_Amazon_適格請求書.pdf",
+                        "postedAt": "2026-11-17 09:15:11 JST",
+                        "notice": "領収証を添付しました",
+                        "noticeAt": "2026-11-17 09:15 JST",
+                        "body": ""
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -3279,13 +3419,13 @@
       "tx-20261110-1051-github-47",
       "tx-20261111-1259-github-22"
     ],
-    "checkedAt": "2026-11-22 09:14 JST",
+    "checkedAt": "2026-11-23 09:24 JST",
     "routine": "UPSIDERチェック（毎日AM9時）",
     "source": "ブラウザで#bo_upsiderを確認。この実行での証憑添付・メモ登録はしていない。",
-    "newTransactions": 0,
-    "ledgerRows": 57,
+    "newTransactions": 3,
+    "ledgerRows": 60,
     "registeredComplete": 22,
-    "needsAction": 29,
+    "needsAction": 32,
     "excluded": 6,
     "needsActionIds": [
       "tx-20261111-1553-amazon-0",
@@ -3316,12 +3456,18 @@
       "tx-20261119-2351-jtbamarys-8000",
       "tx-20261120-0345-adam-33246",
       "tx-20261120-1654-paypal-0",
-      "tx-20261120-1655-seeed-691525"
+      "tx-20261120-1655-seeed-691525",
+      "tx-20261122-1841-dhl-4500",
+      "tx-20261122-2126-monotaro-23857",
+      "tx-20261123-0353-nejikuru-27379"
     ],
     "excludedOutOfScope": [
-      "TRIPO AI ¥3,200（AIトイ決済用、池滝 俊太）。11/21 09:13以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-      "OPENAI ¥30,000（南里さん決済用）。11/21 09:13以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-      "GITHUB ¥117（SaaS決済用）。11/21 09:13以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+      "AMAZON CO JP ¥8,862（ECサイト決済用）。11/22 09:14以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+      "1PASSWORD ¥4,893（USD 29.95、SaaS決済用）。11/22 09:14以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+      "AMAZON CO JP ¥10,220（イベント事業決済用、吉野 哲仁）。11/22 09:14以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+      "TRIPO AI ¥3,200（AIトイ決済用、池滝 俊太）。前回記載のまま対象外。行は追加しない。",
+      "OPENAI ¥30,000（南里さん決済用）。前回記載のまま対象外。行は追加しない。",
+      "GITHUB ¥117（SaaS決済用）。前回記載のまま対象外。行は追加しない。",
       "RUNPOD.IO ¥8,175（SaaS決済用）。11/20 09:20以降。前回記載のまま対象外。行は追加しない。",
       "RUNPOD.IO ¥8,175（SaaS決済用、2件目）。11/20 09:20以降。前回記載のまま対象外。行は追加しない。",
       "GOOGLE*CLOUD ¥3,200（SaaS決済用）。11/20 09:20以降。前回記載のまま対象外。行は追加しない。",
@@ -3347,7 +3493,7 @@
     "memosCreated": 0,
     "attachmentsAttempted": 0,
     "attachmentsConfirmed": 0,
-    "note": "ブラウザで#bo_upsiderを2026-11-22 09:14 JSTに確認。新規の対象取引はなし。既存の要処理26スレッドに新しい返信・UPSIDER通知はなかった。この実行での証憑添付・メモ登録はしていない。対象外はTRIPO AI ¥3,200（AIトイ決済用、池滝 俊太）、OPENAI ¥30,000（南里さん決済用）、GITHUB ¥117（SaaS決済用）。行は追加しない。ステータス・メモ・Driveリンク・メモ初期値は変えていない。メモ作成は行っていない。",
+    "note": "ブラウザで#bo_upsiderを2026-11-23 09:24 JSTに確認。新規の対象取引は3件（DHL ¥4,500、MonotaRO ¥23,857、ネジクル ¥27,379）。いずれも返信0件で、メモ・証憑なし。既存の要処理26スレッドに新しい返信・UPSIDER通知はなかった。この実行での証憑添付・メモ登録はしていない。対象外はAMAZON CO JP ¥8,862（ECサイト決済用）、1PASSWORD ¥4,893（USD 29.95、SaaS決済用）、AMAZON CO JP ¥10,220（イベント事業決済用、吉野 哲仁）。行は追加しない。ステータス・メモ・Driveリンク・メモ初期値は変えていない。メモ作成は行っていない。",
     "previous": {
       "refundExcluded": 2,
       "refundExcludedIds": [
@@ -3361,10 +3507,10 @@
         "tx-20261110-1051-github-47",
         "tx-20261111-1259-github-22"
       ],
-      "checkedAt": "2026-11-21 09:13 JST",
+      "checkedAt": "2026-11-22 09:14 JST",
       "routine": "UPSIDERチェック（毎日AM9時）",
       "source": "ブラウザで#bo_upsiderを確認。この実行での証憑添付・メモ登録はしていない。",
-      "newTransactions": 2,
+      "newTransactions": 0,
       "ledgerRows": 57,
       "registeredComplete": 22,
       "needsAction": 29,
@@ -3401,10 +3547,13 @@
         "tx-20261120-1655-seeed-691525"
       ],
       "excludedOutOfScope": [
-        "RUNPOD.IO ¥8,175（SaaS決済用）。11/20 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-        "RUNPOD.IO ¥8,175（SaaS決済用、2件目）。11/20 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-        "GOOGLE*CLOUD ¥3,200（SaaS決済用）。11/20 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-        "LENOVO.COM JP EPRO ¥296,010（ECサイト決済用、池滝 俊太が2026-11-21 00:54 JSTにメモ登録済み）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+        "TRIPO AI ¥3,200（AIトイ決済用、池滝 俊太）。11/21 09:13以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+        "OPENAI ¥30,000（南里さん決済用）。11/21 09:13以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+        "GITHUB ¥117（SaaS決済用）。11/21 09:13以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+        "RUNPOD.IO ¥8,175（SaaS決済用）。11/20 09:20以降。前回記載のまま対象外。行は追加しない。",
+        "RUNPOD.IO ¥8,175（SaaS決済用、2件目）。11/20 09:20以降。前回記載のまま対象外。行は追加しない。",
+        "GOOGLE*CLOUD ¥3,200（SaaS決済用）。11/20 09:20以降。前回記載のまま対象外。行は追加しない。",
+        "LENOVO.COM JP EPRO ¥296,010（ECサイト決済用、池滝 俊太が2026-11-21 00:54 JSTにメモ登録済み）。前回記載のまま対象外。行は追加しない。",
         "GITHUB, INC. ¥549（SaaS決済用）。11/19 09:20以降。前回記載のまま対象外。行は追加しない。",
         "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-19 12:03 JST）。前回記載のまま対象外。行は追加しない。",
         "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-20 00:17 JST）。前回記載のまま対象外。行は追加しない。",
@@ -3426,7 +3575,7 @@
       "memosCreated": 0,
       "attachmentsAttempted": 0,
       "attachmentsConfirmed": 0,
-      "note": "ブラウザで#bo_upsiderを2026-11-21 09:13 JSTに確認。新規2件（PAYPALWALLET ¥0は確認決済で返信0件、Seeed Studio ¥691,525はメモなし）。SeeedはIwasaki_BO/Secretaryがinvoice.pdfを添付し、UPSIDER「領収証を添付しました」を16:59 JSTに確認した。決済メモ完了通知はなく、人間の投稿はメモ完了に数えない。Driveコピーはない。既存の要処理27スレッドに新しい返信・決済メモ完了通知はなかった。この実行での証憑添付・メモ登録はしていない。対象外はRUNPOD.IO ¥8,175×2、GOOGLE*CLOUD ¥3,200、LENOVO.COM JP EPRO ¥296,010（池滝 俊太が00:54にメモ登録済み）。行は追加しない。メモ作成は行っていない。",
+      "note": "ブラウザで#bo_upsiderを2026-11-22 09:14 JSTに確認。新規の対象取引はなし。既存の要処理26スレッドに新しい返信・UPSIDER通知はなかった。この実行での証憑添付・メモ登録はしていない。対象外はTRIPO AI ¥3,200（AIトイ決済用、池滝 俊太）、OPENAI ¥30,000（南里さん決済用）、GITHUB ¥117（SaaS決済用）。行は追加しない。ステータス・メモ・Driveリンク・メモ初期値は変えていない。メモ作成は行っていない。",
       "previous": {
         "refundExcluded": 2,
         "refundExcludedIds": [
@@ -3440,13 +3589,13 @@
           "tx-20261110-1051-github-47",
           "tx-20261111-1259-github-22"
         ],
-        "checkedAt": "2026-11-20 09:20 JST",
+        "checkedAt": "2026-11-21 09:13 JST",
         "routine": "UPSIDERチェック（毎日AM9時）",
-        "source": "ブラウザで#bo_upsiderを確認。証憑3件を本文なしで添付。メモ登録はしていない。",
-        "newTransactions": 3,
-        "ledgerRows": 55,
+        "source": "ブラウザで#bo_upsiderを確認。この実行での証憑添付・メモ登録はしていない。",
+        "newTransactions": 2,
+        "ledgerRows": 57,
         "registeredComplete": 22,
-        "needsAction": 27,
+        "needsAction": 29,
         "excluded": 6,
         "needsActionIds": [
           "tx-20261111-1553-amazon-0",
@@ -3475,15 +3624,21 @@
           "tx-20261118-2234-misumi-5984",
           "tx-20261119-1514-misumi-8745",
           "tx-20261119-2351-jtbamarys-8000",
-          "tx-20261120-0345-adam-33246"
+          "tx-20261120-0345-adam-33246",
+          "tx-20261120-1654-paypal-0",
+          "tx-20261120-1655-seeed-691525"
         ],
         "excludedOutOfScope": [
-          "GITHUB, INC. ¥549（SaaS決済用）。11/19 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-          "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-19 12:03 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-          "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-20 00:17 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-          "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-20 07:37 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-          "DHL JAPAN ¥31,900（AIトイ決済用、池滝 俊太、2026-11-19 13:34 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-          "AMAZON CO JP ¥0・¥18,490・¥4,027（イベント事業決済用、吉野 哲仁、2026-11-19 15:58〜16:01 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+          "RUNPOD.IO ¥8,175（SaaS決済用）。11/20 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+          "RUNPOD.IO ¥8,175（SaaS決済用、2件目）。11/20 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+          "GOOGLE*CLOUD ¥3,200（SaaS決済用）。11/20 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+          "LENOVO.COM JP EPRO ¥296,010（ECサイト決済用、池滝 俊太が2026-11-21 00:54 JSTにメモ登録済み）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+          "GITHUB, INC. ¥549（SaaS決済用）。11/19 09:20以降。前回記載のまま対象外。行は追加しない。",
+          "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-19 12:03 JST）。前回記載のまま対象外。行は追加しない。",
+          "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-20 00:17 JST）。前回記載のまま対象外。行は追加しない。",
+          "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-20 07:37 JST）。前回記載のまま対象外。行は追加しない。",
+          "DHL JAPAN ¥31,900（AIトイ決済用、池滝 俊太、2026-11-19 13:34 JST）。前回記載のまま対象外。行は追加しない。",
+          "AMAZON CO JP ¥0・¥18,490・¥4,027（イベント事業決済用、吉野 哲仁、2026-11-19 15:58〜16:01 JST）。前回記載のまま対象外。行は追加しない。",
           "ANTHROPIC* CLAUDE SUB ¥35,892（南里さん決済用、南里 勇気、2026-11-18 17:14 JST）。前回記載のまま対象外。行は追加しない。",
           "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 17:31 JST）。前回記載のまま対象外。行は追加しない。",
           "HANABI AI INC. ¥16,314（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 18:01 JST）。前回記載のまま対象外。行は追加しない。",
@@ -3494,15 +3649,12 @@
           "GITHUB, INC. ¥598（USD 3.66、SaaS決済用、株式会社Algomatic Dynamics、11/17 13:00）。前回記載のまま対象外。行は追加しない。",
           "RUNPOD.IO ¥8,171（USD 50.00、SaaS決済用、株式会社Algomatic Dynamics、11/17 16:17）。前回記載のまま対象外。行は追加しない。"
         ],
-        "statusChanges": [
-          "tx-20261113-0053-monotaro-18678",
-          "tx-20261117-1823-monotaro-10993"
-        ],
+        "statusChanges": [],
         "savedNotAttached": [],
         "memosCreated": 0,
-        "attachmentsAttempted": 3,
-        "attachmentsConfirmed": 3,
-        "note": "ブラウザで#bo_upsiderを2026-11-20 09:20 JSTに確認。MonotaRO ¥18,678は証憑なしから登録完了（メモは2026-11-15 23:18:16の既存、納入済）。MonotaRO ¥10,993はメモ・証憑なしからメモなし（決済メモ完了通知なし、全3点納入済）。新規3件（JTBAMARYS ¥8,000はメモなし、ミスミ ¥8,745とADAM AI LABS ¥33,246は返信0件・メモ・証憑なし）。証憑3件を本文なしで添付し、UPSIDER「領収証を添付しました」を確認した。既存の要処理25スレッドに新しい返信・決済メモ完了通知はなかった（上記2件の添付通知を除く）。対象外はGITHUB, INC. ¥549、RUNPOD.IO ¥8,160×3、DHL JAPAN ¥31,900、AMAZON CO JP ¥0・¥18,490・¥4,027。行は追加しない。メモ作成は行っていない。",
+        "attachmentsAttempted": 0,
+        "attachmentsConfirmed": 0,
+        "note": "ブラウザで#bo_upsiderを2026-11-21 09:13 JSTに確認。新規2件（PAYPALWALLET ¥0は確認決済で返信0件、Seeed Studio ¥691,525はメモなし）。SeeedはIwasaki_BO/Secretaryがinvoice.pdfを添付し、UPSIDER「領収証を添付しました」を16:59 JSTに確認した。決済メモ完了通知はなく、人間の投稿はメモ完了に数えない。Driveコピーはない。既存の要処理27スレッドに新しい返信・決済メモ完了通知はなかった。この実行での証憑添付・メモ登録はしていない。対象外はRUNPOD.IO ¥8,175×2、GOOGLE*CLOUD ¥3,200、LENOVO.COM JP EPRO ¥296,010（池滝 俊太が00:54にメモ登録済み）。行は追加しない。メモ作成は行っていない。",
         "previous": {
           "refundExcluded": 2,
           "refundExcludedIds": [
@@ -3516,18 +3668,17 @@
             "tx-20261110-1051-github-47",
             "tx-20261111-1259-github-22"
           ],
-          "checkedAt": "2026-11-19 09:20 JST",
+          "checkedAt": "2026-11-20 09:20 JST",
           "routine": "UPSIDERチェック（毎日AM9時）",
-          "source": "ブラウザで#bo_upsiderを確認。新規の証憑添付はなし。メモ登録はしていない。",
+          "source": "ブラウザで#bo_upsiderを確認。証憑3件を本文なしで添付。メモ登録はしていない。",
           "newTransactions": 3,
-          "ledgerRows": 52,
-          "registeredComplete": 21,
-          "needsAction": 25,
+          "ledgerRows": 55,
+          "registeredComplete": 22,
+          "needsAction": 27,
           "excluded": 6,
           "needsActionIds": [
             "tx-20261111-1553-amazon-0",
             "tx-20261111-2343-amazon-2399",
-            "tx-20261113-0053-monotaro-18678",
             "tx-20261113-1023-monotaro-1318",
             "tx-20261113-2255-wilco-20900",
             "tx-20261114-0123-monotaro-439",
@@ -3549,12 +3700,21 @@
             "tx-20261117-1831-misumi-7878",
             "tx-20261118-2127-misumi-10890",
             "tx-20261118-2211-nejikuru-5782",
-            "tx-20261118-2234-misumi-5984"
+            "tx-20261118-2234-misumi-5984",
+            "tx-20261119-1514-misumi-8745",
+            "tx-20261119-2351-jtbamarys-8000",
+            "tx-20261120-0345-adam-33246"
           ],
           "excludedOutOfScope": [
-            "ANTHROPIC* CLAUDE SUB ¥35,892（南里さん決済用、南里 勇気、2026-11-18 17:14 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-            "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 17:31 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-            "HANABI AI INC. ¥16,314（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 18:01 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+            "GITHUB, INC. ¥549（SaaS決済用）。11/19 09:20以降。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+            "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-19 12:03 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+            "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-20 00:17 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+            "RUNPOD.IO ¥8,160（SaaS決済用、2026-11-20 07:37 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+            "DHL JAPAN ¥31,900（AIトイ決済用、池滝 俊太、2026-11-19 13:34 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+            "AMAZON CO JP ¥0・¥18,490・¥4,027（イベント事業決済用、吉野 哲仁、2026-11-19 15:58〜16:01 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+            "ANTHROPIC* CLAUDE SUB ¥35,892（南里さん決済用、南里 勇気、2026-11-18 17:14 JST）。前回記載のまま対象外。行は追加しない。",
+            "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 17:31 JST）。前回記載のまま対象外。行は追加しない。",
+            "HANABI AI INC. ¥16,314（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 18:01 JST）。前回記載のまま対象外。行は追加しない。",
             "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 11:07 JST）。前回記載のまま対象外。行は追加しない。",
             "DP4*RAKSUL ¥7,805（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-18 12:38 JST）。前回記載のまま対象外。行は追加しない。",
             "VERCEL INC. ¥3,595（USD 22.00、SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 06:49 JST）。前回記載のまま対象外。行は追加しない。",
@@ -3562,12 +3722,15 @@
             "GITHUB, INC. ¥598（USD 3.66、SaaS決済用、株式会社Algomatic Dynamics、11/17 13:00）。前回記載のまま対象外。行は追加しない。",
             "RUNPOD.IO ¥8,171（USD 50.00、SaaS決済用、株式会社Algomatic Dynamics、11/17 16:17）。前回記載のまま対象外。行は追加しない。"
           ],
-          "statusChanges": [],
+          "statusChanges": [
+            "tx-20261113-0053-monotaro-18678",
+            "tx-20261117-1823-monotaro-10993"
+          ],
           "savedNotAttached": [],
           "memosCreated": 0,
-          "attachmentsAttempted": 0,
-          "attachmentsConfirmed": 0,
-          "note": "ブラウザで#bo_upsiderを2026-11-19 09:20 JSTに確認。新規3件（ミスミ ¥10,890、ネジクル ¥5,782、ミスミ ¥5,984）は返信0件、メモ・証憑なし。MonotaRO ¥10,993は一部納入、ミスミ ¥7,878は一部出荷。ステータスはメモ・証憑なしのまま。既存の要処理20スレッドに新しい返信・決済メモ完了通知はなく、証憑の新規添付はない。対象外はANTHROPIC* CLAUDE SUB ¥35,892、RUNPOD.IO ¥8,157（17:31）、HANABI AI INC. ¥16,314。行は追加しない。前回記載のRUNPOD.IO ¥8,157（11:07）、DP4*RAKSUL ¥7,805、VERCEL INC. ¥3,595、SHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。メモ作成は行っていない。",
+          "attachmentsAttempted": 3,
+          "attachmentsConfirmed": 3,
+          "note": "ブラウザで#bo_upsiderを2026-11-20 09:20 JSTに確認。MonotaRO ¥18,678は証憑なしから登録完了（メモは2026-11-15 23:18:16の既存、納入済）。MonotaRO ¥10,993はメモ・証憑なしからメモなし（決済メモ完了通知なし、全3点納入済）。新規3件（JTBAMARYS ¥8,000はメモなし、ミスミ ¥8,745とADAM AI LABS ¥33,246は返信0件・メモ・証憑なし）。証憑3件を本文なしで添付し、UPSIDER「領収証を添付しました」を確認した。既存の要処理25スレッドに新しい返信・決済メモ完了通知はなかった（上記2件の添付通知を除く）。対象外はGITHUB, INC. ¥549、RUNPOD.IO ¥8,160×3、DHL JAPAN ¥31,900、AMAZON CO JP ¥0・¥18,490・¥4,027。行は追加しない。メモ作成は行っていない。",
           "previous": {
             "refundExcluded": 2,
             "refundExcludedIds": [
@@ -3581,13 +3744,13 @@
               "tx-20261110-1051-github-47",
               "tx-20261111-1259-github-22"
             ],
-            "checkedAt": "2026-11-18 13:40 JST",
-            "routine": "臨時巡回（2026-11-18 13:36〜13:40 JST）",
-            "source": "ブラウザで#bo_upsiderを確認。証憑PDF3件を本文なしで添付。メモ登録はしていない。",
-            "newTransactions": 0,
-            "ledgerRows": 49,
+            "checkedAt": "2026-11-19 09:20 JST",
+            "routine": "UPSIDERチェック（毎日AM9時）",
+            "source": "ブラウザで#bo_upsiderを確認。新規の証憑添付はなし。メモ登録はしていない。",
+            "newTransactions": 3,
+            "ledgerRows": 52,
             "registeredComplete": 21,
-            "needsAction": 22,
+            "needsAction": 25,
             "excluded": 6,
             "needsActionIds": [
               "tx-20261111-1553-amazon-0",
@@ -3611,26 +3774,28 @@
               "tx-20261116-2030-monotaro-2109",
               "tx-20261117-0001-jlcpcb-25017",
               "tx-20261117-1823-monotaro-10993",
-              "tx-20261117-1831-misumi-7878"
+              "tx-20261117-1831-misumi-7878",
+              "tx-20261118-2127-misumi-10890",
+              "tx-20261118-2211-nejikuru-5782",
+              "tx-20261118-2234-misumi-5984"
             ],
             "excludedOutOfScope": [
-              "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 11:07 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-              "DP4*RAKSUL ¥7,805（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-18 12:38 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+              "ANTHROPIC* CLAUDE SUB ¥35,892（南里さん決済用、南里 勇気、2026-11-18 17:14 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+              "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 17:31 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+              "HANABI AI INC. ¥16,314（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 18:01 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+              "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 11:07 JST）。前回記載のまま対象外。行は追加しない。",
+              "DP4*RAKSUL ¥7,805（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-18 12:38 JST）。前回記載のまま対象外。行は追加しない。",
               "VERCEL INC. ¥3,595（USD 22.00、SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 06:49 JST）。前回記載のまま対象外。行は追加しない。",
               "SHEIN.COM ¥21,461（イベント事業決済用、吉野 哲仁、11/17 11:48）。前回記載のまま対象外。行は追加しない。",
               "GITHUB, INC. ¥598（USD 3.66、SaaS決済用、株式会社Algomatic Dynamics、11/17 13:00）。前回記載のまま対象外。行は追加しない。",
               "RUNPOD.IO ¥8,171（USD 50.00、SaaS決済用、株式会社Algomatic Dynamics、11/17 16:17）。前回記載のまま対象外。行は追加しない。"
             ],
-            "statusChanges": [
-              "tx-20261114-0426-misumi-3267",
-              "tx-20261116-2027-monotaro-8965",
-              "tx-20261116-2030-monotaro-2109"
-            ],
+            "statusChanges": [],
             "savedNotAttached": [],
             "memosCreated": 0,
-            "attachmentsAttempted": 3,
-            "attachmentsConfirmed": 3,
-            "note": "ブラウザで#bo_upsiderを2026-11-18 13:36〜13:40 JSTに確認。ミスミ ¥3,267、MonotaRO ¥8,965・¥2,109の証憑をスレッドへ本文なしで添付し、UPSIDER「領収証を添付しました」を確認。メモ未登録のためステータスはメモなし。登録完了にはしていない。3件とも納入済。MonotaRO ¥10,993は3/3点出荷済・納入待ちのまま、ミスミ ¥7,878は受付のまま。ステータスはメモ・証憑なし。対象外はRUNPOD.IO ¥8,157とDP4*RAKSUL ¥7,805。行は追加しない。前回記載のVERCEL INC. ¥3,595、SHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。メモ作成は行っていない。",
+            "attachmentsAttempted": 0,
+            "attachmentsConfirmed": 0,
+            "note": "ブラウザで#bo_upsiderを2026-11-19 09:20 JSTに確認。新規3件（ミスミ ¥10,890、ネジクル ¥5,782、ミスミ ¥5,984）は返信0件、メモ・証憑なし。MonotaRO ¥10,993は一部納入、ミスミ ¥7,878は一部出荷。ステータスはメモ・証憑なしのまま。既存の要処理20スレッドに新しい返信・決済メモ完了通知はなく、証憑の新規添付はない。対象外はANTHROPIC* CLAUDE SUB ¥35,892、RUNPOD.IO ¥8,157（17:31）、HANABI AI INC. ¥16,314。行は追加しない。前回記載のRUNPOD.IO ¥8,157（11:07）、DP4*RAKSUL ¥7,805、VERCEL INC. ¥3,595、SHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。メモ作成は行っていない。",
             "previous": {
               "refundExcluded": 2,
               "refundExcludedIds": [
@@ -3644,10 +3809,10 @@
                 "tx-20261110-1051-github-47",
                 "tx-20261111-1259-github-22"
               ],
-              "checkedAt": "2026-11-18 09:12 JST",
-              "routine": "UPSIDERチェック（毎日AM9時）",
-              "source": "ブラウザで#bo_upsiderを確認。証憑PDF5件を本文なしで添付。メモ登録はしていない。",
-              "newTransactions": 2,
+              "checkedAt": "2026-11-18 13:40 JST",
+              "routine": "臨時巡回（2026-11-18 13:36〜13:40 JST）",
+              "source": "ブラウザで#bo_upsiderを確認。証憑PDF3件を本文なしで添付。メモ登録はしていない。",
+              "newTransactions": 0,
               "ledgerRows": 49,
               "registeredComplete": 21,
               "needsAction": 22,
@@ -3677,25 +3842,23 @@
                 "tx-20261117-1831-misumi-7878"
               ],
               "excludedOutOfScope": [
-                "VERCEL INC. ¥3,595（USD 22.00、SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 06:49 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                "RUNPOD.IO ¥8,157（SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 11:07 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                "DP4*RAKSUL ¥7,805（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-18 12:38 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                "VERCEL INC. ¥3,595（USD 22.00、SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 06:49 JST）。前回記載のまま対象外。行は追加しない。",
                 "SHEIN.COM ¥21,461（イベント事業決済用、吉野 哲仁、11/17 11:48）。前回記載のまま対象外。行は追加しない。",
                 "GITHUB, INC. ¥598（USD 3.66、SaaS決済用、株式会社Algomatic Dynamics、11/17 13:00）。前回記載のまま対象外。行は追加しない。",
                 "RUNPOD.IO ¥8,171（USD 50.00、SaaS決済用、株式会社Algomatic Dynamics、11/17 16:17）。前回記載のまま対象外。行は追加しない。"
               ],
               "statusChanges": [
-                "tx-20261113-2255-wilco-20900",
-                "tx-20261115-2231-monotaro-2198",
-                "tx-20261116-0006-monotaro-1868",
-                "tx-20261116-0023-amazon-49704",
-                "tx-20261116-0232-amazon-5003",
-                "tx-20261117-1823-monotaro-10993",
-                "tx-20261117-1831-misumi-7878"
+                "tx-20261114-0426-misumi-3267",
+                "tx-20261116-2027-monotaro-8965",
+                "tx-20261116-2030-monotaro-2109"
               ],
               "savedNotAttached": [],
               "memosCreated": 0,
-              "attachmentsAttempted": 5,
-              "attachmentsConfirmed": 5,
-              "note": "ブラウザで#bo_upsiderを2026-11-18 09:12 JSTに確認。ウィルコ ¥20,900、MonotaRO ¥2,198・¥1,868、Amazon ¥49,704・¥5,003の証憑をスレッドへ本文なしで添付し、UPSIDER「領収証を添付しました」を確認。メモ未登録のためステータスはメモなし。登録完了にはしていない。新規AIハンド取引2件（MonotaRO ¥10,993、ミスミ ¥7,878）はメモ・証憑なし、返信0件。Amazon ¥2,399・MonotaRO ¥18,678はメモあり・証憑なしのまま。対象外はVERCEL INC. ¥3,595。前回記載のSHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。メモ作成は行っていない。",
+              "attachmentsAttempted": 3,
+              "attachmentsConfirmed": 3,
+              "note": "ブラウザで#bo_upsiderを2026-11-18 13:36〜13:40 JSTに確認。ミスミ ¥3,267、MonotaRO ¥8,965・¥2,109の証憑をスレッドへ本文なしで添付し、UPSIDER「領収証を添付しました」を確認。メモ未登録のためステータスはメモなし。登録完了にはしていない。3件とも納入済。MonotaRO ¥10,993は3/3点出荷済・納入待ちのまま、ミスミ ¥7,878は受付のまま。ステータスはメモ・証憑なし。対象外はRUNPOD.IO ¥8,157とDP4*RAKSUL ¥7,805。行は追加しない。前回記載のVERCEL INC. ¥3,595、SHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。メモ作成は行っていない。",
               "previous": {
                 "refundExcluded": 2,
                 "refundExcludedIds": [
@@ -3709,13 +3872,13 @@
                   "tx-20261110-1051-github-47",
                   "tx-20261111-1259-github-22"
                 ],
-                "checkedAt": "2026-11-17 18:09 JST",
-                "routine": "臨時巡回（シバタさん指示 2026-11-17 18:02 JST）",
-                "source": "ブラウザで#bo_upsiderを読み取りのみ確認（18スレッド＋新規カード）。投稿・添付・メモ登録はしていない。",
-                "newTransactions": 0,
-                "ledgerRows": 47,
+                "checkedAt": "2026-11-18 09:12 JST",
+                "routine": "UPSIDERチェック（毎日AM9時）",
+                "source": "ブラウザで#bo_upsiderを確認。証憑PDF5件を本文なしで添付。メモ登録はしていない。",
+                "newTransactions": 2,
+                "ledgerRows": 49,
                 "registeredComplete": 21,
-                "needsAction": 20,
+                "needsAction": 22,
                 "excluded": 6,
                 "needsActionIds": [
                   "tx-20261111-1553-amazon-0",
@@ -3737,31 +3900,30 @@
                   "tx-20261116-0232-amazon-5003",
                   "tx-20261116-2027-monotaro-8965",
                   "tx-20261116-2030-monotaro-2109",
-                  "tx-20261117-0001-jlcpcb-25017"
+                  "tx-20261117-0001-jlcpcb-25017",
+                  "tx-20261117-1823-monotaro-10993",
+                  "tx-20261117-1831-misumi-7878"
                 ],
                 "excludedOutOfScope": [
-                  "SHEIN.COM ¥21,461（イベント事業決済用、吉野 哲仁、11/17 11:48）",
-                  "GITHUB, INC. ¥598（USD 3.66、SaaS決済用、株式会社Algomatic Dynamics、11/17 13:00）",
-                  "RUNPOD.IO ¥8,171（USD 50.00、SaaS決済用、株式会社Algomatic Dynamics、11/17 16:17）"
+                  "VERCEL INC. ¥3,595（USD 22.00、SaaS決済用、株式会社Algomatic Dynamics、2026-11-18 06:49 JST）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                  "SHEIN.COM ¥21,461（イベント事業決済用、吉野 哲仁、11/17 11:48）。前回記載のまま対象外。行は追加しない。",
+                  "GITHUB, INC. ¥598（USD 3.66、SaaS決済用、株式会社Algomatic Dynamics、11/17 13:00）。前回記載のまま対象外。行は追加しない。",
+                  "RUNPOD.IO ¥8,171（USD 50.00、SaaS決済用、株式会社Algomatic Dynamics、11/17 16:17）。前回記載のまま対象外。行は追加しない。"
                 ],
                 "statusChanges": [
-                  "tx-20261116-0232-amazon-5003",
-                  "tx-20261116-0023-amazon-49704",
                   "tx-20261113-2255-wilco-20900",
                   "tx-20261115-2231-monotaro-2198",
-                  "tx-20261116-0006-monotaro-1868"
-                ],
-                "savedNotAttached": [
-                  "tx-20261116-0232-amazon-5003",
+                  "tx-20261116-0006-monotaro-1868",
                   "tx-20261116-0023-amazon-49704",
-                  "tx-20261113-2255-wilco-20900",
-                  "tx-20261115-2231-monotaro-2198",
-                  "tx-20261116-0006-monotaro-1868"
+                  "tx-20261116-0232-amazon-5003",
+                  "tx-20261117-1823-monotaro-10993",
+                  "tx-20261117-1831-misumi-7878"
                 ],
+                "savedNotAttached": [],
                 "memosCreated": 0,
-                "attachmentsAttempted": 0,
-                "attachmentsConfirmed": 0,
-                "note": "臨時巡回。ブラウザで#bo_upsiderを2026-11-17 18:09 JSTに確認。新しい決済メモ完了通知・領収証添付通知はなし。Amazon ¥5,003・¥49,704、ウィルコ ¥20,900、MonotaRO ¥2,198・¥1,868の証憑をDriveへ保存済みのため「証憑保存済・Slack未添付」に更新（Slack未添付・メモ未登録）。AIハンド決済用の新規カードはなし。出荷状況（MonotaRO ¥17,151・¥8,965・¥2,109、ミスミ ¥3,267）を更新。",
+                "attachmentsAttempted": 5,
+                "attachmentsConfirmed": 5,
+                "note": "ブラウザで#bo_upsiderを2026-11-18 09:12 JSTに確認。ウィルコ ¥20,900、MonotaRO ¥2,198・¥1,868、Amazon ¥49,704・¥5,003の証憑をスレッドへ本文なしで添付し、UPSIDER「領収証を添付しました」を確認。メモ未登録のためステータスはメモなし。登録完了にはしていない。新規AIハンド取引2件（MonotaRO ¥10,993、ミスミ ¥7,878）はメモ・証憑なし、返信0件。Amazon ¥2,399・MonotaRO ¥18,678はメモあり・証憑なしのまま。対象外はVERCEL INC. ¥3,595。前回記載のSHEIN.COM ¥21,461、GITHUB, INC. ¥598、RUNPOD.IO ¥8,171も対象外のまま。メモ作成は行っていない。",
                 "previous": {
                   "refundExcluded": 2,
                   "refundExcludedIds": [
@@ -3775,10 +3937,10 @@
                     "tx-20261110-1051-github-47",
                     "tx-20261111-1259-github-22"
                   ],
-                  "checkedAt": "2026-11-17 09:18 JST",
-                  "routine": "UPSIDERチェック（毎日AM9時）",
-                  "source": "ブラウザで#bo_upsiderを確認。証憑PDF3件を本文なしで添付。メモ登録はしていない。",
-                  "newTransactions": 3,
+                  "checkedAt": "2026-11-17 18:09 JST",
+                  "routine": "臨時巡回（シバタさん指示 2026-11-17 18:02 JST）",
+                  "source": "ブラウザで#bo_upsiderを読み取りのみ確認（18スレッド＋新規カード）。投稿・添付・メモ登録はしていない。",
+                  "newTransactions": 0,
                   "ledgerRows": 47,
                   "registeredComplete": 21,
                   "needsAction": 20,
@@ -3806,28 +3968,29 @@
                     "tx-20261117-0001-jlcpcb-25017"
                   ],
                   "excludedOutOfScope": [
-                    "Cubemars ¥8,425（AIトイ決済用、池滝）",
-                    "RUNPOD.IO ¥8,186 ×2（SaaS決済用、株式会社Algomatic Dynamics）"
+                    "SHEIN.COM ¥21,461（イベント事業決済用、吉野 哲仁、11/17 11:48）",
+                    "GITHUB, INC. ¥598（USD 3.66、SaaS決済用、株式会社Algomatic Dynamics、11/17 13:00）",
+                    "RUNPOD.IO ¥8,171（USD 50.00、SaaS決済用、株式会社Algomatic Dynamics、11/17 16:17）"
                   ],
                   "statusChanges": [
-                    "tx-20261114-0123-monotaro-439",
-                    "tx-20261114-0209-monotaro-3953",
-                    "tx-20261115-2123-amazon-3080",
-                    "tx-20261116-0023-amazon-49704"
+                    "tx-20261116-0232-amazon-5003",
+                    "tx-20261116-0023-amazon-49704",
+                    "tx-20261113-2255-wilco-20900",
+                    "tx-20261115-2231-monotaro-2198",
+                    "tx-20261116-0006-monotaro-1868"
                   ],
-                  "savedNotAttached": [],
+                  "savedNotAttached": [
+                    "tx-20261116-0232-amazon-5003",
+                    "tx-20261116-0023-amazon-49704",
+                    "tx-20261113-2255-wilco-20900",
+                    "tx-20261115-2231-monotaro-2198",
+                    "tx-20261116-0006-monotaro-1868"
+                  ],
                   "memosCreated": 0,
-                  "attachmentsAttempted": 3,
-                  "attachmentsConfirmed": 3,
-                  "note": "MonotaRO ¥439・¥3,953とAmazon ¥3,080の証憑を2026-11-17 09:12〜09:15 JSTにスレッドへ本文なしで添付し、3件ともUPSIDER「領収証を添付しました」を確認。メモ未登録のためステータスはメモなし。新規AIハンド取引3件（MonotaRO ¥8,965・¥2,109、JLCPCB ¥25,017）はメモ・証憑なし。Amazon ¥49,704のスレッドtsを取得し決済時刻を14:23に訂正。Amazon ¥2,399・MonotaRO ¥18,678はメモあり・証憑なしのまま。",
+                  "attachmentsAttempted": 0,
+                  "attachmentsConfirmed": 0,
+                  "note": "臨時巡回。ブラウザで#bo_upsiderを2026-11-17 18:09 JSTに確認。新しい決済メモ完了通知・領収証添付通知はなし。Amazon ¥5,003・¥49,704、ウィルコ ¥20,900、MonotaRO ¥2,198・¥1,868の証憑をDriveへ保存済みのため「証憑保存済・Slack未添付」に更新（Slack未添付・メモ未登録）。AIハンド決済用の新規カードはなし。出荷状況（MonotaRO ¥17,151・¥8,965・¥2,109、ミスミ ¥3,267）を更新。",
                   "previous": {
-                    "checkedAt": "2026-11-16 16:30 JST",
-                    "routine": "UPSIDERチェック（随時・ユーザー依頼）",
-                    "source": "ユーザー依頼の随時パトロール。ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                    "newTransactions": 1,
-                    "ledgerRows": 44,
-                    "registeredComplete": 21,
-                    "needsAction": 17,
                     "refundExcluded": 2,
                     "refundExcludedIds": [
                       "tx-20261102-2053-earth-23960",
@@ -3840,6 +4003,13 @@
                       "tx-20261110-1051-github-47",
                       "tx-20261111-1259-github-22"
                     ],
+                    "checkedAt": "2026-11-17 09:18 JST",
+                    "routine": "UPSIDERチェック（毎日AM9時）",
+                    "source": "ブラウザで#bo_upsiderを確認。証憑PDF3件を本文なしで添付。メモ登録はしていない。",
+                    "newTransactions": 3,
+                    "ledgerRows": 47,
+                    "registeredComplete": 21,
+                    "needsAction": 20,
                     "excluded": 6,
                     "needsActionIds": [
                       "tx-20261111-1553-amazon-0",
@@ -3858,10 +4028,14 @@
                       "tx-20261115-2231-monotaro-2198",
                       "tx-20261116-0006-monotaro-1868",
                       "tx-20261116-0023-amazon-49704",
-                      "tx-20261116-0232-amazon-5003"
+                      "tx-20261116-0232-amazon-5003",
+                      "tx-20261116-2027-monotaro-8965",
+                      "tx-20261116-2030-monotaro-2109",
+                      "tx-20261117-0001-jlcpcb-25017"
                     ],
                     "excludedOutOfScope": [
-                      "Cubemars ¥8,425（AIトイ決済用、池滝）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
+                      "Cubemars ¥8,425（AIトイ決済用、池滝）",
+                      "RUNPOD.IO ¥8,186 ×2（SaaS決済用、株式会社Algomatic Dynamics）"
                     ],
                     "statusChanges": [
                       "tx-20261114-0123-monotaro-439",
@@ -3869,22 +4043,19 @@
                       "tx-20261115-2123-amazon-3080",
                       "tx-20261116-0023-amazon-49704"
                     ],
-                    "savedNotAttached": [
-                      "tx-20261114-0123-monotaro-439",
-                      "tx-20261114-0209-monotaro-3953",
-                      "tx-20261115-2123-amazon-3080"
-                    ],
+                    "savedNotAttached": [],
                     "memosCreated": 0,
-                    "attachmentsAttempted": 0,
-                    "note": "ユーザー依頼の随時パトロール。ブラウザで#bo_upsiderを読んだ時刻は2026-11-16 16:30 JST。MonotaRO ¥439（領収証 No.B8561262）・¥3,953（領収証 No.B8561267）とAmazon ¥3,080（適格請求書 JP6CGS6P9AJGKI）を16:33〜16:36 JSTにDriveへ保存し、Slackには未添付。登録完了にはしていない。新規1件（Amazon ¥49,704、注文249-8562873-0763848）。Amazon ¥2,399は16:33時点で適格請求書がまだ取れない。Cubemars ¥8,425は対象外。メモ作成は行っていない。",
+                    "attachmentsAttempted": 3,
+                    "attachmentsConfirmed": 3,
+                    "note": "MonotaRO ¥439・¥3,953とAmazon ¥3,080の証憑を2026-11-17 09:12〜09:15 JSTにスレッドへ本文なしで添付し、3件ともUPSIDER「領収証を添付しました」を確認。メモ未登録のためステータスはメモなし。新規AIハンド取引3件（MonotaRO ¥8,965・¥2,109、JLCPCB ¥25,017）はメモ・証憑なし。Amazon ¥49,704のスレッドtsを取得し決済時刻を14:23に訂正。Amazon ¥2,399・MonotaRO ¥18,678はメモあり・証憑なしのまま。",
                     "previous": {
-                      "checkedAt": "2026-11-16 09:16 JST",
-                      "routine": "UPSIDERチェック",
-                      "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                      "newTransactions": 2,
-                      "ledgerRows": 43,
+                      "checkedAt": "2026-11-16 16:30 JST",
+                      "routine": "UPSIDERチェック（随時・ユーザー依頼）",
+                      "source": "ユーザー依頼の随時パトロール。ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+                      "newTransactions": 1,
+                      "ledgerRows": 44,
                       "registeredComplete": 21,
-                      "needsAction": 16,
+                      "needsAction": 17,
                       "refundExcluded": 2,
                       "refundExcludedIds": [
                         "tx-20261102-2053-earth-23960",
@@ -3914,26 +4085,34 @@
                         "tx-20261115-2230-monotaro-17151",
                         "tx-20261115-2231-monotaro-2198",
                         "tx-20261116-0006-monotaro-1868",
+                        "tx-20261116-0023-amazon-49704",
                         "tx-20261116-0232-amazon-5003"
                       ],
-                      "excludedOutOfScope": [],
+                      "excludedOutOfScope": [
+                        "Cubemars ¥8,425（AIトイ決済用、池滝）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
+                      ],
                       "statusChanges": [
-                        "tx-20261115-2140-eventpay-9000",
-                        "tx-20261116-0006-monotaro-1868",
-                        "tx-20261116-0232-amazon-5003"
+                        "tx-20261114-0123-monotaro-439",
+                        "tx-20261114-0209-monotaro-3953",
+                        "tx-20261115-2123-amazon-3080",
+                        "tx-20261116-0023-amazon-49704"
                       ],
-                      "savedNotAttached": [],
+                      "savedNotAttached": [
+                        "tx-20261114-0123-monotaro-439",
+                        "tx-20261114-0209-monotaro-3953",
+                        "tx-20261115-2123-amazon-3080"
+                      ],
                       "memosCreated": 0,
-                      "attachmentsAttempted": 1,
-                      "note": "ブラウザで#bo_upsiderを読んだ時刻は2026-11-16 09:16 JST。EVENT PAY ¥9,000に領収書PDF「20261115_9000JPY_日本ロボット学会_領収書.pdf」を本文なしで添付し、UPSIDER「領収証を添付しました」を確認。新規2件（MonotaRO ¥1,868、Amazon ¥5,003）。メモ作成は行っていない。",
+                      "attachmentsAttempted": 0,
+                      "note": "ユーザー依頼の随時パトロール。ブラウザで#bo_upsiderを読んだ時刻は2026-11-16 16:30 JST。MonotaRO ¥439（領収証 No.B8561262）・¥3,953（領収証 No.B8561267）とAmazon ¥3,080（適格請求書 JP6CGS6P9AJGKI）を16:33〜16:36 JSTにDriveへ保存し、Slackには未添付。登録完了にはしていない。新規1件（Amazon ¥49,704、注文249-8562873-0763848）。Amazon ¥2,399は16:33時点で適格請求書がまだ取れない。Cubemars ¥8,425は対象外。メモ作成は行っていない。",
                       "previous": {
-                        "checkedAt": "2026-11-16 00:02 JST",
+                        "checkedAt": "2026-11-16 09:16 JST",
                         "routine": "UPSIDERチェック",
                         "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                        "newTransactions": 0,
-                        "ledgerRows": 41,
-                        "registeredComplete": 20,
-                        "needsAction": 15,
+                        "newTransactions": 2,
+                        "ledgerRows": 43,
+                        "registeredComplete": 21,
+                        "needsAction": 16,
                         "refundExcluded": 2,
                         "refundExcludedIds": [
                           "tx-20261102-2053-earth-23960",
@@ -3959,27 +4138,27 @@
                           "tx-20261115-2123-amazon-3080",
                           "tx-20261115-2134-amazon-14549",
                           "tx-20261115-2140-google-0",
-                          "tx-20261115-2140-eventpay-9000",
                           "tx-20261115-2152-switchscience-3560",
                           "tx-20261115-2230-monotaro-17151",
-                          "tx-20261115-2231-monotaro-2198"
+                          "tx-20261115-2231-monotaro-2198",
+                          "tx-20261116-0006-monotaro-1868",
+                          "tx-20261116-0232-amazon-5003"
                         ],
                         "excludedOutOfScope": [],
                         "statusChanges": [
-                          "tx-20261111-2343-amazon-2399",
-                          "tx-20261113-0053-monotaro-18678"
+                          "tx-20261115-2140-eventpay-9000",
+                          "tx-20261116-0006-monotaro-1868",
+                          "tx-20261116-0232-amazon-5003"
                         ],
-                        "savedNotAttached": [
-                          "tx-20261115-2140-eventpay-9000"
-                        ],
+                        "savedNotAttached": [],
                         "memosCreated": 0,
-                        "attachmentsAttempted": 0,
-                        "note": "Slackブラウザ確認 11/16 00:02、15件のスレッド確認、メモ登録済3件（EVENT PAY ¥9,000・Amazon ¥2,399・MonotaRO ¥18,678）、領収証添付なし、新規カードなし",
+                        "attachmentsAttempted": 1,
+                        "note": "ブラウザで#bo_upsiderを読んだ時刻は2026-11-16 09:16 JST。EVENT PAY ¥9,000に領収書PDF「20261115_9000JPY_日本ロボット学会_領収書.pdf」を本文なしで添付し、UPSIDER「領収証を添付しました」を確認。新規2件（MonotaRO ¥1,868、Amazon ¥5,003）。メモ作成は行っていない。",
                         "previous": {
-                          "checkedAt": "2026-11-15 22:45 JST",
+                          "checkedAt": "2026-11-16 00:02 JST",
                           "routine": "UPSIDERチェック",
                           "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                          "newTransactions": 7,
+                          "newTransactions": 0,
                           "ledgerRows": 41,
                           "registeredComplete": 20,
                           "needsAction": 15,
@@ -4013,34 +4192,25 @@
                             "tx-20261115-2230-monotaro-17151",
                             "tx-20261115-2231-monotaro-2198"
                           ],
-                          "excludedOutOfScope": [
-                            "RESEND ¥3,322（2026-11-15 13:13、SaaS決済用、株式会社Algomatic Dynamics）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                            "AMAZON CO JP ¥49,704（台帳TX-20261115-AMZ-001）。Slackに出ていないため行は追加しない。",
-                            "AMAZON CO JP ¥5,003。Slackに出ていないため行は追加しない。"
-                          ],
+                          "excludedOutOfScope": [],
                           "statusChanges": [
-                            "tx-20261115-2123-amazon-3080",
-                            "tx-20261115-2134-amazon-14549",
-                            "tx-20261115-2140-google-0",
-                            "tx-20261115-2140-eventpay-9000",
-                            "tx-20261115-2152-switchscience-3560",
-                            "tx-20261115-2230-monotaro-17151",
-                            "tx-20261115-2231-monotaro-2198"
+                            "tx-20261111-2343-amazon-2399",
+                            "tx-20261113-0053-monotaro-18678"
                           ],
                           "savedNotAttached": [
                             "tx-20261115-2140-eventpay-9000"
                           ],
                           "memosCreated": 0,
                           "attachmentsAttempted": 0,
-                          "note": "確認時刻は2026-11-15 22:45 JSTで、ブラウザで#bo_upsiderを読んだ時刻であり、画面を更新した時刻ではない。投稿・添付・メモ登録はしていない。既存の要処理8件（Amazon ¥0、Amazon ¥2,399、MonotaRO ¥18,678、MonotaRO ¥1,318、MonotaRO ¥439、MonotaRO ¥3,953、ウィルコ ¥20,900、ミスミ ¥3,267）はスレッドに返信がなく、メモ完了通知も領収証添付通知もない。ステータスは変えていない。新規の対象取引は7件。いずれも柴田 善広、AIハンド決済用、決済ステータスはOK、スレッドに返信はなく、決済メモも領収証の添付もない。AMAZON CO JP ¥3,080（決済2026-11-15 21:23:47 JST、スレッド1794745427.252579、決済ID 5cd099d7-e7ab-4af4-b21a-1f2633536ffa、台帳TX-20261115-AMZ-002、注文249-5958752-6596606、発注番号 図書新聞、『口紅から機関車まで』×1、着予定11/16）はメモ・証憑なし、要処理、納入待ち。AMAZON CO JP ¥14,549（決済2026-11-15 21:34:14 JST、スレッド1794746054.930309、決済ID dae09261-8253-4cf5-b2d8-10ae108ac1a7、台帳TX-20261115-AMZ-003、注文249-7546580-9987019、発注番号 オフィス什器、KoiFlow ファイルラック4段×1、着予定11/26〜12/8）はメモ・証憑なし、要処理、納入待ち。GOOGLE *CHROME TEMP ¥0（決済2026-11-15 21:40:12 JST、スレッド1794746412.606309、決済ID 7be90fc7-c734-4d31-8dc5-0f70b0feb481）はメモを追加するボタンがない確認決済。Amazon ¥0と同じ確認決済の区分にした。台帳の取引はない。行は削除していない。画面の要処理は登録完了・返金・本人以外の課金以外を数えるため、この確認決済も要処理に入る。EVENT PAY ¥9,000（決済2026-11-15 21:40:24 JST、スレッド1794746424.974559、決済ID 8d7b2bae-7da2-40b6-acf5-5e24a0de1332、台帳TX-20261115-EVP-001、受付番号 S169-50）は日本ロボット学会「第169回ロボット工学セミナー（11/24・オンライン）」参加費。税込¥9,000、消費税¥818。適格請求書の登録番号はT7010005016414。宛名は株式会社AlgomaticDynamics。証憑はDriveへ保存済み（https://drive.google.com/file/d/1yBHveOx1AUhyLtxk_hLA2whZerfA72S1/view）。Slackには未添付。シバタさんが手動で添付する。共有拒否ではない。登録完了にはしていない。メモは未登録。用途・セグメントは要確認（候補は研修・セミナー費）。ステータスは証憑保存済・Slack未添付。SP SWITCHSCIENCE ¥3,560（決済2026-11-15 21:52:24 JST、スレッド1794747144.256949、決済ID 4c9ec042-d484-47ff-bdf3-ed35f3f65b56、台帳TX-20261115-SWS-001、注文Y245720、AS5601 磁気式エンコーダ Breakout Board×2、ネコポス）はメモ・証憑なし、要処理、納入待ち。DP12*MONOTARO.COM ¥17,151（決済2026-11-15 22:30:24 JST、スレッド1794749424.750489、決済ID 9fa87e41-2f15-427b-9efd-12e968e8a504、台帳TX-20261115-MNT-001、受付202927990、参照 YUBI製造工具、LOBSTER シャコ万力 B125V×4）はメモ・証憑なし、要処理、納入待ち。DP12*MONOTARO.COM ¥2,198（決済2026-11-15 22:31:58 JST、スレッド1794749518.102389、決済ID 39de4707-3411-4a65-9809-de7d64bf648d、台帳TX-20261115-MNT-002、受付202928013、参照 YUBI製造工具、タニタ でか見えタイマー TD429GY×2）はメモ・証憑なし、要処理、納入待ち。対象外のため行に加えていないのは、RESEND ¥3,322（2026-11-15 13:13、SaaS決済用、株式会社Algomatic Dynamics）。Amazon ¥49,704（台帳TX-20261115-AMZ-001）とAmazon ¥5,003はSlackに出ていないので行は作っていない。台帳のステータスから数えると登録完了20件、除外6件（返金2件、本人以外の課金4件）、証憑保存済・Slack未添付1件、要処理15件。要処理はメモ・証憑なしのAmazon ¥2,399、MonotaRO ¥18,678、MonotaRO ¥1,318、ウィルコ ¥20,900、MonotaRO ¥439、MonotaRO ¥3,953、ミスミ ¥3,267、Amazon ¥3,080、Amazon ¥14,549、スイッチサイエンス ¥3,560、MonotaRO ¥17,151、MonotaRO ¥2,198、確認決済のAmazon ¥0とGOOGLE *CHROME TEMP ¥0、証憑保存済・Slack未添付のEVENT PAY ¥9,000。メモあり21件。新しい返金はない。",
+                          "note": "Slackブラウザ確認 11/16 00:02、15件のスレッド確認、メモ登録済3件（EVENT PAY ¥9,000・Amazon ¥2,399・MonotaRO ¥18,678）、領収証添付なし、新規カードなし",
                           "previous": {
-                            "checkedAt": "2026-11-15 09:20 JST",
-                            "routine": "UPSIDERチェック（毎日AM9時）",
+                            "checkedAt": "2026-11-15 22:45 JST",
+                            "routine": "UPSIDERチェック",
                             "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                            "newTransactions": 0,
-                            "ledgerRows": 34,
+                            "newTransactions": 7,
+                            "ledgerRows": 41,
                             "registeredComplete": 20,
-                            "needsAction": 8,
+                            "needsAction": 15,
                             "refundExcluded": 2,
                             "refundExcludedIds": [
                               "tx-20261102-2053-earth-23960",
@@ -4062,26 +4232,40 @@
                               "tx-20261113-2255-wilco-20900",
                               "tx-20261114-0123-monotaro-439",
                               "tx-20261114-0209-monotaro-3953",
-                              "tx-20261114-0426-misumi-3267"
+                              "tx-20261114-0426-misumi-3267",
+                              "tx-20261115-2123-amazon-3080",
+                              "tx-20261115-2134-amazon-14549",
+                              "tx-20261115-2140-google-0",
+                              "tx-20261115-2140-eventpay-9000",
+                              "tx-20261115-2152-switchscience-3560",
+                              "tx-20261115-2230-monotaro-17151",
+                              "tx-20261115-2231-monotaro-2198"
                             ],
                             "excludedOutOfScope": [
-                              "Bambu ¥228,000（ECサイト決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                              "Bambu ¥114,000（ECサイト決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                              "CubeMars ¥369,268（池滝 俊太、AIトイ決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                              "MonotaRO ¥8,576（池滝 俊太、AIトイ決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                              "SLACK ¥35,729（SaaS）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                              "JLCPCB ¥8,218（ECサイト決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
+                              "RESEND ¥3,322（2026-11-15 13:13、SaaS決済用、株式会社Algomatic Dynamics）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                              "AMAZON CO JP ¥49,704（台帳TX-20261115-AMZ-001）。Slackに出ていないため行は追加しない。",
+                              "AMAZON CO JP ¥5,003。Slackに出ていないため行は追加しない。"
                             ],
-                            "statusChanges": [],
-                            "savedNotAttached": [],
+                            "statusChanges": [
+                              "tx-20261115-2123-amazon-3080",
+                              "tx-20261115-2134-amazon-14549",
+                              "tx-20261115-2140-google-0",
+                              "tx-20261115-2140-eventpay-9000",
+                              "tx-20261115-2152-switchscience-3560",
+                              "tx-20261115-2230-monotaro-17151",
+                              "tx-20261115-2231-monotaro-2198"
+                            ],
+                            "savedNotAttached": [
+                              "tx-20261115-2140-eventpay-9000"
+                            ],
                             "memosCreated": 0,
                             "attachmentsAttempted": 0,
-                            "note": "新しい決済カードはない。要処理8件のスレッドはいずれも返信がなく、メモ完了通知も領収証添付通知もない。ステータス変化なし。",
+                            "note": "確認時刻は2026-11-15 22:45 JSTで、ブラウザで#bo_upsiderを読んだ時刻であり、画面を更新した時刻ではない。投稿・添付・メモ登録はしていない。既存の要処理8件（Amazon ¥0、Amazon ¥2,399、MonotaRO ¥18,678、MonotaRO ¥1,318、MonotaRO ¥439、MonotaRO ¥3,953、ウィルコ ¥20,900、ミスミ ¥3,267）はスレッドに返信がなく、メモ完了通知も領収証添付通知もない。ステータスは変えていない。新規の対象取引は7件。いずれも柴田 善広、AIハンド決済用、決済ステータスはOK、スレッドに返信はなく、決済メモも領収証の添付もない。AMAZON CO JP ¥3,080（決済2026-11-15 21:23:47 JST、スレッド1794745427.252579、決済ID 5cd099d7-e7ab-4af4-b21a-1f2633536ffa、台帳TX-20261115-AMZ-002、注文249-5958752-6596606、発注番号 図書新聞、『口紅から機関車まで』×1、着予定11/16）はメモ・証憑なし、要処理、納入待ち。AMAZON CO JP ¥14,549（決済2026-11-15 21:34:14 JST、スレッド1794746054.930309、決済ID dae09261-8253-4cf5-b2d8-10ae108ac1a7、台帳TX-20261115-AMZ-003、注文249-7546580-9987019、発注番号 オフィス什器、KoiFlow ファイルラック4段×1、着予定11/26〜12/8）はメモ・証憑なし、要処理、納入待ち。GOOGLE *CHROME TEMP ¥0（決済2026-11-15 21:40:12 JST、スレッド1794746412.606309、決済ID 7be90fc7-c734-4d31-8dc5-0f70b0feb481）はメモを追加するボタンがない確認決済。Amazon ¥0と同じ確認決済の区分にした。台帳の取引はない。行は削除していない。画面の要処理は登録完了・返金・本人以外の課金以外を数えるため、この確認決済も要処理に入る。EVENT PAY ¥9,000（決済2026-11-15 21:40:24 JST、スレッド1794746424.974559、決済ID 8d7b2bae-7da2-40b6-acf5-5e24a0de1332、台帳TX-20261115-EVP-001、受付番号 S169-50）は日本ロボット学会「第169回ロボット工学セミナー（11/24・オンライン）」参加費。税込¥9,000、消費税¥818。適格請求書の登録番号はT7010005016414。宛名は株式会社AlgomaticDynamics。証憑はDriveへ保存済み（https://drive.google.com/file/d/1yBHveOx1AUhyLtxk_hLA2whZerfA72S1/view）。Slackには未添付。シバタさんが手動で添付する。共有拒否ではない。登録完了にはしていない。メモは未登録。用途・セグメントは要確認（候補は研修・セミナー費）。ステータスは証憑保存済・Slack未添付。SP SWITCHSCIENCE ¥3,560（決済2026-11-15 21:52:24 JST、スレッド1794747144.256949、決済ID 4c9ec042-d484-47ff-bdf3-ed35f3f65b56、台帳TX-20261115-SWS-001、注文Y245720、AS5601 磁気式エンコーダ Breakout Board×2、ネコポス）はメモ・証憑なし、要処理、納入待ち。DP12*MONOTARO.COM ¥17,151（決済2026-11-15 22:30:24 JST、スレッド1794749424.750489、決済ID 9fa87e41-2f15-427b-9efd-12e968e8a504、台帳TX-20261115-MNT-001、受付202927990、参照 YUBI製造工具、LOBSTER シャコ万力 B125V×4）はメモ・証憑なし、要処理、納入待ち。DP12*MONOTARO.COM ¥2,198（決済2026-11-15 22:31:58 JST、スレッド1794749518.102389、決済ID 39de4707-3411-4a65-9809-de7d64bf648d、台帳TX-20261115-MNT-002、受付202928013、参照 YUBI製造工具、タニタ でか見えタイマー TD429GY×2）はメモ・証憑なし、要処理、納入待ち。対象外のため行に加えていないのは、RESEND ¥3,322（2026-11-15 13:13、SaaS決済用、株式会社Algomatic Dynamics）。Amazon ¥49,704（台帳TX-20261115-AMZ-001）とAmazon ¥5,003はSlackに出ていないので行は作っていない。台帳のステータスから数えると登録完了20件、除外6件（返金2件、本人以外の課金4件）、証憑保存済・Slack未添付1件、要処理15件。要処理はメモ・証憑なしのAmazon ¥2,399、MonotaRO ¥18,678、MonotaRO ¥1,318、ウィルコ ¥20,900、MonotaRO ¥439、MonotaRO ¥3,953、ミスミ ¥3,267、Amazon ¥3,080、Amazon ¥14,549、スイッチサイエンス ¥3,560、MonotaRO ¥17,151、MonotaRO ¥2,198、確認決済のAmazon ¥0とGOOGLE *CHROME TEMP ¥0、証憑保存済・Slack未添付のEVENT PAY ¥9,000。メモあり21件。新しい返金はない。",
                             "previous": {
-                              "checkedAt": "2026-11-14 09:20 JST",
+                              "checkedAt": "2026-11-15 09:20 JST",
                               "routine": "UPSIDERチェック（毎日AM9時）",
                               "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                              "newTransactions": 5,
+                              "newTransactions": 0,
                               "ledgerRows": 34,
                               "registeredComplete": 20,
                               "needsAction": 8,
@@ -4116,28 +4300,19 @@
                                 "SLACK ¥35,729（SaaS）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
                                 "JLCPCB ¥8,218（ECサイト決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
                               ],
-                              "statusChanges": [
-                                "tx-20261111-1404-monotaro-30017",
-                                "tx-20261111-1546-monotaro-4065",
-                                "tx-20261111-1940-misumi-44189",
-                                "tx-20261113-1023-monotaro-1318",
-                                "tx-20261113-2255-wilco-20900",
-                                "tx-20261114-0123-monotaro-439",
-                                "tx-20261114-0209-monotaro-3953",
-                                "tx-20261114-0426-misumi-3267"
-                              ],
+                              "statusChanges": [],
                               "savedNotAttached": [],
                               "memosCreated": 0,
                               "attachmentsAttempted": 0,
-                              "note": "確認時刻は2026-11-14 09:20 JSTで、ブラウザで#bo_upsiderを読んだ時刻であり、画面を更新した時刻ではない。投稿・添付・メモ登録はしていない。MonotaRO ¥30,017（tx-20261111-1404-monotaro-30017、スレッド1794373453.560069、台帳TX-20261111-MNT-001、注文書番号134323400030、受付202639045）は、柴田 善広が2026-11-13 21:35 JSTに20261111_30017JPY_モノタロウ_領収証.pdfを添付し、UPSIDERが21:35 JSTに「領収証を添付しました」と通知した。発行事業者は株式会社ＭｏｎｏｔａＲＯ、登録番号 T6140001054380。領収証 No.B8538556。DriveのURLは変えていない（https://drive.google.com/file/d/1xaRjk-UuOI_SWzBO9e6bHz3VMu5BGL61/view?usp=drivesdk）。メモは登録済みのまま。ステータスは証憑保存済・Slack未添付から登録完了にした。MonotaRO ¥4,065（tx-20261111-1546-monotaro-4065、スレッド1794379576.006419、台帳TX-20261111-MNT-002、注文書番号134323400031、受付202654082）は、柴田 善広が2026-11-13 21:35 JSTに20261111_4065JPY_モノタロウ_領収証.pdfを添付し、UPSIDERが21:36 JSTに「領収証を添付しました」と通知した。DriveのURLは変えていない（https://drive.google.com/file/d/1btXLz-yTieyIoK0IAz8qsz4cW1O_TeFf/view?usp=drivesdk）。メモは登録済みのまま。ステータスは証憑保存済・Slack未添付から登録完了にした。ミスミ ¥44,189（tx-20261111-1940-misumi-44189、スレッド1794393605.849899、台帳TX-20261111-MSM-001、注文書番号AB25748GD4）は、柴田 善広が2026-11-13 21:34 JSTにメモを投稿した。用途はYUBI Glove製造用資材購入、セグメント1はAIハンド、セグメント2はプロダクト販売、分類は製造用資材、内容は樹脂製軸受、イグリデュール G GFM-2023-07 ×121。UPSIDERが21:34 JSTに「決済メモを追加しました！」と通知した。完了通知のエコーは内容の行を省略していた。メモ本文は柴田 善広の投稿にある。21:35 JSTに20261111_44189JPY_ミスミ_領収書.pdfを添付し、UPSIDERが21:35 JSTに「領収証を添付しました」と通知した。発行事業者は株式会社ミスミ、登録番号 T9010601030898。DriveのURLは変えていない（https://drive.google.com/file/d/1OzxJkEKS6GvpfE2CgopfOEWX5CJRtKhg/view?usp=drivesdk）。ステータスは証憑保存済・Slack未添付から登録完了にした。Amazon ¥2,399（tx-20261111-2343-amazon-2399、スレッド1794408224.262909、注文250-6606641-6831015）は返信がなく、メモ・証憑なしのまま。適格請求書待ち。11/12配達済み。MonotaRO ¥18,678（tx-20261113-0053-monotaro-18678、スレッド1794498836.125669、注文書番号134323400032）は返信がなく、メモ・証憑なし、要処理、出荷予定は11/25までのまま。Amazon ¥0（tx-20261111-1553-amazon-0、スレッド1794380035.547129）は返信がなく、確認決済のまま。新規の対象取引は5件。いずれも柴田 善広、AIハンド決済用、返信はなく、メモ・証憑なし、要処理。DP12*MONOTARO.COM ¥1,318（決済2026-11-13 10:23:56 JST、スレッド1794533037.399359、決済ID c3e9cccd-d710-47b9-ba7e-2eb3a1e8391b、台帳TX-20261113-MNT-002、注文書番号134323400033、TRUSCO NS-10N R×1）は出荷済（2026-11-13、ヤマト426978777971）、納入待ち。WILCO.JP ¥20,900（決済2026-11-13 22:55:08 JST、スレッド1794578109.819919、決済ID 48ea51bf-e9d3-4cda-aa04-521fb1785978、台帳TX-20261113-WLC-001、注文受付E00339678、HUD-42601 ウルトラサート4 M2.6×1000）は受付。DP12*MONOTARO.COM ¥439（決済2026-11-14 01:23:32 JST、スレッド1794587013.186459、決済ID 77c29095-9e97-4414-b821-f43da3f06cfc、台帳TX-20261114-MNT-002、注文書番号134323400034、くず入れ GX-003B-N×1）は出荷予定11/16まで。DP12*MONOTARO.COM ¥3,953（決済2026-11-14 02:09:55 JST、スレッド1794589796.697149、決済ID 7d447db2-fe12-42b6-8103-21d277c56bc4、台帳TX-20261114-MNT-003、注文書番号134323400035、NS-10N Y×3）は出荷予定11/16まで。DP5*MISUMI ¥3,267（決済2026-11-14 04:26:36 JST、スレッド1794597997.191909、決済ID 8f74525f-ac8f-445a-9ec7-43056c166b2e、台帳TX-20261114-MSM-001、注文AB25764G15、HFSC5-2020-500×1とHFSB6-3060-1000-RTP×1）は出荷予定11/17、お届け11/18。対象外のため行に加えていないのは、Bambu ¥228,000とBambu ¥114,000（ECサイト決済用）、CubeMars ¥369,268とMonotaRO ¥8,576（池滝 俊太、AIトイ決済用）、SLACK ¥35,729（SaaS）、JLCPCB ¥8,218（ECサイト決済用）。台帳のステータスから数えると登録完了20件、除外6件（返金2件、本人以外の課金4件）、要処理8件。要処理はメモ・証憑なしのAmazon ¥2,399とMonotaRO ¥18,678、確認決済のAmazon ¥0、新規のMonotaRO ¥1,318、ウィルコ ¥20,900、MonotaRO ¥439、MonotaRO ¥3,953、ミスミ ¥3,267。メモあり21件。新しい返金はない。",
+                              "note": "新しい決済カードはない。要処理8件のスレッドはいずれも返信がなく、メモ完了通知も領収証添付通知もない。ステータス変化なし。",
                               "previous": {
-                                "checkedAt": "2026-11-13 19:30 JST",
-                                "routine": "領収書のDrive保存",
-                                "source": "取得した証憑をDriveへ保存し台帳へ記録した。Slackへの投稿・添付・メモ登録はしていない。",
-                                "newTransactions": 0,
-                                "ledgerRows": 29,
-                                "registeredComplete": 17,
-                                "needsAction": 6,
+                                "checkedAt": "2026-11-14 09:20 JST",
+                                "routine": "UPSIDERチェック（毎日AM9時）",
+                                "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+                                "newTransactions": 5,
+                                "ledgerRows": 34,
+                                "registeredComplete": 20,
+                                "needsAction": 8,
                                 "refundExcluded": 2,
                                 "refundExcludedIds": [
                                   "tx-20261102-2053-earth-23960",
@@ -4152,32 +4327,42 @@
                                 ],
                                 "excluded": 6,
                                 "needsActionIds": [
-                                  "tx-20261111-1404-monotaro-30017",
-                                  "tx-20261111-1546-monotaro-4065",
                                   "tx-20261111-1553-amazon-0",
-                                  "tx-20261111-1940-misumi-44189",
                                   "tx-20261111-2343-amazon-2399",
-                                  "tx-20261113-0053-monotaro-18678"
+                                  "tx-20261113-0053-monotaro-18678",
+                                  "tx-20261113-1023-monotaro-1318",
+                                  "tx-20261113-2255-wilco-20900",
+                                  "tx-20261114-0123-monotaro-439",
+                                  "tx-20261114-0209-monotaro-3953",
+                                  "tx-20261114-0426-misumi-3267"
                                 ],
-                                "excludedOutOfScope": [],
+                                "excludedOutOfScope": [
+                                  "Bambu ¥228,000（ECサイト決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                  "Bambu ¥114,000（ECサイト決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                  "CubeMars ¥369,268（池滝 俊太、AIトイ決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                  "MonotaRO ¥8,576（池滝 俊太、AIトイ決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                  "SLACK ¥35,729（SaaS）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                  "JLCPCB ¥8,218（ECサイト決済用）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
+                                ],
                                 "statusChanges": [
                                   "tx-20261111-1404-monotaro-30017",
                                   "tx-20261111-1546-monotaro-4065",
-                                  "tx-20261111-1940-misumi-44189"
+                                  "tx-20261111-1940-misumi-44189",
+                                  "tx-20261113-1023-monotaro-1318",
+                                  "tx-20261113-2255-wilco-20900",
+                                  "tx-20261114-0123-monotaro-439",
+                                  "tx-20261114-0209-monotaro-3953",
+                                  "tx-20261114-0426-misumi-3267"
                                 ],
-                                "savedNotAttached": [
-                                  "tx-20261111-1404-monotaro-30017",
-                                  "tx-20261111-1546-monotaro-4065",
-                                  "tx-20261111-1940-misumi-44189"
-                                ],
+                                "savedNotAttached": [],
                                 "memosCreated": 0,
                                 "attachmentsAttempted": 0,
-                                "note": "MonotaRO ¥30,017（tx-20261111-1404-monotaro-30017、スレッド1794373453.560069、台帳TX-20261111-MNT-001、注文書番号134323400030、受付202639045）の領収証 No.B8538556（発行2026-11-13、登録番号 T6140001054380）をDriveへ保存した（https://drive.google.com/file/d/1xaRjk-UuOI_SWzBO9e6bHz3VMu5BGL61/view?usp=drivesdk）。ステータスは証憑なしから証憑保存済・Slack未添付にした。登録完了にはしていない。メモは登録済みのまま。MonotaRO ¥4,065（tx-20261111-1546-monotaro-4065、スレッド1794379576.006419、台帳TX-20261111-MNT-002、注文書番号134323400031、受付202654082）の領収証 No.B8538572をDriveへ保存した（https://drive.google.com/file/d/1btXLz-yTieyIoK0IAz8qsz4cW1O_TeFf/view?usp=drivesdk）。ステータスは証憑なしから証憑保存済・Slack未添付にした。登録完了にはしていない。ミスミ ¥44,189（tx-20261111-1940-misumi-44189、スレッド1794393605.849899、台帳TX-20261111-MSM-001、注文書番号AB25748GD4）の領収書（登録番号 T9010601030898）をDriveへ保存した（https://drive.google.com/file/d/1OzxJkEKS6GvpfE2CgopfOEWX5CJRtKhg/view?usp=drivesdk）。2026-11-13に納品書を受領し、納入済みとした。ステータスはメモ・証憑なしから証憑保存済・Slack未添付にした。登録完了にはしていない。メモは未登録のまま。Amazon ¥2,399（tx-20261111-2343-amazon-2399、スレッド1794408224.262909、台帳TX-20261111-AMZ-001、注文250-6606641-6831015）は11/12配達済みのまま。ステータスはメモ・証憑なしのまま（適格請求書待ち）。支払い明細書（適格請求書ではない）をDriveへ保存した（https://drive.google.com/file/d/1HcZ-haZhwf4GUE3V4txhGjiRiFTxAZT_/view）。補助証憑の欄はないため、Drive証憑には入れず注記した。メモは未登録のまま。MonotaRO ¥18,678（注文書番号134323400032）は変えていない。要処理、メモ・証憑なし、出荷予定は11/25まで。台帳のステータスから数えると登録完了17件、除外6件（返金2件、本人以外の課金4件）、要処理6件。要処理は証憑保存済・Slack未添付のMonotaRO ¥30,017、MonotaRO ¥4,065、ミスミ ¥44,189、メモ・証憑なしのAmazon ¥2,399とMonotaRO ¥18,678、確認決済のAmazon ¥0。メモあり20件。新しい返金はない。",
+                                "note": "確認時刻は2026-11-14 09:20 JSTで、ブラウザで#bo_upsiderを読んだ時刻であり、画面を更新した時刻ではない。投稿・添付・メモ登録はしていない。MonotaRO ¥30,017（tx-20261111-1404-monotaro-30017、スレッド1794373453.560069、台帳TX-20261111-MNT-001、注文書番号134323400030、受付202639045）は、柴田 善広が2026-11-13 21:35 JSTに20261111_30017JPY_モノタロウ_領収証.pdfを添付し、UPSIDERが21:35 JSTに「領収証を添付しました」と通知した。発行事業者は株式会社ＭｏｎｏｔａＲＯ、登録番号 T6140001054380。領収証 No.B8538556。DriveのURLは変えていない（https://drive.google.com/file/d/1xaRjk-UuOI_SWzBO9e6bHz3VMu5BGL61/view?usp=drivesdk）。メモは登録済みのまま。ステータスは証憑保存済・Slack未添付から登録完了にした。MonotaRO ¥4,065（tx-20261111-1546-monotaro-4065、スレッド1794379576.006419、台帳TX-20261111-MNT-002、注文書番号134323400031、受付202654082）は、柴田 善広が2026-11-13 21:35 JSTに20261111_4065JPY_モノタロウ_領収証.pdfを添付し、UPSIDERが21:36 JSTに「領収証を添付しました」と通知した。DriveのURLは変えていない（https://drive.google.com/file/d/1btXLz-yTieyIoK0IAz8qsz4cW1O_TeFf/view?usp=drivesdk）。メモは登録済みのまま。ステータスは証憑保存済・Slack未添付から登録完了にした。ミスミ ¥44,189（tx-20261111-1940-misumi-44189、スレッド1794393605.849899、台帳TX-20261111-MSM-001、注文書番号AB25748GD4）は、柴田 善広が2026-11-13 21:34 JSTにメモを投稿した。用途はYUBI Glove製造用資材購入、セグメント1はAIハンド、セグメント2はプロダクト販売、分類は製造用資材、内容は樹脂製軸受、イグリデュール G GFM-2023-07 ×121。UPSIDERが21:34 JSTに「決済メモを追加しました！」と通知した。完了通知のエコーは内容の行を省略していた。メモ本文は柴田 善広の投稿にある。21:35 JSTに20261111_44189JPY_ミスミ_領収書.pdfを添付し、UPSIDERが21:35 JSTに「領収証を添付しました」と通知した。発行事業者は株式会社ミスミ、登録番号 T9010601030898。DriveのURLは変えていない（https://drive.google.com/file/d/1OzxJkEKS6GvpfE2CgopfOEWX5CJRtKhg/view?usp=drivesdk）。ステータスは証憑保存済・Slack未添付から登録完了にした。Amazon ¥2,399（tx-20261111-2343-amazon-2399、スレッド1794408224.262909、注文250-6606641-6831015）は返信がなく、メモ・証憑なしのまま。適格請求書待ち。11/12配達済み。MonotaRO ¥18,678（tx-20261113-0053-monotaro-18678、スレッド1794498836.125669、注文書番号134323400032）は返信がなく、メモ・証憑なし、要処理、出荷予定は11/25までのまま。Amazon ¥0（tx-20261111-1553-amazon-0、スレッド1794380035.547129）は返信がなく、確認決済のまま。新規の対象取引は5件。いずれも柴田 善広、AIハンド決済用、返信はなく、メモ・証憑なし、要処理。DP12*MONOTARO.COM ¥1,318（決済2026-11-13 10:23:56 JST、スレッド1794533037.399359、決済ID c3e9cccd-d710-47b9-ba7e-2eb3a1e8391b、台帳TX-20261113-MNT-002、注文書番号134323400033、TRUSCO NS-10N R×1）は出荷済（2026-11-13、ヤマト426978777971）、納入待ち。WILCO.JP ¥20,900（決済2026-11-13 22:55:08 JST、スレッド1794578109.819919、決済ID 48ea51bf-e9d3-4cda-aa04-521fb1785978、台帳TX-20261113-WLC-001、注文受付E00339678、HUD-42601 ウルトラサート4 M2.6×1000）は受付。DP12*MONOTARO.COM ¥439（決済2026-11-14 01:23:32 JST、スレッド1794587013.186459、決済ID 77c29095-9e97-4414-b821-f43da3f06cfc、台帳TX-20261114-MNT-002、注文書番号134323400034、くず入れ GX-003B-N×1）は出荷予定11/16まで。DP12*MONOTARO.COM ¥3,953（決済2026-11-14 02:09:55 JST、スレッド1794589796.697149、決済ID 7d447db2-fe12-42b6-8103-21d277c56bc4、台帳TX-20261114-MNT-003、注文書番号134323400035、NS-10N Y×3）は出荷予定11/16まで。DP5*MISUMI ¥3,267（決済2026-11-14 04:26:36 JST、スレッド1794597997.191909、決済ID 8f74525f-ac8f-445a-9ec7-43056c166b2e、台帳TX-20261114-MSM-001、注文AB25764G15、HFSC5-2020-500×1とHFSB6-3060-1000-RTP×1）は出荷予定11/17、お届け11/18。対象外のため行に加えていないのは、Bambu ¥228,000とBambu ¥114,000（ECサイト決済用）、CubeMars ¥369,268とMonotaRO ¥8,576（池滝 俊太、AIトイ決済用）、SLACK ¥35,729（SaaS）、JLCPCB ¥8,218（ECサイト決済用）。台帳のステータスから数えると登録完了20件、除外6件（返金2件、本人以外の課金4件）、要処理8件。要処理はメモ・証憑なしのAmazon ¥2,399とMonotaRO ¥18,678、確認決済のAmazon ¥0、新規のMonotaRO ¥1,318、ウィルコ ¥20,900、MonotaRO ¥439、MonotaRO ¥3,953、ミスミ ¥3,267。メモあり21件。新しい返金はない。",
                                 "previous": {
-                                  "checkedAt": "2026-11-13 09:21 JST",
-                                  "routine": "UPSIDERチェック（毎日AM9時）",
-                                  "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                                  "newTransactions": 5,
+                                  "checkedAt": "2026-11-13 19:30 JST",
+                                  "routine": "領収書のDrive保存",
+                                  "source": "取得した証憑をDriveへ保存し台帳へ記録した。Slackへの投稿・添付・メモ登録はしていない。",
+                                  "newTransactions": 0,
                                   "ledgerRows": 29,
                                   "registeredComplete": 17,
                                   "needsAction": 6,
@@ -4202,25 +4387,28 @@
                                     "tx-20261111-2343-amazon-2399",
                                     "tx-20261113-0053-monotaro-18678"
                                   ],
-                                  "excludedOutOfScope": [
-                                    "EVENTOS ¥0（イベント事業決済用、吉野 哲仁、2026-11-12 18:34:39 JST、スレッド1794476079.988119）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                                    "BRAVESOFT INC. ¥0（イベント事業決済用、吉野 哲仁、2026-11-12 18:35:30 JST、スレッド1794476131.214289）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                                    "BRAVESOFT INC. ¥60,500（イベント事業決済用、吉野 哲仁、2026-11-12 18:35:53 JST、スレッド1794476153.915879）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                                    "DP4*RAKSUL ¥4,711（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-12 19:46:48 JST、スレッド1794480409.627769）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
+                                  "excludedOutOfScope": [],
+                                  "statusChanges": [
+                                    "tx-20261111-1404-monotaro-30017",
+                                    "tx-20261111-1546-monotaro-4065",
+                                    "tx-20261111-1940-misumi-44189"
                                   ],
-                                  "statusChanges": [],
-                                  "savedNotAttached": [],
+                                  "savedNotAttached": [
+                                    "tx-20261111-1404-monotaro-30017",
+                                    "tx-20261111-1546-monotaro-4065",
+                                    "tx-20261111-1940-misumi-44189"
+                                  ],
                                   "memosCreated": 0,
                                   "attachmentsAttempted": 0,
-                                  "note": "09:20以降の新規カード決済は5件。対象は1件で、MonotaRO ¥18,678（TX-20261113-MNT-001、注文書番号134323400032、受付202785267、スレッド1794498836.125669、Seeed XIAO ESP32C6 ×10、発注番号 YUBI Glove製造）を行にした。返信はなく、メモ・証憑なし。在庫切れで未出荷、出荷予定は11/25まで。税込¥18,678、税¥1,698。EVENTOS ¥0（イベント事業決済用、吉野 哲仁、2026-11-12 18:34:39 JST、スレッド1794476079.988119）、BRAVESOFT INC. ¥0（同じカード、2026-11-12 18:35:30 JST、スレッド1794476131.214289）、BRAVESOFT INC. ¥60,500（同じカード、2026-11-12 18:35:53 JST、スレッド1794476153.915879）、DP4*RAKSUL ¥4,711（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-12 19:46:48 JST、スレッド1794480409.627769）は柴田 善広 / AIハンド決済用ではないため対象外で、行は追加していない。既存要処理5件のスレッドに新しい返信もUPSIDER通知もない。ミスミ ¥44,189は11/12にSBS即配サポート 0417677859336で全数出荷し、納入待ち、到着予定11/13。台帳ステータスはメモ・証憑なしのまま。Amazon ¥2,399は11/12 17:22 JSTに配達済み。Amazon Businessで取れたのは支払い明細書（適格請求書ではない）だけで、適格請求書待ち。Driveはなしのまま。台帳ステータスはメモ・証憑なしのまま。MonotaRO ¥30,017、MonotaRO ¥4,065、Amazon ¥0はステータスを変えていない。画面の要処理は登録完了・返金・本人以外の課金以外を数えるため、確認決済（¥0、本決済¥2,399は別行）も要処理に入る。要処理は6件（MonotaRO ¥30,017、MonotaRO ¥4,065、ミスミ ¥44,189、Amazon ¥2,399、MonotaRO ¥18,678、Amazon ¥0）。登録完了17件。除外6件（返金2件、本人以外の課金4件）。台帳29件。メモあり20件。新しい返金はない。投稿・添付・メモ登録はしていない。",
+                                  "note": "MonotaRO ¥30,017（tx-20261111-1404-monotaro-30017、スレッド1794373453.560069、台帳TX-20261111-MNT-001、注文書番号134323400030、受付202639045）の領収証 No.B8538556（発行2026-11-13、登録番号 T6140001054380）をDriveへ保存した（https://drive.google.com/file/d/1xaRjk-UuOI_SWzBO9e6bHz3VMu5BGL61/view?usp=drivesdk）。ステータスは証憑なしから証憑保存済・Slack未添付にした。登録完了にはしていない。メモは登録済みのまま。MonotaRO ¥4,065（tx-20261111-1546-monotaro-4065、スレッド1794379576.006419、台帳TX-20261111-MNT-002、注文書番号134323400031、受付202654082）の領収証 No.B8538572をDriveへ保存した（https://drive.google.com/file/d/1btXLz-yTieyIoK0IAz8qsz4cW1O_TeFf/view?usp=drivesdk）。ステータスは証憑なしから証憑保存済・Slack未添付にした。登録完了にはしていない。ミスミ ¥44,189（tx-20261111-1940-misumi-44189、スレッド1794393605.849899、台帳TX-20261111-MSM-001、注文書番号AB25748GD4）の領収書（登録番号 T9010601030898）をDriveへ保存した（https://drive.google.com/file/d/1OzxJkEKS6GvpfE2CgopfOEWX5CJRtKhg/view?usp=drivesdk）。2026-11-13に納品書を受領し、納入済みとした。ステータスはメモ・証憑なしから証憑保存済・Slack未添付にした。登録完了にはしていない。メモは未登録のまま。Amazon ¥2,399（tx-20261111-2343-amazon-2399、スレッド1794408224.262909、台帳TX-20261111-AMZ-001、注文250-6606641-6831015）は11/12配達済みのまま。ステータスはメモ・証憑なしのまま（適格請求書待ち）。支払い明細書（適格請求書ではない）をDriveへ保存した（https://drive.google.com/file/d/1HcZ-haZhwf4GUE3V4txhGjiRiFTxAZT_/view）。補助証憑の欄はないため、Drive証憑には入れず注記した。メモは未登録のまま。MonotaRO ¥18,678（注文書番号134323400032）は変えていない。要処理、メモ・証憑なし、出荷予定は11/25まで。台帳のステータスから数えると登録完了17件、除外6件（返金2件、本人以外の課金4件）、要処理6件。要処理は証憑保存済・Slack未添付のMonotaRO ¥30,017、MonotaRO ¥4,065、ミスミ ¥44,189、メモ・証憑なしのAmazon ¥2,399とMonotaRO ¥18,678、確認決済のAmazon ¥0。メモあり20件。新しい返金はない。",
                                   "previous": {
-                                    "checkedAt": "2026-11-12 09:20 JST",
+                                    "checkedAt": "2026-11-13 09:21 JST",
                                     "routine": "UPSIDERチェック（毎日AM9時）",
                                     "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                                    "newTransactions": 4,
-                                    "ledgerRows": 28,
+                                    "newTransactions": 5,
+                                    "ledgerRows": 29,
                                     "registeredComplete": 17,
-                                    "needsAction": 5,
+                                    "needsAction": 6,
                                     "refundExcluded": 2,
                                     "refundExcludedIds": [
                                       "tx-20261102-2053-earth-23960",
@@ -4239,30 +4427,28 @@
                                       "tx-20261111-1546-monotaro-4065",
                                       "tx-20261111-1553-amazon-0",
                                       "tx-20261111-1940-misumi-44189",
-                                      "tx-20261111-2343-amazon-2399"
+                                      "tx-20261111-2343-amazon-2399",
+                                      "tx-20261113-0053-monotaro-18678"
                                     ],
                                     "excludedOutOfScope": [
-                                      "HIMARI SHOTEN ¥26,310（南里さん決済用、南里 勇気、2026-11-11 21:39:20 JST、スレッド1794400760.220609）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
-                                      "GITHUB, INC. ¥16,432（USD 101.20、SaaS決済用、株式会社Algomatic Dynamics名義、2026-11-12 04:20:31 JST、スレッド1794424831.175209）。柴田 善広 / AIハンド決済用ではないため対象外。行は追加しない。",
-                                      "AMAZON CO JP ¥8,990（イベント事業決済用、吉野 哲仁、2026-11-10 21:10:04 JST、スレッド1794312604.656699）。09:34時点で対象外。今回の新規4件には含めない。"
+                                      "EVENTOS ¥0（イベント事業決済用、吉野 哲仁、2026-11-12 18:34:39 JST、スレッド1794476079.988119）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                      "BRAVESOFT INC. ¥0（イベント事業決済用、吉野 哲仁、2026-11-12 18:35:30 JST、スレッド1794476131.214289）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                      "BRAVESOFT INC. ¥60,500（イベント事業決済用、吉野 哲仁、2026-11-12 18:35:53 JST、スレッド1794476153.915879）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                      "DP4*RAKSUL ¥4,711（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-12 19:46:48 JST、スレッド1794480409.627769）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
                                     ],
-                                    "statusChanges": [
-                                      "tx-20261111-1404-monotaro-30017",
-                                      "tx-20261111-1546-monotaro-4065",
-                                      "tx-20261111-1553-amazon-0"
-                                    ],
+                                    "statusChanges": [],
                                     "savedNotAttached": [],
                                     "memosCreated": 0,
                                     "attachmentsAttempted": 0,
-                                    "note": "18:47以降の新規カード決済は4件。対象は2件で、ミスミ ¥44,189（TX-20261111-MSM-001、注文書番号AB25748GD4、スレッド1794393605.849899）とAmazon ¥2,399（TX-20261111-AMZ-001、注文250-6606641-6831015、スレッド1794408224.262909）を行にした。どちらも返信はなく、メモ・証憑なし。HIMARI SHOTEN ¥26,310（南里さん決済用、南里 勇気、2026-11-11 21:39:20 JST、スレッド1794400760.220609）とGITHUB, INC. ¥16,432（USD 101.20、SaaS決済用、株式会社Algomatic Dynamics名義、2026-11-12 04:20:31 JST、スレッド1794424831.175209）は柴田 善広 / AIハンド決済用ではないため対象外で、行は追加していない。MonotaRO ¥30,017はYoshihiro Shibataの2026-11-11 20:48:41 JSTのメモ返信のあと、UPSIDERが20:48:44 JSTに「決済メモを追加しました！」と通知した。用途はAIハンド製造ライン用資材収納用品購入、セグメント1はAIハンド、セグメント2はその他、分類は備品、内容は折りたたみコンテナ FCLD50-GR/C ×5、50L用台車 ×1。tsは未取得。メモ登録済み・証憑未取得。納入待ち、11/12納入予定。台帳ステータスは証憑なし。MonotaRO ¥4,065はShibataの20:49:59 JSTのメモ返信のあと、UPSIDERが20:50:02 JSTに「決済メモを追加しました！」と通知した。用途はYUBI製造用副資材購入、セグメント1はAIハンド、セグメント2はプロダクト販売、分類は副資材、内容は接着剤、セメダイン スーパーXゴールド AX-014 20mL ×5。2026-11-11にヤマト 426978601394で直送品を全数出荷し、納入待ち。台帳ステータスは証憑なし。Amazon ¥0（スレッド1794380035.547129）は返信がない。本決済¥2,399は別行になったため、確認決済（¥0、本決済¥2,399は別行）にした。行は削除していない。画面の要処理は登録完了・返金・本人以外の課金以外を数えるため、この確認決済も要処理に入る。要処理は5件（MonotaRO ¥30,017、MonotaRO ¥4,065、ミスミ ¥44,189、Amazon ¥2,399、Amazon ¥0）。GITHUB, INC. ¥22は返信がなく、変えていない。登録完了17件。除外6件（返金2件、本人以外の課金4件）。台帳28件。メモあり20件。新しい返金はない。投稿・添付・メモ登録はしていない。",
+                                    "note": "09:20以降の新規カード決済は5件。対象は1件で、MonotaRO ¥18,678（TX-20261113-MNT-001、注文書番号134323400032、受付202785267、スレッド1794498836.125669、Seeed XIAO ESP32C6 ×10、発注番号 YUBI Glove製造）を行にした。返信はなく、メモ・証憑なし。在庫切れで未出荷、出荷予定は11/25まで。税込¥18,678、税¥1,698。EVENTOS ¥0（イベント事業決済用、吉野 哲仁、2026-11-12 18:34:39 JST、スレッド1794476079.988119）、BRAVESOFT INC. ¥0（同じカード、2026-11-12 18:35:30 JST、スレッド1794476131.214289）、BRAVESOFT INC. ¥60,500（同じカード、2026-11-12 18:35:53 JST、スレッド1794476153.915879）、DP4*RAKSUL ¥4,711（ECサイト決済用、株式会社Algomatic Dynamics、2026-11-12 19:46:48 JST、スレッド1794480409.627769）は柴田 善広 / AIハンド決済用ではないため対象外で、行は追加していない。既存要処理5件のスレッドに新しい返信もUPSIDER通知もない。ミスミ ¥44,189は11/12にSBS即配サポート 0417677859336で全数出荷し、納入待ち、到着予定11/13。台帳ステータスはメモ・証憑なしのまま。Amazon ¥2,399は11/12 17:22 JSTに配達済み。Amazon Businessで取れたのは支払い明細書（適格請求書ではない）だけで、適格請求書待ち。Driveはなしのまま。台帳ステータスはメモ・証憑なしのまま。MonotaRO ¥30,017、MonotaRO ¥4,065、Amazon ¥0はステータスを変えていない。画面の要処理は登録完了・返金・本人以外の課金以外を数えるため、確認決済（¥0、本決済¥2,399は別行）も要処理に入る。要処理は6件（MonotaRO ¥30,017、MonotaRO ¥4,065、ミスミ ¥44,189、Amazon ¥2,399、MonotaRO ¥18,678、Amazon ¥0）。登録完了17件。除外6件（返金2件、本人以外の課金4件）。台帳29件。メモあり20件。新しい返金はない。投稿・添付・メモ登録はしていない。",
                                     "previous": {
-                                      "checkedAt": "2026-11-11 18:47 JST",
-                                      "routine": "UPSIDERチェック",
+                                      "checkedAt": "2026-11-12 09:20 JST",
+                                      "routine": "UPSIDERチェック（毎日AM9時）",
                                       "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
                                       "newTransactions": 4,
-                                      "ledgerRows": 26,
+                                      "ledgerRows": 28,
                                       "registeredComplete": 17,
-                                      "needsAction": 3,
+                                      "needsAction": 5,
                                       "refundExcluded": 2,
                                       "refundExcludedIds": [
                                         "tx-20261102-2053-earth-23960",
@@ -4279,62 +4465,70 @@
                                       "needsActionIds": [
                                         "tx-20261111-1404-monotaro-30017",
                                         "tx-20261111-1546-monotaro-4065",
-                                        "tx-20261111-1553-amazon-0"
+                                        "tx-20261111-1553-amazon-0",
+                                        "tx-20261111-1940-misumi-44189",
+                                        "tx-20261111-2343-amazon-2399"
                                       ],
                                       "excludedOutOfScope": [
-                                        "AMAZON CO JP ¥2,399（注文250-6606641-6831015、TINMORRY コールドプレート ×1、台帳TX-20261111-AMZ-001、納品予定11/12）。確認決済¥0は行にしたが、本決済はSlack未着のため行は追加しない。",
+                                        "HIMARI SHOTEN ¥26,310（南里さん決済用、南里 勇気、2026-11-11 21:39:20 JST、スレッド1794400760.220609）。柴田 善広 / AIハンド決済用ではないため行は追加しない。",
+                                        "GITHUB, INC. ¥16,432（USD 101.20、SaaS決済用、株式会社Algomatic Dynamics名義、2026-11-12 04:20:31 JST、スレッド1794424831.175209）。柴田 善広 / AIハンド決済用ではないため対象外。行は追加しない。",
                                         "AMAZON CO JP ¥8,990（イベント事業決済用、吉野 哲仁、2026-11-10 21:10:04 JST、スレッド1794312604.656699）。09:34時点で対象外。今回の新規4件には含めない。"
                                       ],
                                       "statusChanges": [
-                                        "tx-20261105-1357-nisshin-17600",
-                                        "tx-20261111-1259-github-22"
+                                        "tx-20261111-1404-monotaro-30017",
+                                        "tx-20261111-1546-monotaro-4065",
+                                        "tx-20261111-1553-amazon-0"
                                       ],
                                       "savedNotAttached": [],
                                       "memosCreated": 0,
                                       "attachmentsAttempted": 0,
-                                      "note": "GITHUB, INC. ¥22（USD 0.14、SaaS決済用、スレッド1794369591.509309）はメモも証憑もない。シバタさん回答 2026-11-11により本人以外の課金（シバタさん回答 2026-11-11）として要処理から除外した。行は削除していない。MonotaRO ¥30,017（TX-20261111-MNT-001、注文書番号134323400030、受付202639045）は11/11全数出荷（ヤマト 664362973562、西濃 9583853145）で納入待ち。メモ未登録・証憑未取得。MonotaRO ¥4,065（TX-20261111-MNT-002、注文書番号134323400031、受付202654082）は未出荷で出荷待ち。メモ未登録・証憑未取得。AMAZON CO JP ¥0（スレッド1794380035.547129）は注文250-6606641-6831015（TINMORRY コールドプレート ×1、¥2,399、TX-20261111-AMZ-001、納品予定11/12）の確認決済とみられる。本決済¥2,399はSlack未着で行にしていない。MonotaRO 2件とAmazon ¥0の台帳ステータスはメモ・証憑なし。日進ゴム ¥17,600はメモ登録済みのため登録完了。証憑状態はSlack添付確認済（nisshin-4735.png、2026-11-05 18:50 JST、UPSIDER「領収証を添付しました」）。新しい返金はない。投稿・添付・メモ登録はしていない。",
+                                      "note": "18:47以降の新規カード決済は4件。対象は2件で、ミスミ ¥44,189（TX-20261111-MSM-001、注文書番号AB25748GD4、スレッド1794393605.849899）とAmazon ¥2,399（TX-20261111-AMZ-001、注文250-6606641-6831015、スレッド1794408224.262909）を行にした。どちらも返信はなく、メモ・証憑なし。HIMARI SHOTEN ¥26,310（南里さん決済用、南里 勇気、2026-11-11 21:39:20 JST、スレッド1794400760.220609）とGITHUB, INC. ¥16,432（USD 101.20、SaaS決済用、株式会社Algomatic Dynamics名義、2026-11-12 04:20:31 JST、スレッド1794424831.175209）は柴田 善広 / AIハンド決済用ではないため対象外で、行は追加していない。MonotaRO ¥30,017はYoshihiro Shibataの2026-11-11 20:48:41 JSTのメモ返信のあと、UPSIDERが20:48:44 JSTに「決済メモを追加しました！」と通知した。用途はAIハンド製造ライン用資材収納用品購入、セグメント1はAIハンド、セグメント2はその他、分類は備品、内容は折りたたみコンテナ FCLD50-GR/C ×5、50L用台車 ×1。tsは未取得。メモ登録済み・証憑未取得。納入待ち、11/12納入予定。台帳ステータスは証憑なし。MonotaRO ¥4,065はShibataの20:49:59 JSTのメモ返信のあと、UPSIDERが20:50:02 JSTに「決済メモを追加しました！」と通知した。用途はYUBI製造用副資材購入、セグメント1はAIハンド、セグメント2はプロダクト販売、分類は副資材、内容は接着剤、セメダイン スーパーXゴールド AX-014 20mL ×5。2026-11-11にヤマト 426978601394で直送品を全数出荷し、納入待ち。台帳ステータスは証憑なし。Amazon ¥0（スレッド1794380035.547129）は返信がない。本決済¥2,399は別行になったため、確認決済（¥0、本決済¥2,399は別行）にした。行は削除していない。画面の要処理は登録完了・返金・本人以外の課金以外を数えるため、この確認決済も要処理に入る。要処理は5件（MonotaRO ¥30,017、MonotaRO ¥4,065、ミスミ ¥44,189、Amazon ¥2,399、Amazon ¥0）。GITHUB, INC. ¥22は返信がなく、変えていない。登録完了17件。除外6件（返金2件、本人以外の課金4件）。台帳28件。メモあり20件。新しい返金はない。投稿・添付・メモ登録はしていない。",
                                       "previous": {
-                                        "checkedAt": "2026-11-11 09:34 JST",
-                                        "routine": "UPSIDERチェック（毎日AM9時）",
+                                        "checkedAt": "2026-11-11 18:47 JST",
+                                        "routine": "UPSIDERチェック",
                                         "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                                        "newTransactions": 0,
-                                        "ledgerRows": 22,
-                                        "registeredComplete": 16,
-                                        "needsAction": 1,
+                                        "newTransactions": 4,
+                                        "ledgerRows": 26,
+                                        "registeredComplete": 17,
+                                        "needsAction": 3,
                                         "refundExcluded": 2,
                                         "refundExcludedIds": [
                                           "tx-20261102-2053-earth-23960",
                                           "tx-20261104-0923-danballace-23960"
                                         ],
-                                        "notOwnerExcluded": 3,
+                                        "notOwnerExcluded": 4,
                                         "notOwnerExcludedIds": [
                                           "tx-20261109-1754-github-392",
                                           "tx-20261109-1755-github-783",
-                                          "tx-20261110-1051-github-47"
+                                          "tx-20261110-1051-github-47",
+                                          "tx-20261111-1259-github-22"
                                         ],
-                                        "excluded": 5,
+                                        "excluded": 6,
                                         "needsActionIds": [
-                                          "tx-20261105-1357-nisshin-17600"
+                                          "tx-20261111-1404-monotaro-30017",
+                                          "tx-20261111-1546-monotaro-4065",
+                                          "tx-20261111-1553-amazon-0"
                                         ],
                                         "excludedOutOfScope": [
-                                          "AMAZON CO JP ¥8,990（イベント事業決済用、吉野 哲仁、2026-11-10 21:10:04 JST、スレッド1794312604.656699）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
+                                          "AMAZON CO JP ¥2,399（注文250-6606641-6831015、TINMORRY コールドプレート ×1、台帳TX-20261111-AMZ-001、納品予定11/12）。確認決済¥0は行にしたが、本決済はSlack未着のため行は追加しない。",
+                                          "AMAZON CO JP ¥8,990（イベント事業決済用、吉野 哲仁、2026-11-10 21:10:04 JST、スレッド1794312604.656699）。09:34時点で対象外。今回の新規4件には含めない。"
                                         ],
                                         "statusChanges": [
-                                          "tx-20261102-2054-earth-5570",
-                                          "tx-20261106-1553-danballace-7160"
+                                          "tx-20261105-1357-nisshin-17600",
+                                          "tx-20261111-1259-github-22"
                                         ],
                                         "savedNotAttached": [],
                                         "memosCreated": 0,
                                         "attachmentsAttempted": 0,
-                                        "note": "アースダンボール ¥5,570はシバタさんが2026-11-10 13:49:59 JSTに20261102_5570JPY_アースダンボール_領収書.pdfを手動添付し、UPSIDERが13:50:00 JSTに「領収証を提出しています」、13:50:07 JSTに「領収証を添付しました」と通知したため登録完了。発行事業者は株式会社アースダンボール。DANBALLACE ¥7,160はシバタさんが2026-11-10 13:49:44 JSTに20261106_7160JPY_アースダンボール_領収書.pdfを手動添付し、UPSIDERが13:49:45 JSTに「領収証を提出しています」、13:49:52 JSTに「領収証を添付しました」と通知したため登録完了。日進ゴム ¥17,600は証憑なしのまま。11/06以降の返信はなく、11/05のnisshin-4735.pngは誤添付で削除済み。AMAZON CO JP ¥8,990（イベント事業決済用、吉野 哲仁、2026-11-10 21:10:04 JST、スレッド1794312604.656699）は対象外で行に加えていない。新しい返金はない。新しいGitHub課金はない。投稿・添付・メモ登録はしていない。",
+                                        "note": "GITHUB, INC. ¥22（USD 0.14、SaaS決済用、スレッド1794369591.509309）はメモも証憑もない。シバタさん回答 2026-11-11により本人以外の課金（シバタさん回答 2026-11-11）として要処理から除外した。行は削除していない。MonotaRO ¥30,017（TX-20261111-MNT-001、注文書番号134323400030、受付202639045）は11/11全数出荷（ヤマト 664362973562、西濃 9583853145）で納入待ち。メモ未登録・証憑未取得。MonotaRO ¥4,065（TX-20261111-MNT-002、注文書番号134323400031、受付202654082）は未出荷で出荷待ち。メモ未登録・証憑未取得。AMAZON CO JP ¥0（スレッド1794380035.547129）は注文250-6606641-6831015（TINMORRY コールドプレート ×1、¥2,399、TX-20261111-AMZ-001、納品予定11/12）の確認決済とみられる。本決済¥2,399はSlack未着で行にしていない。MonotaRO 2件とAmazon ¥0の台帳ステータスはメモ・証憑なし。日進ゴム ¥17,600はメモ登録済みのため登録完了。証憑状態はSlack添付確認済（nisshin-4735.png、2026-11-05 18:50 JST、UPSIDER「領収証を添付しました」）。新しい返金はない。投稿・添付・メモ登録はしていない。",
                                         "previous": {
-                                          "checkedAt": "2026-11-10 13:40:00 JST",
-                                          "routine": "UPSIDERチェック",
+                                          "checkedAt": "2026-11-11 09:34 JST",
+                                          "routine": "UPSIDERチェック（毎日AM9時）",
                                           "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                                          "newTransactions": 1,
+                                          "newTransactions": 0,
                                           "ledgerRows": 22,
-                                          "registeredComplete": 14,
-                                          "needsAction": 3,
+                                          "registeredComplete": 16,
+                                          "needsAction": 1,
                                           "refundExcluded": 2,
                                           "refundExcludedIds": [
                                             "tx-20261102-2053-earth-23960",
@@ -4348,43 +4542,47 @@
                                           ],
                                           "excluded": 5,
                                           "needsActionIds": [
-                                            "tx-20261102-2054-earth-5570",
-                                            "tx-20261105-1357-nisshin-17600",
-                                            "tx-20261106-1553-danballace-7160"
+                                            "tx-20261105-1357-nisshin-17600"
+                                          ],
+                                          "excludedOutOfScope": [
+                                            "AMAZON CO JP ¥8,990（イベント事業決済用、吉野 哲仁、2026-11-10 21:10:04 JST、スレッド1794312604.656699）。柴田 善広 / AIハンド決済用ではないため行は追加しない。"
                                           ],
                                           "statusChanges": [
-                                            "tx-20261109-1754-github-392",
-                                            "tx-20261109-1755-github-783"
-                                          ],
-                                          "savedNotAttached": [
                                             "tx-20261102-2054-earth-5570",
                                             "tx-20261106-1553-danballace-7160"
                                           ],
+                                          "savedNotAttached": [],
                                           "memosCreated": 0,
                                           "attachmentsAttempted": 0,
-                                          "note": "GITHUB, INC. ¥47（USD 0.29）を追加した。メモ完了通知も証憑通知もない。シバタさんが2026-11-10 13:41 JSTに本人の課金ではないと回答したため、¥392・¥783と同じ本人以外の課金（シバタさん回答 2026-11-10）として要処理から除外した。行は削除していない。返金除外とは別の理由。アースダンボール ¥5,570、DANBALLACE ¥7,160、日進ゴム ¥17,600は変えていない。新しい返金はない。",
+                                          "note": "アースダンボール ¥5,570はシバタさんが2026-11-10 13:49:59 JSTに20261102_5570JPY_アースダンボール_領収書.pdfを手動添付し、UPSIDERが13:50:00 JSTに「領収証を提出しています」、13:50:07 JSTに「領収証を添付しました」と通知したため登録完了。発行事業者は株式会社アースダンボール。DANBALLACE ¥7,160はシバタさんが2026-11-10 13:49:44 JSTに20261106_7160JPY_アースダンボール_領収書.pdfを手動添付し、UPSIDERが13:49:45 JSTに「領収証を提出しています」、13:49:52 JSTに「領収証を添付しました」と通知したため登録完了。日進ゴム ¥17,600は証憑なしのまま。11/06以降の返信はなく、11/05のnisshin-4735.pngは誤添付で削除済み。AMAZON CO JP ¥8,990（イベント事業決済用、吉野 哲仁、2026-11-10 21:10:04 JST、スレッド1794312604.656699）は対象外で行に加えていない。新しい返金はない。新しいGitHub課金はない。投稿・添付・メモ登録はしていない。",
                                           "previous": {
-                                            "checkedAt": "2026-11-10 09:06 JST",
+                                            "checkedAt": "2026-11-10 13:40:00 JST",
                                             "routine": "UPSIDERチェック",
                                             "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
-                                            "newTransactions": 2,
-                                            "ledgerRows": 21,
+                                            "newTransactions": 1,
+                                            "ledgerRows": 22,
                                             "registeredComplete": 14,
-                                            "needsAction": 5,
+                                            "needsAction": 3,
                                             "refundExcluded": 2,
                                             "refundExcludedIds": [
                                               "tx-20261102-2053-earth-23960",
                                               "tx-20261104-0923-danballace-23960"
                                             ],
+                                            "notOwnerExcluded": 3,
+                                            "notOwnerExcludedIds": [
+                                              "tx-20261109-1754-github-392",
+                                              "tx-20261109-1755-github-783",
+                                              "tx-20261110-1051-github-47"
+                                            ],
+                                            "excluded": 5,
                                             "needsActionIds": [
                                               "tx-20261102-2054-earth-5570",
                                               "tx-20261105-1357-nisshin-17600",
-                                              "tx-20261106-1553-danballace-7160",
-                                              "tx-20261109-1754-github-392",
-                                              "tx-20261109-1755-github-783"
+                                              "tx-20261106-1553-danballace-7160"
                                             ],
                                             "statusChanges": [
-                                              "tx-20261105-1241-akizuki-2600"
+                                              "tx-20261109-1754-github-392",
+                                              "tx-20261109-1755-github-783"
                                             ],
                                             "savedNotAttached": [
                                               "tx-20261102-2054-earth-5570",
@@ -4392,13 +4590,15 @@
                                             ],
                                             "memosCreated": 0,
                                             "attachmentsAttempted": 0,
-                                            "note": "秋月電子 ¥2,600はUPSIDERの「領収証を添付しました」を確認して登録完了。GITHUB, INC. 2件はメモ・証憑なしの要処理。アースダンボール ¥5,570、DANBALLACE ¥7,160、日進ゴム ¥17,600は変えていない。",
+                                            "note": "GITHUB, INC. ¥47（USD 0.29）を追加した。メモ完了通知も証憑通知もない。シバタさんが2026-11-10 13:41 JSTに本人の課金ではないと回答したため、¥392・¥783と同じ本人以外の課金（シバタさん回答 2026-11-10）として要処理から除外した。行は削除していない。返金除外とは別の理由。アースダンボール ¥5,570、DANBALLACE ¥7,160、日進ゴム ¥17,600は変えていない。新しい返金はない。",
                                             "previous": {
-                                              "checkedAt": "2026-11-09 16:25 JST",
-                                              "routine": "領収書のDrive保存",
-                                              "source": "bestcarton.comマイページで取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
-                                              "registeredComplete": 13,
-                                              "needsAction": 4,
+                                              "checkedAt": "2026-11-10 09:06 JST",
+                                              "routine": "UPSIDERチェック",
+                                              "source": "ブラウザで#bo_upsiderを確認。投稿・添付・メモ登録はしていない。",
+                                              "newTransactions": 2,
+                                              "ledgerRows": 21,
+                                              "registeredComplete": 14,
+                                              "needsAction": 5,
                                               "refundExcluded": 2,
                                               "refundExcludedIds": [
                                                 "tx-20261102-2053-earth-23960",
@@ -4406,29 +4606,32 @@
                                               ],
                                               "needsActionIds": [
                                                 "tx-20261102-2054-earth-5570",
-                                                "tx-20261105-1241-akizuki-2600",
                                                 "tx-20261105-1357-nisshin-17600",
-                                                "tx-20261106-1553-danballace-7160"
+                                                "tx-20261106-1553-danballace-7160",
+                                                "tx-20261109-1754-github-392",
+                                                "tx-20261109-1755-github-783"
                                               ],
                                               "statusChanges": [
-                                                "tx-20261102-2054-earth-5570",
-                                                "tx-20261106-1553-danballace-7160"
+                                                "tx-20261105-1241-akizuki-2600"
                                               ],
                                               "savedNotAttached": [
                                                 "tx-20261102-2054-earth-5570",
-                                                "tx-20261105-1241-akizuki-2600",
                                                 "tx-20261106-1553-danballace-7160"
                                               ],
-                                              "shareRefused": false,
                                               "memosCreated": 0,
                                               "attachmentsAttempted": 0,
+                                              "note": "秋月電子 ¥2,600はUPSIDERの「領収証を添付しました」を確認して登録完了。GITHUB, INC. 2件はメモ・証憑なしの要処理。アースダンボール ¥5,570、DANBALLACE ¥7,160、日進ゴム ¥17,600は変えていない。",
                                               "previous": {
-                                                "checkedAt": "2026-11-09 15:59 JST",
+                                                "checkedAt": "2026-11-09 16:25 JST",
                                                 "routine": "領収書のDrive保存",
-                                                "source": "取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
+                                                "source": "bestcarton.comマイページで取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
                                                 "registeredComplete": 13,
                                                 "needsAction": 4,
                                                 "refundExcluded": 2,
+                                                "refundExcludedIds": [
+                                                  "tx-20261102-2053-earth-23960",
+                                                  "tx-20261104-0923-danballace-23960"
+                                                ],
                                                 "needsActionIds": [
                                                   "tx-20261102-2054-earth-5570",
                                                   "tx-20261105-1241-akizuki-2600",
@@ -4436,28 +4639,24 @@
                                                   "tx-20261106-1553-danballace-7160"
                                                 ],
                                                 "statusChanges": [
-                                                  "tx-20261105-1241-akizuki-2600"
+                                                  "tx-20261102-2054-earth-5570",
+                                                  "tx-20261106-1553-danballace-7160"
                                                 ],
                                                 "savedNotAttached": [
-                                                  "tx-20261105-1241-akizuki-2600"
+                                                  "tx-20261102-2054-earth-5570",
+                                                  "tx-20261105-1241-akizuki-2600",
+                                                  "tx-20261106-1553-danballace-7160"
                                                 ],
                                                 "shareRefused": false,
                                                 "memosCreated": 0,
                                                 "attachmentsAttempted": 0,
                                                 "previous": {
-                                                  "checkedAt": "2026-11-09 15:31 JST",
-                                                  "routine": "UPSIDERチェック",
-                                                  "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
-                                                  "newTransactions": 0,
-                                                  "threadsChecked": 3,
-                                                  "ledgerRows": 19,
+                                                  "checkedAt": "2026-11-09 15:59 JST",
+                                                  "routine": "領収書のDrive保存",
+                                                  "source": "取得した領収書を台帳へ記録。Slackへの投稿・添付はしていない。",
                                                   "registeredComplete": 13,
                                                   "needsAction": 4,
                                                   "refundExcluded": 2,
-                                                  "refundExcludedIds": [
-                                                    "tx-20261102-2053-earth-23960",
-                                                    "tx-20261104-0923-danballace-23960"
-                                                  ],
                                                   "needsActionIds": [
                                                     "tx-20261102-2054-earth-5570",
                                                     "tx-20261105-1241-akizuki-2600",
@@ -4465,24 +4664,23 @@
                                                     "tx-20261106-1553-danballace-7160"
                                                   ],
                                                   "statusChanges": [
-                                                    "tx-20261105-1253-monotaro-17553",
-                                                    "tx-20261105-1404-monotaro-4833",
-                                                    "tx-20261104-2114-misumi-16614"
+                                                    "tx-20261105-1241-akizuki-2600"
                                                   ],
-                                                  "attachmentsObserved": 3,
-                                                  "attachmentMethod": "ユーザーが手動でスレッドへ添付",
+                                                  "savedNotAttached": [
+                                                    "tx-20261105-1241-akizuki-2600"
+                                                  ],
+                                                  "shareRefused": false,
                                                   "memosCreated": 0,
-                                                  "doNotResend": [],
-                                                  "note": "134323400028、134323400029、AB256FB3F5は手動添付済み。",
+                                                  "attachmentsAttempted": 0,
                                                   "previous": {
-                                                    "checkedAt": "2026-11-09 09:26:56 JST",
+                                                    "checkedAt": "2026-11-09 15:31 JST",
                                                     "routine": "UPSIDERチェック",
                                                     "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
                                                     "newTransactions": 0,
-                                                    "threadsChecked": 18,
+                                                    "threadsChecked": 3,
                                                     "ledgerRows": 19,
-                                                    "registeredComplete": 10,
-                                                    "needsAction": 7,
+                                                    "registeredComplete": 13,
+                                                    "needsAction": 4,
                                                     "refundExcluded": 2,
                                                     "refundExcludedIds": [
                                                       "tx-20261102-2053-earth-23960",
@@ -4490,52 +4688,83 @@
                                                     ],
                                                     "needsActionIds": [
                                                       "tx-20261102-2054-earth-5570",
-                                                      "tx-20261106-1553-danballace-7160",
-                                                      "tx-20261104-2114-misumi-16614",
                                                       "tx-20261105-1241-akizuki-2600",
-                                                      "tx-20261105-1253-monotaro-17553",
                                                       "tx-20261105-1357-nisshin-17600",
-                                                      "tx-20261105-1404-monotaro-4833"
-                                                    ],
-                                                    "excludedOutOfScope": [
-                                                      "DOCUSIGN INC. ¥13,310（11/7 22:25 JST、会社名義・SaaSカード）",
-                                                      "VERCEL INC. ¥10,697（SaaS決済用、2026-11-09 07:48:31 JST、txn 683692ea-88be-4f53-a2ed-789063082ca0）"
-                                                    ],
-                                                    "limits": [
-                                                      "スレッド返信数は前回値がないため増減比較不可",
-                                                      "完了通知の新規tsは未取得。memoEvidenceは増やしていない",
-                                                      "Amazon ¥2,473は事業者名・登録番号が読めず、今回の証憑有効性再検証とはしない"
-                                                    ],
-                                                    "doNotResend": [
-                                                      "134323400028",
-                                                      "134323400029",
-                                                      "AB256FB3F5"
+                                                      "tx-20261106-1553-danballace-7160"
                                                     ],
                                                     "statusChanges": [
-                                                      "tx-20261102-2053-earth-23960"
+                                                      "tx-20261105-1253-monotaro-17553",
+                                                      "tx-20261105-1404-monotaro-4833",
+                                                      "tx-20261104-2114-misumi-16614"
                                                     ],
-                                                    "attachmentsAttempted": 0,
+                                                    "attachmentsObserved": 3,
+                                                    "attachmentMethod": "ユーザーが手動でスレッドへ添付",
                                                     "memosCreated": 0,
+                                                    "doNotResend": [],
+                                                    "note": "134323400028、134323400029、AB256FB3F5は手動添付済み。",
                                                     "previous": {
-                                                      "checkedAt": "2026-11-08 09:07 JST",
-                                                      "routine": "UPSIDERチェック（毎日AM9時）",
+                                                      "checkedAt": "2026-11-09 09:26:56 JST",
+                                                      "routine": "UPSIDERチェック",
+                                                      "source": "ブラウザ読み取り結果。投稿・添付・メモ登録はしていない。",
                                                       "newTransactions": 0,
-                                                      "statusChanges": 0,
+                                                      "threadsChecked": 18,
+                                                      "ledgerRows": 19,
+                                                      "registeredComplete": 10,
+                                                      "needsAction": 7,
+                                                      "refundExcluded": 2,
+                                                      "refundExcludedIds": [
+                                                        "tx-20261102-2053-earth-23960",
+                                                        "tx-20261104-0923-danballace-23960"
+                                                      ],
+                                                      "needsActionIds": [
+                                                        "tx-20261102-2054-earth-5570",
+                                                        "tx-20261106-1553-danballace-7160",
+                                                        "tx-20261104-2114-misumi-16614",
+                                                        "tx-20261105-1241-akizuki-2600",
+                                                        "tx-20261105-1253-monotaro-17553",
+                                                        "tx-20261105-1357-nisshin-17600",
+                                                        "tx-20261105-1404-monotaro-4833"
+                                                      ],
+                                                      "excludedOutOfScope": [
+                                                        "DOCUSIGN INC. ¥13,310（11/7 22:25 JST、会社名義・SaaSカード）",
+                                                        "VERCEL INC. ¥10,697（SaaS決済用、2026-11-09 07:48:31 JST、txn 683692ea-88be-4f53-a2ed-789063082ca0）"
+                                                      ],
+                                                      "limits": [
+                                                        "スレッド返信数は前回値がないため増減比較不可",
+                                                        "完了通知の新規tsは未取得。memoEvidenceは増やしていない",
+                                                        "Amazon ¥2,473は事業者名・登録番号が読めず、今回の証憑有効性再検証とはしない"
+                                                      ],
+                                                      "doNotResend": [
+                                                        "134323400028",
+                                                        "134323400029",
+                                                        "AB256FB3F5"
+                                                      ],
+                                                      "statusChanges": [
+                                                        "tx-20261102-2053-earth-23960"
+                                                      ],
                                                       "attachmentsAttempted": 0,
                                                       "memosCreated": 0,
-                                                      "excludedOutOfScope": [
-                                                        "DOCUSIGN INC（会社名義・SaaSカード）"
-                                                      ],
-                                                      "gmailAfter20261108": 0,
-                                                      "driveInboxNewPdfs": 0,
-                                                      "botInboxNewMail": 0
+                                                      "previous": {
+                                                        "checkedAt": "2026-11-08 09:07 JST",
+                                                        "routine": "UPSIDERチェック（毎日AM9時）",
+                                                        "newTransactions": 0,
+                                                        "statusChanges": 0,
+                                                        "attachmentsAttempted": 0,
+                                                        "memosCreated": 0,
+                                                        "excludedOutOfScope": [
+                                                          "DOCUSIGN INC（会社名義・SaaSカード）"
+                                                        ],
+                                                        "gmailAfter20261108": 0,
+                                                        "driveInboxNewPdfs": 0,
+                                                        "botInboxNewMail": 0
+                                                      }
                                                     }
-                                                  }
-                                                },
-                                                "refundExcludedIds": [
-                                                  "tx-20261102-2053-earth-23960",
-                                                  "tx-20261104-0923-danballace-23960"
-                                                ]
+                                                  },
+                                                  "refundExcludedIds": [
+                                                    "tx-20261102-2053-earth-23960",
+                                                    "tx-20261104-0923-danballace-23960"
+                                                  ]
+                                                }
                                               }
                                             }
                                           }
